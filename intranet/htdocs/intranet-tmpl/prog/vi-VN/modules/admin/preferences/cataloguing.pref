@@ -1,0 +1,322 @@
+--- 
+biên mục: 
+  " C\xE1\xBA\xA5u tr\xC3\xBAc bi\xE1\xBB\x83u ghi": 
+    - 
+      - " Gi\xC3\xA1 tr\xE1\xBB\x8B m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh cho ng\xC3\xB4n ng\xE1\xBB\xAF t\xC3\xA0i li\xE1\xBB\x87u trong tr\xC6\xB0\xE1\xBB\x9Dng 008 t\xE1\xBA\xA1i v\xE1\xBB\x8B tr\xC3\xAD 35-37 (v\xC3\xAD d\xE1\xBB\xA5 nh\xC6\xB0 eng, nor, ger, xem th\xC3\xAAm <a href=\"http://www.loc.gov/marc/languages/language_code.html\">\"Danh s\xC3\xA1ch m\xC3\xA3 MARC cho ng\xC3\xB4n ng\xE1\xBB\xAF\"</a>)"
+      - 
+        pref: DefaultLanguageField008
+      - "  (N\xE1\xBA\xBFu \xC4\x91\xE1\xBB\x83 tr\xE1\xBB\x91ng gi\xC3\xA1 tr\xE1\xBB\x8B m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh s\xE1\xBA\xBD l\xC3\xA0 eng)"
+    - 
+      - Fill in the default country code for field 008 Range 15-17 of MARC21 - Place of publication, production, or execution. See <a href="http://www.loc.gov/marc/countries/countries_code.html">MARC Code List for Countries</a>
+      - 
+        pref: DefaultCountryField008
+      - " Empty defaults to xxu for United States."
+    - 
+      - " Di\xE1\xBB\x85n gi\xE1\xBA\xA3i v\xC3\xA0 l\xC6\xB0u tr\xE1\xBB\xAF bi\xE1\xBB\x83u ghi MARC trong \xC4\x91\xE1\xBB\x8Bnh d\xE1\xBA\xA1ng"
+      - 
+        choices: 
+          MARC21: " MARC21"
+          NORMARC: " NORMARC"
+          UNIMARC: " UNIMARC"
+        pref: marcflavour
+      - " ."
+    - 
+      - " Ch\xC3\xADnh s\xC3\xA1ch l\xC6\xB0u th\xC3\xB4ng \xC4\x91\xC6\xB0\xE1\xBB\xA3c \xC3\xA1p d\xE1\xBB\xA5ng tr\xC3\xAAn"
+      - 
+        choices: 
+          "": " bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c"
+          1: " bi\xE1\xBB\x83u ghi t\xC3\xA0i li\xE1\xBB\x87u"
+        pref: item-level_itypes
+      - " (Th\xC3\xB4ng s\xE1\xBB\x91 n\xC3\xA0y s\xE1\xBA\xBD \xE1\xBA\xA3nh h\xC6\xB0\xE1\xBB\x9Fng t\xE1\xBB\x9Bi ch\xC3\xADnh s\xC3\xA1ch l\xC6\xB0u th\xC3\xB4ng v\xC3\xA0 ti\xE1\xBB\x81n ph\xE1\xBA\xA1t c\xC5\xA9ng nh\xC6\xB0 vi\xE1\xBB\x87c hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c bi\xE1\xBB\x83u t\xC6\xB0\xE1\xBB\xA3ng ki\xE1\xBB\x83u t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn giao di\xE1\xBB\x87n OPAC)."
+    - 
+      - " \xC3\x81nh x\xE1\xBA\xA1 tr\xC6\xB0\xE1\xBB\x9Dng con MARC"
+      - 
+        pref: itemcallnumber
+      - " t\xE1\xBB\x9Bi k\xC3\xBD hi\xE1\xBB\x87u ph\xC3\xA2n lo\xE1\xBA\xA1i c\xE1\xBB\xA7a t\xC3\xA0i li\xE1\xBB\x87u. (B\xE1\xBA\xA1n c\xC3\xB3 th\xE1\xBB\x83 \xC3\xA1nh x\xE1\xBA\xA1 nhi\xE1\xBB\x81u tr\xC6\xB0\xE1\xBB\x9Dng con, v\xC3\xAD d\xE1\xBB\xA5 <code>082ab</code> s\xE1\xBA\xBD \xC3\xA1nh x\xE1\xBA\xA1 tr\xC6\xB0\xE1\xBB\x9Dng con a v\xC3\xA0 b c\xE1\xBB\xA7a tr\xC6\xB0\xE1\xBB\x9Dng 082.)<br />V\xC3\xAD d\xE1\xBB\xA5: <strong>Dewey</strong>: <code>082ab</code> ho\xE1\xBA\xB7c <code>092ab</code>; <strong>LOC</strong>: <code>050ab</code> ho\xE1\xBA\xB7c <code>090ab</code>; <strong>t\xE1\xBB\xAB bi\xE1\xBB\x83u ghi t\xC3\xA0i li\xE1\xBB\x87u</strong>: <code>852hi</code>"
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B tr\xC6\xB0\xE1\xBB\x9Dng con MARC"
+      - 
+        pref: AlternateHoldingsField
+      - "nh\xC6\xB0 l\xC3\xA0 th\xC3\xB4ng tin s\xE1\xBB\x9F h\xE1\xBB\xAFu cho bi\xE1\xBB\x83u ghi kh\xC3\xB4ng c\xC3\xB3 t\xC3\xA0i li\xE1\xBB\x87u (B\xE1\xBA\xA1n c\xC3\xB3 th\xE1\xBB\x83 nh\xE1\xBA\xADp nhi\xE1\xBB\x81u tr\xC6\xB0\xE1\xBB\x9Dng con, v\xC3\xAD d\xE1\xBB\xA5 <code>852abhi</code> s\xE1\xBA\xBD xem x\xC3\xA9t tr\xC6\xB0\xE1\xBB\x9Dng con a, b, h v\xC3\xA0 i c\xE1\xBB\xA7a tr\xC6\xB0\xE1\xBB\x9Dng 852), v\xE1\xBB\x9Bi c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng con c\xC3\xA1ch nhau b\xE1\xBA\xB1ng "
+      - 
+        pref: AlternateHoldingsSeparator
+      - " ."
+    - 
+      - " Nh\xE1\xBA\xADp <a href=\"http://www.loc.gov/marc/organizations/orgshome.html\">\"M\xC3\xA3 t\xE1\xBB\x95 ch\xE1\xBB\xA9c MARC\"</a>"
+      - 
+        pref: MARCOrgCode
+      - by default in new MARC21 records (leave blank to disable). This can be also set on libraries level.
+    - 
+      - " Khi t\xC3\xA0i li\xE1\xBB\x87u m\xE1\xBB\x9Bi \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBA\xA1o, chuy\xE1\xBB\x83n t\xC3\xA0i li\xE1\xBB\x87u v\xE1\xBB\x81 kho t\xE1\xBA\xA1m th\xE1\xBB\x9Di v\xE1\xBB\x9Bi m\xC3\xA3 kho l\xC3\xA0"
+      - 
+        class: short
+        pref: NewItemsDefaultLocation
+      - " (B\xE1\xBA\xA1n n\xC3\xAAn \xC4\x91i\xE1\xBB\x81n m\xE1\xBB\x99t m\xC3\xA3 kho ho\xE1\xBA\xB7c b\xE1\xBB\x8F tr\xE1\xBB\x91ng \xC4\x91\xE1\xBB\x83 kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t)."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng sao ch\xC3\xA9p"
+          1: " Sao ch\xC3\xA9p"
+        pref: z3950NormalizeAuthor
+      - " t\xC3\xA1c gi\xE1\xBA\xA3 t\xE1\xBB\xAB c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng UNIMARC"
+      - 
+        class: multi
+        pref: z3950AuthorAuthFields
+      - " (ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBB\x9Fi d\xE1\xBA\xA5u ph\xE1\xBA\xA9y) t\xE1\xBB\x9Bi tr\xC6\xB0\xE1\xBB\x9Dng t\xC3\xA1c gi\xE1\xBA\xA3 ch\xC3\xADnh x\xC3\xA1c khi Nh\xE1\xBA\xADp bi\xE1\xBB\x83u ghi qua giao th\xE1\xBB\xA9c Z39.50."
+    - 
+      - " \xC4\x90\xC4\x83ng k\xC3\xBD c\xC3\xA1 bi\xE1\xBB\x87t t\xC3\xA0i li\xE1\xBB\x87u"
+      - 
+        choices: 
+          EAN13: " t\xE1\xBB\xB1 sinh theo m\xC3\xA3 \xC4\x91\xC4\x83ng k\xC3\xBD c\xC3\xA1 bi\xE1\xBB\x87t EAN 13 t\xC4\x83ng d\xE1\xBA\xA7n"
+          "OFF": " kh\xC3\xB4ng t\xE1\xBB\xB1 \xC4\x91\xE1\xBB\x99ng sinh ra."
+          annual: " \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBB\xB1 sinh theo m\xE1\xBA\xABu &lt;n\xC4\x83m&gt;-0001, &lt;n\xC4\x83m&gt;-0002."
+          hbyymmincr: " \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBB\xB1 sinh theo m\xE1\xBA\xABu &lt;\"m\xC3\xA3 th\xC6\xB0 vi\xE1\xBB\x87n\"&gt;yymm0001."
+          incremental: " \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBB\xB1 sinh theo m\xE1\xBA\xABu 1, 2, 3."
+        pref: autoBarcode
+    - 
+      - " Khi b\xE1\xBA\xA1n t\xE1\xBA\xA1o t\xC3\xA0i li\xE1\xBB\x87u m\xE1\xBB\x9Bi,"
+      - 
+        choices: 
+          "": " c\xC3\xA1c th\xC3\xB4ng tin c\xE1\xBB\xA7a t\xC3\xA0i li\xE1\xBB\x87u \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBA\xA1o tr\xC6\xB0\xE1\xBB\x9Bc \xC4\x91\xC3\xB3 s\xE1\xBA\xBD \xC4\x91\xC6\xB0\xE1\xBB\xA3c hi\xE1\xBB\x83n th\xE1\xBB\x8B."
+          1: " c\xC3\xA1c th\xC3\xB4ng tin c\xE1\xBB\xA7a t\xC3\xA0i li\xE1\xBB\x87u \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBA\xA1o tr\xC6\xB0\xE1\xBB\x9Bc \xC4\x91\xC3\xB3 kh\xC3\xB4ng \xC4\x91\xC6\xB0\xE1\xBB\xA3c hi\xE1\xBB\x83n th\xE1\xBB\x8B."
+        pref: PrefillItem
+    - 
+      - " X\xC3\xA1c \xC4\x91\xE1\xBB\x8Bnh danh s\xC3\xA1ch c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng con \xC4\x91\xC6\xB0\xE1\xBB\xA3c gi\xE1\xBB\xAF l\xE1\xBA\xA1i gi\xC3\xA1 tr\xE1\xBB\x8B khi t\xE1\xBA\xA1o m\xE1\xBB\x9Bi t\xC3\xA0i li\xE1\xBB\x87u (ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng d\xE1\xBA\xA5u c\xC3\xA1ch)"
+      - 
+        pref: SubfieldsToUseWhenPrefill
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng ng\xC3\xB4n ng\xE1\xBB\xAF (ISO 690-2)"
+      - 
+        class: short
+        pref: UNIMARCField100Language
+      - " nh\xC6\xB0 l\xC3\xA0 ng\xC3\xB4n ng\xE1\xBB\xAF m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh trong tr\xC6\xB0\xE1\xBB\x9Dng UNIMARC 100 khi t\xE1\xBA\xA1o m\xE1\xBB\x99t bi\xE1\xBB\x83u ghi m\xE1\xBB\x9Bi ho\xE1\xBA\xB7c trong c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng t\xC3\xADch h\xE1\xBB\xA3p s\xE1\xBA\xB5n."
+    - 
+      - Define a list of subfields for which editing is authorized when edit_items_restricted permission is enabled, separated by spaces.
+      - 
+        pref: SubfieldsToAllowForRestrictedEditing
+      - "Examples:"
+      - "UNIMARC: \"995$f 995$h 995$j\""
+      - "MARC21: \"952$a 952$b 952$c\""
+      - Note that the FA framework is excluded from the permission.
+      - If the pref is empty, no fields are restricted.
+    - 
+      - Define a list of subfields for which editing is authorized when items_batchmod_restricted permission is enabled, separated by spaces.
+      - 
+        pref: SubfieldsToAllowForRestrictedBatchmod
+      - "Examples:"
+      - "UNIMARC: \"995$f 995$h 995$j\""
+      - "MARC21: \"952$a 952$b 952$c\""
+      - Note that the FA framework is excluded from the permission.
+      - If the pref is empty, no fields are restricted.
+  " Nh\xC3\xA3n g\xC3\xA1y": 
+    - 
+      - " Khi s\xE1\xBB\xAD d\xE1\xBB\xA5ng in nhanh nh\xC3\xA3n g\xC3\xA1y t\xC3\xA0i li\xE1\xBB\x87u,"
+      - 
+        choices: 
+          "": " kh\xC3\xB4ng t\xE1\xBB\xB1 \xC4\x91\xE1\xBB\x99ng"
+          1: " t\xE1\xBB\xB1 \xC4\x91\xE1\xBB\x99ng"
+        pref: SpineLabelAutoPrint
+      - " hi\xE1\xBB\x83n th\xE1\xBB\x8B h\xE1\xBB\x99p tho\xE1\xBA\xA1i in."
+    - 
+      - " Bao g\xE1\xBB\x93m c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng th\xC3\xB4ng tin sau \xC4\x91\xC3\xA2y tr\xC3\xAAn m\xE1\xBB\x99t nh\xC3\xA3n g\xC3\xA1y \xC4\x91\xC6\xB0\xE1\xBB\xA3c in nhanh:"
+      - " (Nh\xE1\xBA\xADp c\xC3\xA1c c\xE1\xBB\x99t t\xE1\xBB\xAB b\xE1\xBA\xA3ng <code>biblio</code>, <code>biblioitems</code> ho\xE1\xBA\xB7c <code>items</code>, \xC4\x91\xC6\xB0\xE1\xBB\xA3c ch\xE1\xBB\xA9a trong d\xE1\xBA\xA5u &lt; ... &gt;.)"
+      - 
+        pref: SpineLabelFormat
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: SpineLabelShowPrintOnBibDetails
+      - " n\xC3\xBAt \"In nh\xC3\xA3n g\xC3\xA1y\" tr\xC3\xAAn trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c."
+    - ~
+  " Nh\xE1\xBA\xADp d\xE1\xBB\xAF li\xE1\xBB\x87u": 
+    - 
+      - " Khi \xC3\xA1p d\xE1\xBB\xA5ng quy t\xE1\xBA\xAFc ki\xE1\xBB\x83m so\xC3\xA1t ISBN trong qu\xC3\xA1 tr\xC3\xACnh nh\xE1\xBA\xADp bi\xE1\xBB\x83u ghi, h\xE1\xBB\x87 th\xE1\xBB\x91ng s\xE1\xBA\xBD "
+      - 
+        choices: 
+          "": " kh\xC3\xB4ng lo\xE1\xBA\xA1i b\xE1\xBB\x8F"
+          1: " lo\xE1\xBA\xA1i b\xE1\xBB\x8F"
+        pref: AggressiveMatchOnISBN
+      - các ký tự vô nghĩa trong trường ISBN khi thực hiện việc so sánh. Chú ý rằng bạn phải tắt chức năng UseQueryParser.
+    - 
+      - When matching on ISSN with the record import tool,
+      - 
+        choices: 
+          "": don't
+          1: do
+        pref: AggressiveMatchOnISSN
+      - attempt to match aggressively by trying all variations of the ISSNs in the imported record as a phrase in the ISSN fields of already cataloged records.  Note that this preference has no effect if UseQueryParser is on.
+  " Th\xC3\xB4ng s\xE1\xBB\x91 giao di\xE1\xBB\x87n": 
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+      - 
+        choices: class-sources
+        pref: DefaultClassificationSource
+      - " nh\xC6\xB0 l\xC3\xA0 khung ph\xC3\xA2n lo\xE1\xBA\xA1i m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh."
+    - 
+      - 
+        choices: 
+          "": " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: advancedMARCeditor
+      - " m\xC3\xB4 t\xE1\xBA\xA3 tr\xC6\xB0\xE1\xBB\x9Dng v\xC3\xA0 tr\xC6\xB0\xE1\xBB\x9Dng con trong giao di\xE1\xBB\x87n ch\xE1\xBB\x89nh s\xE1\xBB\xADa bi\xE1\xBB\x83u ghi MARC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: EasyAnalyticalRecords
+      - " t\xC3\xADnh n\xC4\x83ng li\xC3\xAAn k\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u t\xE1\xBB\x9Bi bi\xE1\xBB\x83u ghi t\xC3\xA0i li\xE1\xBB\x87u ch\xE1\xBB\xA7 trong giao di\xE1\xBB\x87n hi\xE1\xBB\x83n th\xE1\xBB\x8B t\xC3\xA0i li\xE1\xBB\x87u"
+    - 
+      - 
+        choices: 
+          "": Don't enable
+          1: Enable
+        default: 0
+        pref: EnableAdvancedCatalogingEditor
+      - the advanced cataloging editor.
+      - "<br/> NOTE:"
+      - Currently does not include support for UNIMARC or NORMARC fixed fields.
+  " Th\xC3\xB4ng s\xE1\xBB\x91 hi\xE1\xBB\x83n th\xE1\xBB\x8B": 
+    - 
+      - "Separate multiple displayed authors, series or subjects with "
+      - 
+        class: short
+        pref: AuthoritySeparator
+      - .
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+      - 
+        pref: URLLinkText
+      - " nh\xC6\xB0 l\xC3\xA0 li\xC3\xAAn k\xE1\xBA\xBFt thay th\xE1\xBA\xBF cho c\xC3\xA1c li\xC3\xAAn k\xE1\xBA\xBFt \xC4\x91\xC6\xB0\xE1\xBB\xA3c nh\xC3\xBAng trong bi\xE1\xBB\x83u ghi MARC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng s\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+          1: " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+        pref: UseControlNumber
+      - " s\xE1\xBB\x91 \xC4\x91i\xE1\xBB\x81u khi\xE1\xBB\x83n bi\xE1\xBB\x83u ghi (tr\xC6\xB0\xE1\xBB\x9Dng con $w) v\xC3\xA0 s\xE1\xBB\x91 \xC4\x91i\xE1\xBB\x81u khi\xE1\xBB\x83n (tr\xC6\xB0\xE1\xBB\x9Dng 001) cho vi\xE1\xBB\x87c li\xC3\xAAn k\xE1\xBA\xBFt c\xC3\xA1c bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c."
+    - 
+      - Use
+      - 
+        class: url
+        pref: MarcFieldDocURL
+      - as the URL for MARC field documentation.
+      - Possible substitutions are <tt>{MARC}</tt> (marc flavour, eg. "MARC21" or "UNIMARC"), <tt>{FIELD}</tt> (field number, eg. "000" or "048"), <tt>{LANG}</tt> (user language, eg. "en" or "fi-FI").
+      - If left empty, the format documentation on http://loc.gov (MARC21) or http://archive.ifla.org (UNIMARC) is used.
+      - For example <tt>http://fielddoc.example.com/?marc={MARC}&field={FIELD}&language={LANG}</tt>
+    - 
+      - 
+        choices: 
+          "": " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: hide_marc
+      - " s\xE1\xBB\x91 tr\xC6\xB0\xE1\xBB\x9Dng MARC, m\xC3\xA3 tr\xC6\xB0\xE1\xBB\x9Dng con v\xC3\xA0 c\xC3\xA1c ch\xE1\xBB\x89 s\xE1\xBB\x91 trong hi\xE1\xBB\x83n th\xE1\xBB\x8B MARC."
+    - 
+      - 
+        choices: 
+          economical: " Nh\xC3\xB3m"
+          standard: " Kh\xC3\xB4ng nh\xC3\xB3m"
+        pref: LabelMARCView
+      - " c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng gi\xE1\xBB\x91ng nhau trong m\xE1\xBB\x99t nh\xC3\xA3n tr\xC3\xAAn m\xC3\xA0n h\xC3\xACnh hi\xE1\xBB\x83n th\xE1\xBB\x8B."
+    - 
+      - " Theo m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh, hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c trong"
+      - 
+        choices: 
+          isbd: " ki\xE1\xBB\x83u ISBD (xem b\xC3\xAAn d\xC6\xB0\xE1\xBB\x9Bi)."
+          labeled_marc: " ki\xE1\xBB\x83u nh\xC3\xA3n MARC."
+          marc: " ki\xE1\xBB\x83u MARC."
+          normal: " ki\xE1\xBB\x83u b\xC3\xACnh th\xC6\xB0\xE1\xBB\x9Dng."
+        pref: IntranetBiblioDefaultView
+    - 
+      - "Use the following as the staff ISBD template:"
+      - 
+        class: code
+        pref: ISBD
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng \xE1\xBA\xA9n"
+          1: " \xE1\xBA\xA8n"
+        pref: OpacSuppression
+      - biblios marked as suppressed from OPAC search results.
+      - <br />Restrict the suppression to IP addresses outside of the IP range
+      - 
+        class: short
+        pref: OpacSuppressionByIPRange
+      - " (\xC4\x90\xE1\xBB\x83 tr\xE1\xBB\x91ng n\xE1\xBA\xBFu b\xE1\xBA\xA1n kh\xC3\xB4ng mu\xE1\xBB\x91n s\xE1\xBB\xAD d\xE1\xBB\xA5ng. B\xE1\xBA\xA1n c\xC3\xB3 th\xE1\xBB\x83 thi\xE1\xBA\xBFt l\xE1\xBA\xADp m\xE1\xBB\x99t d\xE1\xBA\xA3i IP nh\xC6\xB0 <code>192.168.</code>.)"
+      - " <br />Chuy\xE1\xBB\x83n h\xC6\xB0\xE1\xBB\x9Bng trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi b\xE1\xBB\x8B \xE1\xBA\xA9n tr\xC3\xAAn giao di\xE1\xBB\x87n Opac t\xE1\xBB\x9Bi"
+      - 
+        choices: 
+          "": " trang l\xE1\xBB\x97i 404 ('Kh\xC3\xB4ng t\xC3\xACm th\xE1\xBA\xA5y')."
+          1: " trang gi\xE1\xBA\xA3i th\xC3\xADch ('Bi\xE1\xBB\x83u ghi n\xC3\xA0y b\xE1\xBB\x8B h\xE1\xBA\xA1n ch\xE1\xBA\xBF hi\xE1\xBB\x83n th\xE1\xBB\x8B')."
+        pref: OpacSuppressionRedirect
+      - " <br />Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c th\xC3\xB4ng b\xC3\xA1o d\xC6\xB0\xE1\xBB\x9Bi \xC4\x91\xC3\xA2y tr\xC3\xAAn trang chuy\xE1\xBB\x83n h\xC6\xB0\xE1\xBB\x9Bng \xC4\x91\xE1\xBB\x91i v\xE1\xBB\x9Bi c\xC3\xA1c bi\xE1\xBB\x83u ghi b\xE1\xBB\x8B \xE1\xBA\xA9n. "
+      - 
+        class: code
+        pref: OpacSuppressionMessage
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng t\xC3\xA1ch bi\xE1\xBB\x87t"
+          1: " T\xC3\xA1ch bi\xE1\xBB\x87t"
+        pref: SeparateHoldings
+      - " vi\xE1\xBB\x87c hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u c\xE1\xBB\xA7a bi\xE1\xBB\x83u ghi trong hai th\xE1\xBA\xBB, th\xE1\xBA\xBB \xC4\x91\xE1\xBA\xA7u ti\xC3\xAAn ch\xE1\xBB\xA9a c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u c\xE1\xBB\xA7a"
+      - 
+        choices: 
+          holdingbranch: " th\xC6\xB0 vi\xE1\xBB\x87n s\xE1\xBB\x9F h\xE1\xBB\xAFu"
+          homebranch: " th\xC6\xB0 vi\xE1\xBB\x87n ch\xC3\xADnh"
+        pref: SeparateHoldingsBranch
+      - " \xC4\x91\xE1\xBB\x91i v\xE1\xBB\x9Bi th\xC6\xB0 vi\xE1\xBB\x87n \xC4\x91ang \xC4\x91\xC6\xB0\xE1\xBB\xA3c \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp. Th\xE1\xBA\xBB th\xE1\xBB\xA9 hai ch\xE1\xBB\xA9a c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u c\xC3\xB2n l\xE1\xBA\xA1i."
+    - 
+      - " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng ghi ch\xC3\xBA"
+      - 
+        class: multi
+        pref: NotesBlacklist
+      - " trong c\xC3\xA1c ghi ch\xC3\xBA ti\xC3\xAAu \xC4\x91\xE1\xBB\x81 (trong hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi tr\xC3\xAAn OPAC) v\xC3\xA0 trong ph\xE1\xBA\xA7n m\xC3\xB4 t\xE1\xBA\xA3 (trong hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi tr\xC3\xAAn giao di\xE1\xBB\x87n nh\xC3\xA2n vi\xC3\xAAn)."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: AcquisitionDetails
+      - " th\xC3\xB4ng tin chi ti\xE1\xBA\xBFt c\xE1\xBB\xA7a vi\xE1\xBB\x87c b\xE1\xBB\x95 sung t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi."
+    - 
+      - 
+        pref: MergeReportFields
+      - fields to display for deleted records after merge
+      - "<br />example: '001,245ab,600'"
+      - "displays:"
+      - <ul>
+      - <li>value of 001</li>
+      - <li>subfields a and b of fields 245</li>
+      - <li>all subfields of fields 600</li>
+  Exporting: 
+    - 
+      - Include following fields when exporting BibTeX,
+      - 
+        pref: BibtexExportAdditionalFields
+        type: textarea
+      - "Use one line per tag in the format BT_TAG: TAG$SUBFIELD ( e.g. lccn: 010$a )"
+      - <br/>
+      - "To specificy multiple marc tags/subfields as targets for a repeating BibTex tag, use the following format: BT_TAG: [TAG2$SUBFIELD1, TAG2$SUBFIELD2] ( e.g. notes: [501$a, 505$g] )"
+      - <br/>
+      - All values of repeating tags and subfields will be printed with the given BibTeX tag.
+      - <br/>
+      - Use '@' ( with quotes ) as the BT_TAG to replace the bibtex record type with a field value of your choosing.
+    - 
+      - Include following fields when exporting RIS,
+      - 
+        pref: RisExportAdditionalFields
+        type: textarea
+      - "Use one line per tag in the format RIS_TAG: TAG$SUBFIELD ( e.g. LC: 010$a )"
+      - <br/>
+      - "To specificy multiple marc tags/subfields as targets for a repeating RIS tag, use the following format: RIS_TAG: [TAG2$SUBFIELD1, TAG2$SUBFIELD2] ( e.g. NT: [501$a, 505$g] )"
+      - <br/>
+      - All values of repeating tags and subfields will be printed with the given RIS tag.
+      - <br/>
+      - Use of TY ( record type ) as a key will <i>replace</i> the default TY with the field value of your choosing.

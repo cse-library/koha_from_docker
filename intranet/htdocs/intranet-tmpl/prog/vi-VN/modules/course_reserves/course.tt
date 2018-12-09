@@ -1,0 +1,189 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; CSDL khóa học &rsaquo; [% IF course_name %] Chỉnh sửa [% course_name %] [% ELSE %] Tạo khóa học [% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="courses_course" class="course">
+
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/course_reserves/course-reserves.pl">CSDL khóa học</a> &rsaquo; [% IF course_name %] Edit <i>[% course_name %]</i> [% ELSE %] New course [% END %]</div>
+
+[% IF ( departments ) %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ <form method="post" action="/cgi-bin/koha/course_reserves/mod_course.pl" class="validated">
+ [% IF course_id %]<input type="hidden" name="course_id" value="[% course_id %]" />[% END %]
+ <fieldset class="rows">
+ <legend>[% IF course_id %]Chỉnh sửa khóa học[% ELSE %]Tạo khóa học[% END %]</legend>
+ <ol>
+ <li>
+ <label class="required" for="department">Đơn vị:</label>
+ <select id="department" name="department" required="required" class="required">
+ <option value="">Chọn đơn vị</option>
+
+ [% FOREACH d IN departments %]
+ [% IF d.authorised_value == department %]
+ <option value="[% d.authorised_value %]" selected="selected">[% d.lib %]</option>
+ [% ELSE %]
+ <option value="[% d.authorised_value %]">[% d.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <span class="required">Bắt buộc</span>
+ </li>
+
+ <li>
+ <label class="required" for="course_number">Số khóa học:</label>
+ <input id="course_number" name="course_number" type="text" value="[% course_number %]" required="required" class="required" />
+ <span class="required">Bắt buộc</span>
+ </li>
+
+ <li>
+ <label for="section">Thành phần:</label>
+ <input id="section" name="section" type="text" value="[% section %]"/>
+ </li>
+
+ <li>
+ <label class="required" for="course_name">Tên khóa học:</label>
+ <input id="course_name" name="course_name" type="text" value="[% course_name %]" required="required" class="required" />
+ <span class="required">Bắt buộc</span>
+ </li>
+
+ <li>
+ [% IF terms %]
+ <label for="term">Thuật ngữ:</label>
+ <select id="term" name="term">
+ <option value=""></option>
+
+ [% FOREACH t IN terms %]
+ [% IF t.authorised_value == term %]
+ <option value="[% t.authorised_value %]" selected="selected">[% t.lib %]</option>
+ [% ELSE %]
+ <option value="[% t.authorised_value %]">[% t.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ [% ELSE %]
+ <span class="label">Thuật ngữ: </span>
+ <span id="term">Bạn chưa thiết lập giá trị định trước cho thông số TERM! Bạn vui lòng quay lại giao diện quản trị để thiết lập các giá trị này.</span>
+ [% END %]
+ </li>
+
+ <li>
+ <span class="label">Người hướng dẫn:</span>
+
+ <fieldset id="course_instructors">
+ <div id="instructors">[% FOREACH i IN instructors %]<div id="borrower_[% i.cardnumber %]">[% i.surname %], [% i.firstname %] ( <a href="#" class="removeInstructor"> Loại bỏ </a> )
+ <input type='hidden' name='instructors' value='[% i.cardnumber %]' /></div>[% END %]</div>
+ </fieldset>
+
+ <fieldset>
+ <label for="find_instructor">Tìm kiếm người hướng dẫn:</label>
+ <input autocomplete="off" id="find_instructor" type="text" style="width:150px" class="noEnterSubmit"/>
+ <div id="find_instructor_container"></div>
+ </fieldset>
+ <li>
+ <label for="staff_note">Ghi chú thủ thư:</label>
+ <textarea name="staff_note" id="staff_note">[% staff_note %]</textarea>
+ </li>
+
+ <li>
+ <label for="public_note">Ghi chú:</label>
+ <textarea name="public_note" id="public_note">[% public_note %]</textarea>
+ </li>
+
+ <li>
+ <label for="students_count">Số sinh viên:</label>
+ <input id="students_count" name="students_count" type="text" value="[% students_count %]" />
+ </li>
+
+ <li>
+ <label for="enabled">Kích hoạt?</label>
+ [% IF enabled == 'no' %]
+ <input type="checkbox" name="enabled" id="enabled" />
+ [% ELSE %]
+ <input type="checkbox" name="enabled" id="enabled" checked="checked" />
+ [% END %]
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input value="Lưu" type="submit" class="submit" />
+
+ [% IF course_id %]
+ <a href="/cgi-bin/koha/course_reserves/course-details.pl?course_id=[% course_id %]" class="cancel">Hủy bỏ</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/course_reserves/course-reserves.pl" class="cancel">Hủy bỏ</a>
+ [% END %]
+ </fieldset>
+ </form>
+ </div>
+ </div>
+
+[% ELSE %]
+
+<div class="dialog alert">
+ <p>
+ Bạn chưa khai báo các giá trị định trước cho thông số DEPARTMENT. [% IF ( CAN_user_parameters ) %] Bạn vui lòng <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=DEPARTMENT">tạo giá trị định trước</a> cho thông số DEPARTMENT. [% ELSE %] Cán bộ quản trị phải tạo giá trị định trước cho thông số DEPARTMENT. [% END %] </p>
+</div>
+
+[% END %]
+
+[% IF ( departments ) %]
+ [% MACRO jsinclude BLOCK %]
+ <script type="text/javascript">
+            $(document).ready(function(){
+                $( "#find_instructor" ).autocomplete({
+                    source: "/cgi-bin/koha/circ/ysearch.pl",
+                    minLength: 3,
+                    select: function( event, ui ) {
+                        AddInstructor( ui.item.surname + ", " + ui.item.firstname, ui.item.cardnumber );
+                        return false;
+                    }
+                })
+                .data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li></li>" )
+                    .data( "ui-autocomplete-item", item )
+                    .append( "<a>" + item.surname + ", " + item.firstname + " (" + item.cardnumber + ") <small>" + item.address + " " + item.city + " " + item.zipcode + " " + item.country + "</small></a>" )
+                    .appendTo( ul );
+                };
+
+                if ( ! $('#instructors').html() ) {
+                    $('#course_instructors').hide();
+                }
+
+                $("body").on("click",".removeInstructor",function(e){
+                    e.preventDefault();
+                    var divid = $(this).parent().attr("id");
+                    var cardnumber = divid.replace("borrower_","");
+                    RemoveInstructor(cardnumber);
+                });
+            });
+
+            function AddInstructor( name, cardnumber ) {
+                div = "<div id='borrower_" + cardnumber + "'>" + name + " ( <a href='#' class='removeInstructor'> " + _("Loại bỏ")+ " </a> ) <input type='hidden' name='instructors' value='" + cardnumber + "' /></div>";
+                $('#instructors').append( div );
+
+                $('#find_instructor').val('').focus();
+                $('#course_instructors').show();
+            }
+
+            function RemoveInstructor( cardnumber ) {
+                $( '#borrower_' + cardnumber ).remove();
+
+                if ( ! $('#instructors').html() ) {
+                    $('#course_instructors').hide( 800 );
+                }
+            }
+        </script>
+ [% END %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

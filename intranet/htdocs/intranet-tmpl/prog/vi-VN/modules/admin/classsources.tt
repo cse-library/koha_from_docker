@@ -1,0 +1,247 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống &rsaquo; Khung phân loại [% IF ( class_source_form ) %] &rsaquo; [% IF ( edit_class_source ) %]Chỉnh sửa khung phân loại[% ELSE %]Tạo khung phân loại[% END %] [% END %] [% IF ( sort_rule_form ) %] &rsaquo; [% IF ( edit_sort_rule ) %]Chỉnh sửa quy tắc phân loại[% ELSE %]Tạo quy tắc phân loại[% END %] [% END %] [% IF ( delete_class_source_form ) %] &rsaquo; Xác nhận xóa khung phân loại [% class_source %] [% ELSIF ( delete_sort_rule_form ) %] &rsaquo; Xác nhận xóa quy tắc phân loại [% sort_rule %] [% ELSIF ( delete_sort_rule_impossible ) %] &rsaquo; Không thể xóa quy tắc phân loại [% sort_rule %] [% END %] </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_classsources" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a>
+&rsaquo; <a href="/cgi-bin/koha/admin/classsources.pl">Khung phân loại</a>
+[% IF ( class_source_form ) %] &rsaquo; [% IF ( edit_class_source ) %]Chỉnh sửa khung phân loại[% ELSE %]Tạo khung phân loại[% END %] [% END %] [% IF ( sort_rule_form ) %] &rsaquo; [% IF ( edit_sort_rule ) %]Chỉnh sửa quy tắc phân loại[% ELSE %]Tạo quy tắc phân loại[% END %] [% END %] [% IF ( delete_class_source_form ) %] &rsaquo; Xác nhận xóa khung phân loại<span class="ex">'[% class_source %]'</span>
+[% ELSIF ( delete_sort_rule_form ) %] &rsaquo; Xác nhận xóa quy tắc phân loại <span class="ex">'[% sort_rule %]'</span>
+[% ELSIF ( delete_sort_rule_impossible ) %] &rsaquo; Không thể xóa quy tắc phân loại <span class="ex">'[% sort_rule %]'</span>
+[% END %]
+</div>
+
+<div id="doc3" class="yui-t2">
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( class_source_form ) %]
+ [% IF ( edit_class_source ) %]
+<h2>Chỉnh sửa khung phân loại</h2>
+ [% ELSE %]
+<h2>Tạo khung phân loại</h2>
+ [% END %]
+<form action="[% script_name %]" name="Aform" class="validated" method="post">
+ <input type="hidden" name="op" value="[% confirm_op %]" />
+ <fieldset class="rows">
+ <ol>
+ <li>
+ [% IF ( edit_class_source ) %]
+ <span class="label">Mã khung phân loại: </span>
+ <input type="hidden" name="class_source" value="[% class_source %]" />
+ [% class_source %]
+ [% ELSE %]
+ <label class="required" for="class_source">Mã khung phân loại: </label>
+ <input class="required" required="required" type="text" id="class_source" name="class_source"  size="10" maxlength="10" />
+ <span class="required">Bắt buộc</span>
+ [% END %]
+ </li>
+ <li><label class="required" for="description">Thông tin mô tả: </label>
+ <input class="required" required="required" type="text" id="description" name="description" size="50" maxlength="250" value="[% description |html %]" />
+ <span class="required">Bắt buộc</span>
+ </li>
+ <li><label for="used">Sử dụng khung phân loại?</label>
+ [% IF ( used ) %]<input type="checkbox" id="used" name="used" value="used" checked="checked" />[% ELSE %]
+ <input type="checkbox" id="used" name="used" value="used" />[% END %]
+ </li>
+ <li><label class="required" for="sort_rule">Quy tắc phân loại: </label>
+ <select class="required" required="required" id="sort_rule" name="sort_rule">
+ [% FOREACH rules_dropdow IN rules_dropdown %]
+ [% IF ( rules_dropdow.selected ) %]
+ <option value="[% rules_dropdow.rule %]" selected="selected">[% rules_dropdow.description %] ([% rules_dropdow.rule %])</option>
+ [% ELSE %]
+ <option value="[% rules_dropdow.rule %]">[% rules_dropdow.description %] ([% rules_dropdow.rule %])</option>
+ [% END %]
+ [% END %]
+ </select>
+ <span class="required">Bắt buộc</span>
+ </li> 
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input value="Lưu" type="submit" />
+ <a class="cancel" href="/cgi-bin/koha/admin/classsources.pl">Hủy bỏ</a>
+ </fieldset>
+</form>
+[% END %]
+
+[% IF ( sort_rule_form ) %]
+ [% IF ( edit_sort_rule ) %]
+<h2>Chỉnh sửa quy tắc phân loại</h2>
+ [% ELSE %]
+<h2>Tạo quy tắc phân loại</h2>
+ [% END %]
+<form action="[% script_name %]" name="Aform" class="validated" method="post">
+ <input type="hidden" name="op" value="[% confirm_op %]" />
+ <fieldset class="rows">
+ <ol>
+ <li>
+ [% IF ( edit_sort_rule ) %]
+ <span class="label">Mã quy tắc phân loại: </span>
+ <input type="hidden" name="sort_rule" value="[% sort_rule %]" />
+ [% sort_rule %]
+ [% ELSE %]
+ <label for="sort_rule" class="required">Mã quy tắc phân loại: </label>
+ <input class="required" required="required" type="text" id="sort_rule" name="sort_rule"  size="10" maxlength="10" />
+ <span class="required">Bắt buộc</span>
+ [% END %]
+ </li>
+ <li><label for="description" class="required">Thông tin mô tả: </label>
+ <input class="required" required="required" type="text" id="description" name="description" size="50" maxlength="250" value="[% description |html %]" />
+ <span class="required">Bắt buộc</span>
+ </li>
+ <li><label for="sort_routine" class="required">Nguồn phân loại: </label>
+ <select class="required" required="required" id="sort_routine" name="sort_routine">
+ [% FOREACH routines_dropdow IN routines_dropdown %]
+ [% IF ( routines_dropdow.selected ) %]
+ <option value="[% routines_dropdow.routine %]" selected="selected">[% routines_dropdow.routine %]</option>
+ [% ELSE %]
+ <option value="[% routines_dropdow.routine %]">[% routines_dropdow.routine %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <span class="required">Bắt buộc</span>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="submit" value="Lưu" />
+ <a class="cancel" href="/cgi-bin/koha/admin/classsources.pl">Hủy bỏ</a>
+ </fieldset>
+</form>
+[% END %]
+
+[% IF ( delete_class_source_form ) %]
+ <div class="dialog alert">
+ <h3>Xác nhận xóa khung phân loại  <span class="ex">'[% class_source %]'</span>?</h3>
+ <form action="[% script_name %]" name="Aform" method="post">
+ <input type="hidden" name="op" value="[% confirm_op %]" />
+ <input type="hidden" name="class_source" value="[% class_source %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Yes, delete classification source</button>
+ </form>
+ <form action="[% script_name %]" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF ( delete_sort_rule_form ) %]
+ <div class="dialog alert">
+ <h3>Xác nhận xóa quy tắc phân loại <span class="ex">'[% sort_rule %]'</span>?</h3>
+ <form action="[% script_name %]" name="Aform" method="post">
+ <input type="hidden" name="op" value="[% confirm_op %]" />
+ <input type="hidden" name="sort_rule" value="[% sort_rule %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Yes, delete filing rule</button>
+ </form>
+ <form action="[% script_name %]" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF ( delete_sort_rule_impossible ) %]
+<div class="dialog alert"><h3>Không thể xóa quy tắc phân loại <span class="ex">'[% sort_rule %]'</span></h3>
+ <p>Quy tắc phân loại [% sort_rule %] đã được sử dụng. Bạn hãy loại bỏ các khung phân loại sử dụng nó và thực hiện lại thao tác.</p>
+ <form action="[% script_name %]" method="get">
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> OK</button>
+ </form>
+</div>
+[% END %]
+
+[% IF ( display_lists ) %]
+
+<div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default btn-sm" id="newsource" href="[% script_name %]?op=add_source"><i class="fa fa-plus"></i> Tạo khung phân loại</a>
+ <a class="btn btn-default btn-sm" id="newrule" href="[% script_name %]?op=add_sort_rule"><i class="fa fa-plus"></i> Tạo quy tắc phân loại</a>
+</div>
+
+<h2>Khung phân loại</h2>
+[% IF ( added_source ) %]
+<div class="dialog message">Bạn đã tạo mới khung phân loại [% added_source %]</div>
+[% END %]
+[% IF ( edited_source ) %]
+<div class="dialog message">Bạn đã chỉnh sửa khung phân loại [% edited_source %]</div>
+[% END %]
+[% IF ( deleted_source ) %]
+<div class="dialog message">Bạn đã xóa khung phân loại [% deleted_source %]</div>
+[% END %]
+[% IF ( failed_add_source ) %]
+<div class="dialog message">Failed to add classification source [% failed_add_source %]. Perhaps the code already exists?</div>
+[% END %]
+<table>
+ <tr>
+ <th>Mã</th>
+ <th>Thông tin mô tả</th>
+ <th>In use</th>
+ <th>Filing rule</th>
+ <th>Thao tác</th>
+ </tr>
+ [% FOREACH class_source IN class_sources %]
+ <tr>
+ <td>[% class_source.code %]</td>
+ <td>[% class_source.description |html %]</td>
+ <td>[% IF ( class_source.used ) %]Có[% ELSE %]Không[% END %]</td>
+ <td>[% class_source.sortrule %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="[% class_source.script_name %]?op=edit_source&amp;class_source=[% class_source.code |html %]"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <a class="btn btn-default btn-xs" href="[% class_source.script_name %]?op=delete_source&amp;class_source=[% class_source.code |html %]"><i class="fa fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END %]
+</table>
+
+<h2>Quy tắc phân loại</h2>
+[% IF ( added_rule ) %]
+<div class="dialog message">Tạo quy tắc phân loại [% added_rule %]</div>
+[% END %]
+[% IF ( edited_rule ) %]
+<div class="dialog message">Chỉnh sửa quy tắc phân loại [% edited_rule %]</div>
+[% END %]
+[% IF ( deleted_rule ) %]
+<div class="dialog message">Bạn đã xóa quy tắc phân loại [% deleted_rule %]</div>
+[% END %]
+[% IF ( failed_add_rule ) %]
+<div class="dialog message">Failed to add filing rule [% failed_add_rule %]. Perhaps the code already exists?</div>
+[% END %]
+<table>
+ <tr>
+ <th>Mã</th>
+ <th>Thông tin mô tả</th>
+ <th>Nguồn phân loại</th>
+ <th>Thao tác</th>
+ </tr>
+ [% FOREACH class_sort_rule IN class_sort_rules %]
+ <tr>
+ <td>[% class_sort_rule.rule %]</td>
+ <td>[% class_sort_rule.description |html %]</td>
+ <td>[% class_sort_rule.sort_routine %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="[% class_sort_rule.script_name %]?op=edit_sort_rule&amp;sort_rule=[% class_sort_rule.rule |html %]"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <a class="btn btn-default btn-xs" href="[% class_sort_rule.script_name %]?op=delete_sort_rule&amp;sort_rule=[% class_sort_rule.rule |html %]"><i class="fa fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END %]
+</table>
+
+[% END %]
+
+ </div>
+ </div>
+<div class="yui-b">
+[% INCLUDE 'admin-menu.inc' %]
+ </div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

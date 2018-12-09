@@ -1,0 +1,429 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Công cụ bổ trợ &rsaquo; Thay đổi nhóm bạn đọc theo lô</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="tools_modborrowers" class="tools">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo;
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Công cụ bổ trợ</a> &rsaquo;
+ <a href="/cgi-bin/koha/tools/modborrowers.pl">Thay đổi nhóm bạn đọc theo lô</a>
+</div>
+
+<div id="doc3" class="yui-t2">
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% IF ( op == 'show_form' ) %]
+ <h1>Thay đổi nhóm bạn đọc theo lô</h1>
+ <form method="post" enctype="multipart/form-data" action="/cgi-bin/koha/tools/modborrowers.pl">
+ <fieldset class="rows">
+ <legend>Sử dụng tệp tin</legend>
+ <ol>
+ <li><label for="uploadfile">Tệp tin: </label> <input type="file" id="uploadfile" name="uploadfile" /></li>
+ </ol>
+ </fieldset>
+
+ [% IF patron_lists %]
+ <fieldset class="rows">
+ <legend>Hoặc sử dụng một danh sách bạn đọc</legend>
+ <ol>
+ <li>
+ <label for="patron_list_id">Danh sách bạn đọc: </label>
+ <select id="patron_list_id" name="patron_list_id">
+ <option value=""></option>
+ [% FOREACH pl IN patron_lists %]
+ <option value="[% pl.patron_list_id %]">[% pl.name %]</option>
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+ [% END %]
+
+ <fieldset class="rows">
+ <legend>Hoặc liệt kê lần lượt thẻ bạn đọc</legend>
+ <ol>
+ <li>
+ <label for="cardnumberlist">Danh sách thẻ bạn đọc (Mỗi thẻ 1 dòng): </label>
+ <textarea rows="10" cols="30" id="cardnumberlist" name="cardnumberlist">[% cardnumberlist %]</textarea>
+ </li>
+ </ol>
+ </fieldset>
+ <input type="hidden" name="op" value="show" />
+ <fieldset class="action">
+ <input type="submit" class="button" value="Tiếp tục" />
+ <a class="cancel" href="/cgi-bin/koha/tools/tools-home.pl">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ [% END %]
+
+ [% IF ( op == 'show') && (!borrowers) && (!notfoundcardnumbers) # Alert if no patrons given%]
+ [% op = 'noshow' # Change op to prevent display in code below %]
+ <h1>Thay đổi nhóm bạn đọc theo lô</h1>
+ <div class="dialog alert">
+ <p>No patron card numbers given.</p>
+ <form action="/cgi-bin/koha/tools/modborrowers.pl" method="get">
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> OK</button>
+ </form>
+ </div>
+ [% END #Alert if no patrons %]
+
+ [% IF ( op == 'show' or op == 'show_results' ) %]
+ [% IF ( op == 'show' ) %]
+ <h1>Thay đổi nhóm bạn đọc theo lô</h1>
+ [% ELSE %]
+ <h1>Hiện thị nhóm bạn đọc</h1>
+ [% END %]
+ [% IF ( notfoundcardnumbers ) %]
+ <div class="dialog alert"><p>Chú ý, danh sách những thẻ bạn đọc không tìm thấy:</p></div>
+ <table style="margin:auto;">
+ <thead>
+ <tr><th>Không tìm thấy thẻ bạn đọc</th></tr>
+ </thead>
+ <tbody>
+ [% FOREACH notfoundcardnumber IN notfoundcardnumbers %]
+ <tr><td>[% notfoundcardnumber.cardnumber %]</td></tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF ( op == 'show_results' ) %]
+ [% IF ( errors ) %]
+ <div class="dialog alert">
+ <h4>Errors occurred:</h4>
+ <ul class="warnings">
+ [% FOREACH error IN errors %]
+ [% IF ( error.error == 'can_not_update' ) %]
+ <li>Can not update patron.
+ [% IF ( error.cardnumber ) %] Cardnumber: [% error.cardnumber %] [% END %]
+ (Borrowernumber: [% error.borrowernumber %])
+ </li>
+ [% ELSE %]
+ <li>[% error.error %]</li>
+ [% END %]
+ [% END %]
+ </ul>
+ </div>
+ [% END %]
+ [% END %]
+
+ [% IF ( op == 'show' ) %]
+ <form name="f" action="modborrowers.pl" method="post">
+ <input type="hidden" name="op" value="do" />
+ [% IF ( borrowers ) %]
+ <div id="toolbar"><a id="selectallbutton" href="#"><i class="fa fa-check"></i> Chọn tất cả</a> | <a id="clearallbutton" href="#"><i class="fa fa-remove"></i> Bỏ tất cả</a></div>
+ [% END %]
+ [% END %]
+ [% IF borrowers %]
+ <div id="cataloguing_additem_itemlist">
+ <div style="overflow:auto">
+ <table id="borrowerst">
+ <thead>
+ <tr>
+ [% IF ( op == 'show' ) %]
+ <th>&nbsp;</th>
+ [% END %]
+ <th>Số thẻ bạn đọc</th>
+ <th>Họ</th>
+ <th>Tên</th>
+ <th>Thư viện</th>
+ <th>Kiểu bạn đọc</th>
+ <th>Thành phố</th>
+ <th>Bang</th>
+ <th>ZIP/Postal code</th>
+ <th>Quốc gia</th>
+ <th class="title-string">Ngày đăng ký</th>
+ <th class="title-string">Ngày hết hạn</th>
+ <th>Ghi chú lưu thông</th>
+ <th>Opac Note</th>
+ [% FOREACH attrh IN attributes_header %]
+ <th>[% attrh.attribute %]</th>
+ [% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH borrower IN borrowers %]
+ <tr>
+ [% IF ( op == 'show' ) %]
+ <td><input type="checkbox" name="borrowernumber" value="[% borrower.borrowernumber %]" checked="checked" /></td>
+ [% END %]
+ <td><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrower.borrowernumber %]">[% borrower.cardnumber %]</a></td>
+ <td>[% borrower.surname %]</td>
+ <td>[% borrower.firstname %]</td>
+ <td>[% Branches.GetName( borrower.branchcode ) %]</td>
+ <td>[% borrower.category_description %]</td>
+ <td>[% borrower.city %]</td>
+ <td>[% borrower.state %]</td>
+ <td>[% borrower.zipcode %]</td>
+ <td>[% borrower.country %]</td>
+ <td><span title="[% borrower.dateenrolled %]">[% borrower.dateenrolled | $KohaDates %]</span></td>
+ <td><span title="[% borrower.dateexpiry %]">[% borrower.dateexpiry | $KohaDates %]</span></td>
+ <td>[% borrower.borrowernotes %]</td>
+ <td>[% borrower.opacnote %]</td>
+ [% FOREACH pa IN borrower.patron_attributes %]
+ [% IF ( pa.code ) %]
+ <td>[% pa.code %]=[% pa.value %]</td>
+ [% ELSE %]
+ <td></td>
+ [% END %]
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ </div>
+
+ [% IF ( op == 'show' ) %]
+ <div id="cataloguing_additem_newitem">
+ <h2>Nhập thẻ bạn đọc</h2>
+ <div class="hint">Checking the box right next to the label will disable the entry and delete the values of that field on all selected patrons</div>
+ <fieldset class="rows" id="fields_list">
+ <ol>
+ [% FOREACH field IN fields %]
+ <li>
+ [% IF ( field.mandatory ) %]
+ <label for="[% field.name %]" class="required">
+ [% ELSE %]
+ <label for="[% field.name %]">
+ [% END %]
+ [% SWITCH ( field.name ) %]
+ [% CASE 'surname' %]
+ Surname:
+ [% CASE 'firstname' %]
+ First name:
+ [% CASE 'branchcode' %]
+ Library:
+ [% CASE 'categorycode' %]
+ Category
+ [% CASE 'city' %]
+ City
+ [% CASE 'state' %]
+ State
+ [% CASE 'zipcode' %]
+ ZIP/Postal code
+ [% CASE 'country' %]
+ Country
+ [% CASE 'sort1' %]
+ Sort 1:
+ [% CASE 'sort2' %]
+ Sort 2:
+ [% CASE 'dateenrolled' %]
+ Registration date:
+ [% CASE 'dateexpiry' %]
+ Expiry date:
+ [% CASE 'borrowernotes' %]
+ Circulation note:
+ [% CASE 'opacnote' %]
+ OPAC note:
+ [% END %]
+ </label>
+ [% IF ( field.type == 'text' ) %]
+ <input type="text" name="[% field.name %]" value="" />
+ [% END %]
+ [% IF ( field.type == 'select' ) %]
+ [% IF field.option.size %]
+ <select name="[% field.name %]" >
+ [% FOREACH opt IN field.option %]
+ <option value="[% opt.value %]">[% opt.lib %]</option>
+ [% END %]
+ </select>
+ [% ELSE %]
+ There is no value defined for [% field.name %]
+ [% END %]
+ [% END %]
+ [% IF ( field.type == 'date' ) %]
+ <input type="text" name="[% field.name %]" id="[% field.name %]" value="" size="10" maxlength="10" class="datepicker" />
+ <a href="#"  class="clear-date" id="clear-date-[% field.name %]" ><i class="fa fa-fw fa-trash"></i> Xóa</a>
+ [% END %]
+ [% IF field.mandatory %]
+ <input title="Trường bắt buộc" readonly="readonly" value="[% field.name %]" name="disable_input" disabled="disabled" type="checkbox" />
+ <span class="required">Required fields cannot be cleared</span>
+ [% ELSE %]
+ <input title="Chọn để xóa trường" value="[% field.name %]" name="disable_input" type="checkbox" />
+ [% END %]
+ </li>
+ [% END %]
+ [% IF ( patron_attributes_codes ) %]
+ <li class="attributes">
+ <label style="width:auto;">Phân loại bạn đọc: <select name="patron_attributes">
+ <option value=""></option>
+ [% FOREACH pac IN patron_attributes_codes %]
+ <option value="[% pac.attribute_code %]" data-type="[% pac.type %]" data-category="[% pac.category_lib %]">[% pac.attribute_lib %]</option>
+ [% END %]
+ </select>
+ </label>
+ <input name="disable_input" type="checkbox" title="Chọn để xóa trường" value="attr0_value" />
+ <span class="patron_attributes_value"></span>
+ <a title="Tạo thuộc tính mới" href="#" class="add_attributes"><i class="fa fa-fw fa-plus"></i> Tạo mới</a>
+ <span class="information_category hint" style="width:25%;float:right;"></span>
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input value="Lưu" name="mainformsubmit" type="submit" />
+ <a href="/cgi-bin/koha/tools/modborrowers.pl" class="cancel">Hủy bỏ</a>
+ </fieldset>
+ </div>
+ </form>
+ [% END %]
+ [% END %]
+ [% END %]
+ [% IF ( op == 'show_results' ) %]
+ <p>
+ <a title="Chỉnh sửa nhóm bạn đọc mới" href="/cgi-bin/koha/tools/modborrowers.pl">Chỉnh sửa nhóm bạn đọc mới</a>
+ </p>
+ [% END %]
+ </div>
+ </div>
+ <div class="yui-b">
+ [% INCLUDE 'tools-menu.inc' %]
+ </div>
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("js/tools-menu.js") %]
+ <script type="text/javascript">
+        var patron_attributes_lib = new Array();
+        var patron_attributes_values = new Array();
+        $(document).ready(function() {
+            [% IF borrowers %]
+                $("#borrowerst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "sDom": 't',
+                    [% IF ( op == 'show_results' ) %]
+                        "aoColumnDefs": [
+                            { 'sType': "title-string", 'aTargets' : [ 'title-string'] }
+                        ],
+                    [% ELSE %]
+                        "aoColumnDefs": [
+                            { "aTargets": [ 0 ], "bSortable": false, "bSearchable": false },
+                            { 'sType': "title-string", 'aTargets' : [ 'title-string'] }
+                        ],
+                    [% END %]
+                    "bPaginate": false
+                }));
+                $("#selectallbutton").click(function() {
+                    $("#borrowerst").find("input:checkbox").each(function() {
+                        $(this).prop("checked", true);
+                    });
+                    return false;
+                });
+                $("#clearallbutton").click(function() {
+                    $("#borrowerst").find("input:checkbox").each(function() {
+                        $(this).prop("checked", false);
+                    });
+                    return false;
+                });
+            [% END %]
+
+            var values = new Array();
+            var lib = new Array();
+            [% FOREACH pav IN patron_attributes_values %]
+                values = new Array();
+                lib = new Array();
+                [% FOREACH option IN pav.options %]
+                    values.push("[% option.lib %]");
+                    lib.push("[% option.authorised_value %]");
+                [% END %]
+                patron_attributes_lib["[% pav.attribute_code %]"] = values;
+                patron_attributes_values["[% pav.attribute_code %]"] = lib;
+            [% END %]
+
+            $('select[name="patron_attributes"]').change(function() {
+                updateAttrValues(this);
+            } );
+
+            $('select[name="patron_attributes"]').change();
+
+            $(".clear-date").on("click",function(e){
+                e.preventDefault();
+                var fieldID = this.id.replace("clear-date-","");
+                $("#" + fieldID).val("");
+            });
+            $("#cataloguing_additem_newitem").on("click",".add_attributes",function(e){
+                e.preventDefault();
+                add_attributes();
+            });
+            $("#cataloguing_additem_newitem").on("click",".del_attributes",function(e){
+                e.preventDefault();
+                del_attributes(this);
+            });
+        });
+
+        function updateAttrValues (select_attr) {
+            var attr_code = $(select_attr).val();
+            var selected_option = $(select_attr).find("option:selected");
+            var type = $(selected_option).attr('data-type');
+            var category = $(selected_option).attr('data-category');
+            var li_node = $(select_attr).parent().parent();
+            var span = $(li_node).find('span.patron_attributes_value');
+            var information_category_node = $(li_node).find('span.information_category');
+            information_category_node.html("");
+
+            if ( category && category.length > 0 ) {
+                information_category_node.html(_("Thuộc tính này chỉ được áp dụng với kiểu bạn đọc %s").format(category));
+            }
+            var disable_input_node = $(li_node).find("input:checkbox[name='disable_input']");
+            if ( type == 'select' ) {
+                var options = '<option value = ""></option>';
+                for ( var i = 0 ; i < patron_attributes_values[attr_code].length ; i++ ) {
+                    options += '<option value="'+patron_attributes_values[attr_code][i]+'">'+patron_attributes_lib[attr_code][i]+'</option>';
+                }
+                span.html('<select name="patron_attributes_value">' + options + '</select>');
+                $(disable_input_node).show();
+            } else if ( $(selected_option).val() != "" ) {
+                span.html('<input type="text" name="patron_attributes_value"/>');
+                $(disable_input_node).show();
+            } else {
+                span.html('');
+                $(disable_input_node).hide();
+            }
+        }
+
+        function add_attributes() {
+            var li_node = $("li.attributes:last");
+            var li_clone = $(li_node).clone();
+            if ( $(li_clone).find("a.del_attributes").length == 0 ) {
+                $(li_clone).append('<a href="#" title="' + _("Xóa") + '" class="del_attributes"><i class="fa fa-fw fa-trash"></i> ' + _("Xóa") + '</a>');
+            }
+            $(li_clone).find('select[name="patron_attributes"]').change(function() {
+                updateAttrValues(this);
+            } );
+
+            $(li_clone).find('select[name="patron_attributes"]').change();
+
+            $("#fields_list>ol").append(li_clone);
+            update_attr_values();
+        }
+
+        function del_attributes(a_node) {
+            $(a_node).parent('li').remove();
+            update_attr_values();
+        }
+
+        function update_attr_values() {
+            $("li.attributes").each(function(i) {
+                $(this).find("input:checkbox").val("attr"+i+"_value");
+            });
+        }
+        function clearDate(nodeid) {
+            $("#"+nodeid).val("");
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,160 @@
+[% USE Asset %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống &rsaquo; [% IF ( add_form ) %][% IF ( searchfield ) %] Máy in &rsaquo; Chỉnh sửa máy in '[% searchfield %]'[% ELSE %] Máy in &rsaquo; Tạo máy in[% END %][% END %] [% IF ( add_validate ) %] Máy in &rsaquo; Tạo thành công máy in[% END %] [% IF ( delete_confirm ) %] Máy in &rsaquo; Xác nhận xóa máy in '[% searchfield %]'[% END %] [% IF ( delete_confirmed ) %] Máy in &rsaquo; Máy in đã bị xóa[% END %] [% IF ( else ) %]Máy in[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% IF ( loop ) %]
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'datatables.inc' %]
+<script type="text/javascript">
+//<![CDATA[
+    $(document).ready(function() {
+        $("#printerst").dataTable($.extend(true, {}, dataTablesDefaults, {
+            "aoColumnDefs": [
+                { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+            ],
+            "aaSorting": [[ 0, "asc" ]],
+            "sPaginationType": "four_button"
+        }));
+    });
+//]]>
+</script>
+[% END %]
+</head>
+<body id="admin_printers" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a> &rsaquo; [% IF ( add_form ) %][% IF ( searchfield ) %] <a href="/cgi-bin/koha/admin/printers.pl">Máy in</a> &rsaquo; Chỉnh sửa máy in '[% searchfield %]'[% ELSE %] <a href="/cgi-bin/koha/admin/printers.pl">Máy in</a> &rsaquo; Tạo máy in[% END %][% END %] [% IF ( add_validate ) %] <a href="/cgi-bin/koha/admin/printers.pl">Máy in</a> &rsaquo; Tạo thành công máy in[% END %] [% IF ( delete_confirm ) %] <a href="/cgi-bin/koha/admin/printers.pl">Máy in</a> &rsaquo; Xác nhận xóa máy in '[% searchfield %]'[% END %] [% IF ( delete_confirmed ) %] <a href="/cgi-bin/koha/admin/printers.pl">Máy in</a> &rsaquo; Máy in đã bị xóa[% END %] [% IF ( else ) %]Máy in[% END %]</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( add_form ) %]
+
+[% IF ( searchfield ) %]
+ <h1>Chỉnh sửa máy in</h1>
+ [% ELSE %]
+ <h1>Tạo máy in</h1>
+ [% END %]
+ <form action="[% script_name %]" name="Aform" method="post" class="validated">
+ <input type="hidden" name="op" value="add_validate" />
+ [% IF ( searchfield ) %]
+ <input type="hidden" name="add" value="0" />
+ [% ELSE %]
+ <input type="hidden" name="add" value="1" />
+ [% END %]
+ <fieldset class="rows">
+<ol> [% IF ( searchfield ) %]
+ <li>
+ <span class="label">Tên máy in: </span>
+ <input type="hidden" name="printername" id="" value="[% searchfield %]" />[% searchfield %]
+ </li>
+ [% ELSE %]
+ <li>
+ <label for="printername" class="required">Tên máy in: </label>
+ <input type="text" name="printername" id="printername" size="40" maxlength="40" class="required" required="required" />
+ <span class="required">Bắt buộc</span>
+ </li>
+ [% END %]
+ <li>
+ <label for="printqueue" class="required">Thứ tự: </label>
+ <input type="text" name="printqueue" id="printqueue" size="20" maxlength="20" value="[% printqueue %]"  class="required" required="required" />
+ <span class="required">Bắt buộc</span>
+ </li>
+ <li>
+ <label for="printtype">Kiểu: </label>
+ <input type="text" name="printtype" id="printtype" size="20" maxlength="20" value="[% printtype %]" />
+ </li></ol>
+ </fieldset>
+ <fieldset class="action"><input value="Tìm kiếm" type="submit" /> <a class="cancel" href="/cgi-bin/koha/admin/printers.pl">Hủy bỏ</a></fieldset>
+ </form>
+
+[% END %]
+
+[% IF ( add_validate ) %]
+<h3>Tạo thành công máy in</h3>
+<form action="[% script_name %]" method="post">
+ <fieldset class="action"> <input type="submit" value="OK" /></fieldset>
+</form>
+[% END %]
+
+[% IF ( delete_confirm ) %]
+ <div class="dialog alert">
+ <h3>Xác nhận xóa máy in <em>[% searchfield %]</em></h3>
+
+ <table>
+ <tr>
+ <th scope="row">Máy in: </th><td>[% searchfield %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Thứ tự: </th><td>[% printqueue %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Kiểu: </th><td>[% printtype %]</td>
+ </tr>
+ </table>
+
+ <form action="[% script_name %]" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="searchfield" value="[% searchfield %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Xóa</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/printers.pl" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF ( delete_confirmed ) %]
+ <div class="dialog message">
+ <h3>Máy in đã bị xóa</h3>
+ <form action="[% script_name %]" method="post">
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> OK</button>
+ </form>
+ </div>
+
+[% END %]
+
+[% IF ( else ) %]
+
+<div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default btn-sm" id="newprinter" href="/cgi-bin/koha/admin/printers.pl?op=add_form"><i class="fa fa-plus"></i> Tạo máy in</a>
+</div>
+
+<h2>Máy in</h2>
+ [% IF ( searchfield ) %] Bạn tìm kiếm [% searchfield %]</span>
+ [% END %]
+
+[% IF ( loop ) %]
+ <table id="printerst">
+ <thead>
+ <tr>
+ <th>Tên</th>
+ <th>Thứ tự</th>
+ <th>Type</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH loo IN loop %]
+ <tr>
+ <td>[% loo.printername %]</td>
+ <td>[% loo.printqueue %]</td>
+ <td>[% loo.printtype %]</td>
+ <td class="actions"><a class="btn btn-default btn-xs" href="[% loo.script_name %]?op=add_form&amp;searchfield=[% loo.printername |uri %]"><i class="fa fa-pencil"></i> Chỉnh sửa</a> <a class="btn btn-default btn-xs" href="[% loo.script_name %]?op=delete_confirm&amp;searchfield=[% loo.printername |uri %]"><i class="fa fa-trash"></i> Xóa</a></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>[% ELSE %]<div class="dialog message">Không có máy in được định nghĩa.</div>[% END %]
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'admin-menu.inc' %]
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

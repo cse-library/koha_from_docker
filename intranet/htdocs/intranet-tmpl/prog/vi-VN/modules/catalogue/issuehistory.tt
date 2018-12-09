@@ -1,0 +1,110 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Tìm kiếm &rsaquo; Lịch sử ghi mượn của [% biblio.title |html %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="catalog_issuehistory" class="catalog">
+
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Tìm kiếm</a> &rsaquo; Lịch sử ghi mượn của <i>[% biblio.title |html %]</i></div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+<h1>Lịch sử ghi mượn của [% biblio.title |html %]</h1>
+[% IF biblio.author %]<h3>, Tác giả: [% biblio.author %]</h3>[% END %]
+
+<div class="searchresults">
+ [% IF checkouts %]
+ <h4>Hiện tại tài liệu được ghi mượn [% checkouts.size %] lần</h4>
+ <table id="table_issues">
+ <thead><tr>
+ [% IF Koha.Preference('intranetreadinghistory') AND CAN_user_circulate_circulate_remaining_permissions %]
+ <th>Bạn đọc</th>
+ [% END %]
+ <th>Đăng ký cá biệt</th>
+ <th>Nơi ghi mượn</th>
+ <th>Gia hạn</th>
+ <th class='title-string'>Ngày ghi mượn</th>
+ <th class='title-string'>Ngày hết hạn</th>
+ <th class='title-string'>Ngày ghi trả</th>
+ </tr></thead>
+ <tbody>
+ [% FOREACH checkout IN checkouts %]
+ <tr>
+ [% IF Koha.Preference('intranetreadinghistory') AND CAN_user_circulate_circulate_remaining_permissions %]
+ <td>[% INCLUDE 'patron-title.inc' patron => checkout.patron hide_patron_infos_if_needed=1 %]</td>
+ [% END %]
+ <td>
+ [% IF checkout.item.barcode %] [%# FIXME This test is not mandatory I think %]
+ <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=[% checkout.item.biblionumber %]&amp;itemnumber=[% checkout.item.itemnumber %]">[% checkout.item.barcode %]</a>
+ [% ELSE %]
+ &nbsp;
+ [% END %]</td>
+ <td>[% IF checkout.branchcode %]
+ [% Branches.GetName( checkout.branchcode ) %]
+ [% ELSE %]
+ &nbsp;
+ [% END %]</td>
+ <td>[% IF checkout.renewals %] Có[% IF checkout.lastreneweddate %], <small>lần cuối vào ngày: [% checkout.lastreneweddate |$KohaDates with_hours => 1  %]</small>
+ [% END %] [% ELSE %] Không [% END %]</td>
+ <td>[% IF checkout.issuedate %]
+ <span title="[% checkout.issuedate %]">[% checkout.issuedate |$KohaDates with_hours => 1  %]</span>
+ [% ELSE %]
+ <span title="0000-00-00"></span>
+ [% END %]</td>
+ <td>[% IF checkout.date_due %]
+ <span title="[% checkout.date_due %]">[% checkout.date_due |$KohaDates with_hours => 1  %]</span>
+ [% ELSE %]
+ <span title="0000-00-00"></span>
+ [% END %]</td>
+ <td>[% IF checkout.returndate %]
+ <span title="[% checkout.returndate %]">[% checkout.returndate |$KohaDates with_hours => 1  %]</span>
+ [% ELSE %]
+ <span title="Được ghi mượn"><small>Được ghi mượn</small></span>
+ [% END %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog message"><p>
+ <b>[% biblio.title |html %][% IF biblio.author %], Tác giả: [% biblio.author %][% END %]</b> chưa được ghi mượn.</p></div>
+
+ [% END %]
+</div>
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'biblio-view-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+[% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript" id="js">
+        $(document).ready(function() {
+            $("#table_issues").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "sType": "title-string", "aTargets" : [ "title-string" ] }
+                ],
+                "aaSorting": [[ 4, "desc" ]],
+                "sPaginationType": "full_numbers"
+            }));
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

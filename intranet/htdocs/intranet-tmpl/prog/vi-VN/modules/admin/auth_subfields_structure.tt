@@ -1,0 +1,320 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống &rsaquo; Cấu trúc trường con MARC biểu ghi nhất quán</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_auth_subfields_structure" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a> &rsaquo;
+ <a href="/cgi-bin/koha/admin/authtypes.pl">Kiểu dữ liệu kiểm soát</a> &rsaquo;
+ [% IF ( authtypecode ) %]<a href="/cgi-bin/koha/admin/auth_tag_structure.pl?authtypecode=[% authtypecode | uri%]">[% authtypecode |html%] Khung mẫu</a> &rsaquo;
+ [% ELSE %]<a href="/cgi-bin/koha/admin/auth_tag_structure.pl">Khung mẫu mặc định</a> &rsaquo; [% END %] [% IF ( else ) %]Cấu trúc trường con MARC của trường [% tagfield | html %] biểu ghi nhất quán [% ELSE %]<a href="/cgi-bin/koha/admin/auth_subfields_structure.pl?tagfield=[% tagfield | uri %]&amp;tagsubfield=[% tagsubfield %]&amp;authtypecode=[% authtypecode |uri %]">Cấu trúc trường con của trường [% tagfield | html %] biểu ghi nhất quán</a> &rsaquo; [% END %] [% IF ( delete_confirm ) %]Xác nhận xóa trường con [% tagsubfield %]?[% END %] [% IF ( delete_confirmed ) %]Dữ liệu đã bị xóa[% END %] [% IF ( add_form ) %] [% IF ( use_heading_flags_p ) %] [% IF ( heading_edit_subfields_p ) %]Chỉnh sửa trường con MARC[% END %] [% ELSE %][% action %][% END %] [% END %] </div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( add_form ) %]
+
+ <h1>[% IF ( use_heading_flags_p ) %] [% IF ( heading_edit_subfields_p ) %]Chỉnh sửa trường con MARC của trường [% tagfield | html %] biểu ghi nhất quán [% authtypecode |html%][% END %] [% ELSE %][% action %][% END %]</h1>
+ <form action="[% script_name %]" name="Aform" method="post">
+ <input type="hidden" name="op" value="add_validate" />
+ <input type="hidden" name="tagfield" value="[% tagfield | html %]" />
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html%]" />
+ <fieldset class="action"><input value="Lưu" class="submit" type="submit" /> <a class="cancel" href="/cgi-bin/koha/admin/auth_subfields_structure.pl?tagfield=[% tagfield | uri %]&amp;authtypecode=[% authtypecode |uri %]">Hủy bỏ</a></fieldset>
+ <div id="subfieldtabs" class="toptabs numbered">
+ <ul>
+ [% FOREACH loo IN loop %]
+ [% IF ( loo.new_subfield ) %]
+ <li><a href="#sub[% loo.tagsubfield %]field" title="[% loo.liblibrarian | html_entity %]">Tạo mới</a></li>
+ [% ELSE %]
+ <li><a href="#sub[% loo.tagsubfield %]field" title="[% loo.liblibrarian | html_entity %]">
+ [% loo.tagsubfield %]
+ </a></li>
+ [% END %]
+ [% END %]
+ </ul>
+
+ [% FOREACH loo IN loop %]
+ <div id="sub[% loo.tagsubfield %]field">
+ <fieldset class="rows"><ol>
+
+ [% IF ( loo.new_subfield ) %]
+ <li>
+ <label for="tagsubfieldinput[% loo.row %]">Mã trường con: </label>
+ <input type="text" name="tagsubfield" value="[% loo.tagsubfield %]" size="1" id="tagsubfield" maxlength="1" />
+ </li>
+ [% ELSE %]
+ <li>
+ <input type="hidden" name="tagsubfield" value="[% loo.tagsubfield %]" />
+ </li>
+ [% END %]
+ <li>
+ <label for="repeatable[% loo.row %]">Lặp lại: </label>
+ [% IF loo.repeatable %]
+ <input type="checkbox" id="repeatable[% loo.row %]" name="repeatable[% loo.row %]" checked="checked" value="1" />
+ [% ELSE %]
+ <input type="checkbox" id="repeatable[% loo.row %]" name="repeatable[% loo.row %]" value="1" />
+ [% END %]
+ </li>
+ <li>
+ <label for="mandatory[% loo.row %]">Bắt buộc: </label>
+ [% IF loo.mandatory %]
+ <input type="checkbox" id="mandatory[% loo.row %]" name="mandatory[% loo.row %]" checked="checked" value="1" />
+ [% ELSE %]
+ <input type="checkbox" id="mandatory[% loo.row %]" name="mandatory[% loo.row %]" value="1" />
+ [% END %]
+ </li>
+ <li><label for="liblibrarian[% loo.row %]">Mô tả cho thủ thư </label><input id="liblibrarian[% loo.row %]" type="text" name="liblibrarian" value="[% loo.liblibrarian | html_entity %]" size="40" maxlength="80" /></li>
+ <li><label for="libopac[% loo.row %]">Mô tả trên OPAC: </label><input type="text" id="libopac[% loo.row %]" name="libopac" value="[% loo.libopac | html_entity %]" size="40" maxlength="80" /></li>
+ <li><label for="tab[% loo.row %]">Thẻ quản lý: </label>
+ <select name="tab" size="1" id="tab[% loo.row %]">
+ [%- IF ( loo.tab ==  -1 ) -%]
+ <option value="-1" selected="selected">Bỏ qua</option>
+ [%- ELSE -%]
+ <option value="-1">Bỏ qua</option>
+ [%- END -%]
+ [%- FOREACH t IN [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] -%]
+ [%- IF ( loo.tab ==  t && t.length>0 ) -%]
+ <option value="[%- t -%]" selected="selected">[%- t -%]</option>
+ [%- ELSIF ( loo.tab ==  t ) -%]
+ <option value="[%- t -%]" selected="selected">&nbsp;</option>
+ [%- ELSE -%]
+ <option value="[%- t -%]">[%- t -%]</option>
+ [%- END -%]
+ [%- END -%]
+ </select>
+ (Chọn 'Bỏ qua' có nghĩa là trường con không được hiển thị trong chế độ chỉnh sửa biểu ghi) </li>
+ <li>
+ <fieldset>
+ <legend>Hiển thị</legend>
+ <ol>
+ <li><label for="ohidden[% loo.row %]">Lựa chọn để hiển thị hoặc không:</label>
+ <select name="ohidden" size="1" id="ohidden[% loo.row %]">
+ [%- IF ( loo.ohidden ==  0 ) -%]
+ <option value= "0" selected="selected">Hiển thị tất cả</option>
+ <option value="1">Ẩn tất cả</option>
+ [%- ELSE -%]
+ [%# All other non-zero values mean: Hide %]
+ <option value= "0">Hiển thị tất cả</option>
+ <option value="1" selected="selected">Ẩn tất cả</option>
+ [%- END -%]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+ </li>
+ <li>
+ <fieldset class="rows">
+ <legend>Thông tin nâng cao:</legend>
+ <ol>
+ <li>
+ <label for="isurl[% loo.row %]">Tạo URL:</label>
+ [% IF loo.isurl %]
+ <input type="checkbox" id="isurl[% loo.row %]" name="isurl[% loo.row %]" checked="checked" value="1" />
+ [% ELSE %]
+ <input type="checkbox" id="isurl[% loo.row %]" name="isurl[% loo.row %]" value="1" />
+ [% END %]
+ (if checked, it means that the subfield is a URL and can be clicked)
+ </li>
+ <li>
+ <label for="defaultvalue[% loo.row %]">Giá trị mặc định:</label>
+ <input type="text" name="defaultvalue" id="defaultvalue[% loo.row %]" value="[% loo.defaultvalue %]" />
+ </li>
+ </ol>
+ </fieldset>
+ </li>
+ <li>
+ <fieldset><legend>Dữ liệu đầu vào</legend> 
+ <ol>
+ <li>
+ <label for="kohafield[% loo.row %]">Trường Koha:</label>
+ <select name="kohafield" id="kohafield[% loo.row %]" size="1">
+ [%- FOREACH value IN loo.kohafields %]
+ [% IF ( value == loo.kohafield  && value.length>0 ) -%]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [%- ELSIF ( value == loo.kohafield ) -%]
+ <option value="[% value %]" selected="selected">&nbsp;</option>
+ [%- ELSIF ( value.length==0 ) -%]
+ <option value="[% value %]">&nbsp;</option>
+ [%- ELSE -%]
+ <option value="[% value %]">[% value %]</option>
+ [%- END -%]
+ [%- END %]
+ </select>
+ </li>
+ <li>
+ <label for="authorised_value[% loo.row %]">Giá trị nhất quán:</label>
+ <select name="authorised_value" id="authorised_value[% loo.row %]" size="1">
+ [%- FOREACH value IN loo.authorised_values %]
+ [% IF ( value == loo.authorised_value && value.length>0 ) -%]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [%- ELSIF ( value == loo.authorised_value ) -%]
+ <option value="[% value %]" selected>&nbsp;</option>
+ [%- ELSIF ( value.length==0 ) -%]
+ <option value="[% value %]">&nbsp;</option>
+ [%- ELSE -%]
+ <option value="[% value %]">[% value %]</option>
+ [%- END -%]
+ [%- END %]
+ </select>
+ </li>
+ <li>
+ <label for="frameworkcode[% loo.row %]">Kiểu dữ liệu kiểm soát:</label>
+ <select name="frameworkcode" id="frameworkcode[% loo.row %]" size="1">
+ [%- FOREACH value IN loo.frameworkcodes %]
+ [% IF ( value == loo.frameworkcode && value.length>0 ) -%]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [%- ELSIF ( value == loo.frameworkcode ) -%]
+ <option value="[% value %]" selected="selected">&nbsp;</option>
+ [%- ELSIF ( value.length==0 ) -%]
+ <option value="[% value %]">&nbsp;</option>
+ [%- ELSE -%]
+ <option value="[% value %]">[% value %]</option>
+ [%- END -%]
+ [%- END %]
+ </select>
+ </li>
+ <li>
+ <label for="value_builder[% loo.row %]">Tích hợp trong:</label>
+ <select name="value_builder" id="value_builder[% loo.row %]" size="1">
+ [%- FOREACH value IN loo.value_builders %]
+ [% IF ( value == loo.value_builder && value.length>0 ) -%]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [%- ELSIF ( value == loo.value_builder ) -%]
+ <option value="[% value %]" selected="selected">&nbsp;</option>
+ [%- ELSIF ( value.length==0 ) -%]
+ <option value="[% value %]">&nbsp;</option>
+ [%- ELSE -%]
+ <option value="[% value %]">[% value %]</option>
+ [%- END -%]
+ [%- END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+ </li>
+ </ol></fieldset><br class="clear" />
+ </div>
+ [% END %]
+ </div>
+ </form>
+[% END %]
+
+[% IF ( delete_confirm ) %]
+
+ <div class="dialog alert">
+ <h3>Xóa trường con <span class="ex">'[% tagsubfield %]'?</span></h3>
+ <form action="[% delete_link %]" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <table>
+ <tr><th scope="row">Trường con:</th> <td>[% tagsubfield %]</td></tr>
+ <tr><th scope="row">Thông tin mô tả:</th> <td>[% liblibrarian | html_entity %]</td></tr>
+ </table>
+ <input type="hidden" name="searchfield" value="[% searchfield %]" />
+ <input type="hidden" name="tagfield" value="[% tagfield%]" />
+ <input type="hidden" name="tagsubfield" value="[% tagsubfield | html %]" />
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Xóa trường con</button>
+ </form>
+
+ <form action="[% delete_link %]" method="get">
+ <input type="hidden" name="searchfield" value="[% searchfield %]" />
+ <input type="hidden" name="tagfield" value="[% tagfield | html %]" />
+ <input type="hidden" name="tagsubfield" value="[% tagsubfield %]" />
+ <input type="hidden" name="authtypecode" value="[% authtypecode |html %]" />
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </form></div>
+[% END %]
+
+[% IF ( delete_confirmed ) %]
+
+ <div class="dialog message"> <h3>Dữ liệu đã bị xóa</h3>
+ <form action="[% script_name %]" method="post">
+ <input type="hidden" name="tagfield" value="[% tagfield | html %]" />
+ <input type="submit" class="approve" value="OK" />
+ </form></div>
+[% END %]
+
+
+[% IF ( else ) %]
+<h1>Quản trị cấu trúc trường con MARC của trường [% tagfield | html %] (Thuộc kiểu [% authtypecode | html%])</h1>
+<p>This screen shows the subfields associated with the selected tag. You can edit subfields or add a new one by clicking on edit.</p>
+<p>The column 'Koha field' shows that the subfield is linked with a Koha field.</p>
+
+<table>
+ <tr>
+ <th>Trường con</th>
+ <th>Văn bản</th>
+ <th>Giới hạn</th>
+ <th>&nbsp;</th>
+ </tr>
+ [% FOREACH loo IN loop %]
+ <tr>
+ <td>[% loo.tagsubfield %]</td>
+ <td>
+ [% IF ( loo.subfield_ignored ) %]
+ <i>[% loo.liblibrarian | html_entity %]</i>
+ [% ELSE %]
+ [% loo.liblibrarian | html_entity %]
+ [% END %]
+ </td>
+ <td>
+ [% IF ( loo.subfield_ignored ) %]
+ <i>Trường con bị bỏ qua</i>
+ [% ELSE %]
+ <strong>Thẻ:</strong>[% loo.tab %],
+ [% IF ( loo.kohafield ) %] | <strong>Trường Koha:</strong> [% loo.kohafield %], [% END %] [% IF ( loo.repeatable ) %]Lặp lại, [% ELSE %]Không lặp lại, [% END %] [% IF ( loo.mandatory ) %]Bắt buộc, [% ELSE %]Không bắt buộc, [% END %] [% IF ( loo.hidden ) %]Ẩn, [% END %] [% IF ( loo.isurl ) %]Tạo URL, [% END %] [% IF ( loo.authorised_value ) %] | <strong>Giá trị nhất quán:</strong>[% loo.authorised_value %],
+ [% END %]
+ [% IF ( loo.frameworkcode ) %] | <strong>Kiểu nhất quán:</strong>[% loo.frameworkcode %],
+ [% END %]
+ [% IF ( loo.value_builder ) %] | <strong>Tích hợp trong:</strong>[% loo.value_builder %],[% END %]
+ [% END %]
+ </td>
+ <td><a href="[% loo.delete %]" class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Xóa</a></td>
+ </tr>
+ [% END %]
+</table>
+
+ <form action="[% script_name %]" method="get">
+ <fieldset class="action"><input type="hidden" name="op" value="add_form" />
+ <input type="hidden" name="tagfield" value="[% edit_tagfield %]" />
+ <input type="hidden" name="authtypecode" value="[% edit_authtypecode %]" />
+ <input type="submit" value="Chỉnh sửa trường con" />
+ <a class="cancel" href="auth_tag_structure.pl?searchfield=[% tagfield | uri%]&amp;authtypecode=[% authtypecode | uri %]">Hủy bỏ</a></fieldset>
+ </form>
+
+ [% IF ( previous ) %]
+ <input type="image" alt="Sau" src="[% interface %]/[% theme %]/images/1leftarrow.png" title="Sau" />
+ </a>
+ [% END %]
+ [% IF ( next ) %]
+ [% next %]
+ <input alt="Tiếp tục" type="image" src="[% interface %]/[% theme %]/images/1rightarrow.png" title="Tiếp tục" />
+ </a>
+ [% END %]
+
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'admin-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") %]
+ <script type="text/javascript">
+     $(document).ready(function() {
+        $('#subfieldtabs').tabs();
+     });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

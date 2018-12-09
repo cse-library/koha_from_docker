@@ -1,0 +1,45 @@
+[% INCLUDE 'help-top.inc' %]
+
+<h1>Label Creator</h1>
+
+<p>Công cụ tạo nhãn gáy tài liệu cho phép bạn tạo ra nội dung và hình thức nhãn gáy của riêng thư viện, đồng thời sử dụng chúng để in nhãn gáy cho tài liệu trong thư viện bao gồm cả mã vạch. Dưới đây là một số tính năng chính:</p>
+
+<ul>
+ <li>Tùy chỉnh hình thức nhãn gáy</li>
+ <li>Thiết kế các hình thức nhãn gáy</li>
+ <li>Tạo và quản lý các lô nhãn gáy</li>
+ <li>Xuất dữ liệu theo từng lô hoặc nhiều lô dữ liệu</li>
+ <li>In nhãn gáy cho một hoặc nhiều tài liệu trong lô</li>
+ <li>Export label data in one of three formats: <ul>
+ <li>PDF - Readable by any standard PDF reader, making labels printable directly on a printer&nbsp;</li>
+ <li>CSV - Xuất dữ liệu nhãn gáy ra tệp tin CSV, đồng thời cho phép bạn nhập dữ liệu này vào các ứng dụng khác</li>
+ <li>XML - Included as an alternate export format</li>
+</ul>
+</li>
+</ul>
+
+<p>Bạn có thể sử dụng các thanh công cụ ở phía trên hoặc phía bên trái của giao diện hiển thị công cụ tạo nhãn gáy tài liệu để truy cập nhanh tới các tính năng liên quan. Đường dẫn ở phía trên giúp bạn xác định vị trí hiện tại của mình trong công cụ tạo nhãn gáy tài liệu. Bạn cũng có thể truy cập vào phần trợ giúp để có thêm thông tin về công cụ này.</p>
+
+<p>The developers of the Label Creator module hope you will find this an extremely useful tool in the course of your cataloging work. You are encouraged to submit any enhancement requests as well as any bugs via Koha Project Bugzilla.</p>
+
+<h2>Templates</h2>
+
+<p>A template is based on the label/card stock you are using. This might be Avery 5160 for address labels, Gaylord 47-284 for spine labels or Avery 28371 for your patron cards, just to give a couple of examples. These labels will include all of the information you will need for setting up a Koha, this information may be on the packaging, and if not it can usually be found on the vendor's website.</p>
+
+<h2>Profiles</h2>
+
+<p>A profile is a set of "adjustments" applied to a given template just prior to printing which compensates for anomalies unique and peculiar to a given printer (to which the profile is assigned). This means if you set a template up and then print a sample set of data and find that the items are not all aligned the same on each label, you need to set up a profile for each printer to make up for the differences in printing styles, such as the shifting of text to the left, right, top or bottom.</p>
+
+<p>If your labels are printing just the way you want, you will not need a profile.</p>
+
+<h2>Layouts</h2>
+
+<p>A layout is used to define the fields you want to appear on your labels.</p>
+
+<h2>Batches</h2>
+
+<p>Batches are made up of the barcodes you would like to print. Once in this tool you can search for the item records you would like to print out labels for.</p>
+
+<p><strong>See the full documentation for the Label Creator in the <a href="http://koha-community.org/manual/[% helpVersion %]/en/html/tools.html#label-creator">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

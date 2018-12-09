@@ -1,0 +1,33 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ lưu thông &rsaquo; Thêm dữ liệu lưu thông ngoại tuyến</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="ocirc_enqueue_koc" class="circ ocirc">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Phân hệ lưu thông</a> &rsaquo; <a href="/cgi-bin/koha/offline_circ/process_koc.pl">Thêm dữ liệu lưu thông ngoại tuyến</a></div>
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+ <h2>Lưu thông ngoại tuyến Koha</h2>
+ <p>Tệp tin của bạn đã được sử lý.</p>
+
+[% FOREACH message IN messages %]
+ [% IF ( message.message ) %]
+ [% IF ( message.ERROR_file_version ) %]
+ <div class="dialog alert"><p>Cảnh báo: Phiên bản của tệp tin này là [% message.upload_version %], phiên bản được hỗ trợ tốt nhất là phiên bản [% message.current_version %]. Do đó kết quả có thể không theo ý bạn.</p>
+ [% END %]
+ [% END %]
+[% END %]
+
+<p><a href="process_koc.pl">Tải lên tệp tin .koc khác</a></p>
+
+<p><a href="list.pl">Xem thao tác lưu thông ngoại tuyến chờ xử lý</a></p>
+
+ </div>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,285 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Administration &rsaquo; Libraries
+[% IF op == 'add_form' %]
+ &rsaquo;[% IF library %]Modify library[% ELSE %]New library [% library.branchcode | html %][% END %]
+[% ELSIF op == 'delete_confirm' %]
+ &rsaquo; Confirm deletion of library '[% library.branchcode | html %]'
+[% END %]
+</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="admin_branches" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a>
+&rsaquo; <a href="/cgi-bin/koha/admin/branches.pl">Thư viện</a>
+[% IF op == 'add_form'  %]
+&rsaquo; [% IF library %]Modify library[% ELSE %]New library [% library.branchcode | html %][% END %]
+[% ELSIF op == 'delete_confirm' %]
+&rsaquo; Confirm deletion of library '[% library.branchcode | html %]'
+[% END %]
+</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% FOREACH m IN messages %]
+ <div class="dialog [% m.type %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ An error occurred when updating this library. Perhaps it already exists.
+ [% CASE 'error_on_insert' %]
+ An error occurred when adding this library. The branchcode might already exist.
+ [% CASE 'error_on_delete' %]
+ An error occurred when deleting this library. Check the logs.
+ [% CASE 'success_on_update' %]
+ Library updated successfully.
+ [% CASE 'success_on_insert' %]
+ Library added successfully.
+ [% CASE 'success_on_delete' %]
+ Library deleted successfully.
+ [% CASE 'cannot_delete_library' %]
+ This library cannot be deleted. Patrons or items are still using it
+ [% IF m.data.patrons_count and m.data.items_count %]
+ ([% m.data.patrons_count %] patrons and [% m.data.items_count %] items).
+ [% ELSIF m.data.patrons_count %]
+ ([% m.data.patrons_count %] patrons).
+ [% ELSIF m.data.items_count %]
+ ([% m.data.items_count %] items).
+ [% END %]
+ [% CASE 'error_on_update_category' %]
+ An error occurred when updating this library category. Perhaps it already exists.
+ [% CASE 'error_on_insert_category' %]
+ An error occurred when adding this library category. The categorycode might already exist.
+ [% CASE 'error_on_delete_category' %]
+ An error occurred when deleting this library category. Check the logs.
+ [% CASE 'success_on_update_category' %]
+ Library category updated successfully.
+ [% CASE 'success_on_insert_category' %]
+ Library category added successfully.
+ [% CASE 'success_on_delete_category' %]
+ Library category deleted successfully.
+ [% CASE 'cannot_delete_category' %]
+ This library category cannot be deleted. [% m.data.libraries_count %] libraries are still using it.
+ [% CASE %]
+ [% m.code %]
+ [% END %]
+ </div>
+[% END %]
+
+[% IF op == 'list' %]
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default btn-sm" id="newbranch" href="/cgi-bin/koha/admin/branches.pl?op=add_form"><i class="fa fa-plus"></i> Tạo thư viện</a>
+ </div>
+[% END %]
+
+[% IF op == 'add_form' %]
+ <h3>[% IF library %]Modify library[% ELSE %]New library[% END %]</h3>
+ <form action="/cgi-bin/koha/admin/branches.pl" id="Aform" name="Aform" class="validated" method="post">
+ <fieldset class="rows">
+ <input type="hidden" name="op" value="add_validate" />
+ [% IF library %]
+ <input type="hidden" name="is_a_modif" value="1" />
+ [% END %]
+ <ol>
+ <li>
+ [% IF library %]
+ <span class="label">Mã thư viện: </span>
+ <input type="hidden" name="branchcode" value="[% library.branchcode |html %]" />
+ [% library.branchcode | html %]
+ [% ELSE %]
+ <label for="branchcode" class="required">Mã thư viện: </label>
+ <input type="text" name="branchcode" id="branchcode" size="10" maxlength="10" value="[% library.branchcode |html %]" class="required" required="required" />
+ <span class="required">Bắt buộc</span>
+ [% END %]
+ </li>
+ <li>
+ <label for="branchname" class="required">Name: </label>
+ <input type="text" name="branchname" id="branchname" size="80" value="[% library.branchname |html %]" class="required" required="required" />
+ <span class="required">Bắt buộc</span>
+ </li>
+ </ol>
+ </fieldset>
+ [% IF categories %]
+ <fieldset class="rows"><legend>Nhóm:</legend>
+ <ol>
+ [% FOREACH category IN categories %]
+ <li>
+ <label for="[% category.categorycode %]">[% category.categoryname |html %]: </label>
+ [% IF category and selected_categorycodes.grep(category.categorycode).size %]
+ <input type="checkbox" id="[% category.categorycode %]" name="selected_categorycode_[% category.categorycode %]" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="[% category.categorycode %]" name="selected_categorycode_[% category.categorycode %]" />
+ [% END %]
+ <span class="hint">[% category.codedescription |html %]</span>
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+ [% END %]
+ <fieldset class="rows">
+ <ol>
+ <li><label for="branchaddress1">Địa chỉ 1: </label><input type="text" name="branchaddress1" id="branchaddress1" size="60" value="[% library.branchaddress1 |html %]" /></li>
+ <li><label for="branchaddress2">Địa chỉ 2: </label><input type="text" name="branchaddress2" id="branchaddress2" size="60" value="[% library.branchaddress2 |html %]" /></li>
+ <li><label for="branchaddress3">Địa chỉ 3: </label><input type="text" name="branchaddress3" id="branchaddress3" size="60" value="[% library.branchaddress3 |html %]" /></li>
+ <li><label for="branchcity">Thành phố: </label><input type="text" name="branchcity" id="branchcity" size="60" value="[% library.branchcity |html %]" /></li>
+ <li><label for="branchstate">Bang: </label><input type="text" name="branchstate" id="branchstate" size="60" value="[% library.branchstate |html %]" /></li>
+ <li><label for="branchzip">ZIP/Postal code: </label><input type="text" name="branchzip" id="branchzip"  size="25" maxlength="25" value="[% library.branchzip |html %]" /></li>
+ <li><label for="branchcountry">Quốc gia: </label><input type="text" name="branchcountry" id="branchcountry" size="60" value="[% library.branchcountry |html %]" /></li>
+ <li><label for="branchphone">Điện thoại: </label><input type="text" name="branchphone" id="branchphone" size="60" value="[% library.branchphone |html %]" /></li>
+ <li><label for="branchfax">Số Fax: </label><input type="text" name="branchfax" id="branchfax" size="60" value="[% library.branchfax |html %]" /></li>
+ <li><label for="branchemail">Thư điện tử: </label><input type="text" name="branchemail" id="branchemail" class="email"  size="80" value="[% library.branchemail |html %]" /></li>
+ <li><label for="branchreplyto">Reply-To: </label> <input type="text" name="branchreplyto" id="branchreplyto" class="email"  size="80" value="[% library.branchreplyto |html %]" /><br /><span class="hint">Default: ReplyToDefault system preference</span></li>
+ <li><label for="branchreturnpath">Return-Path: </label> <input type="text" name="branchreturnpath" id="branchreturnpath" class="email"  size="80" value="[% library.branchreturnpath |html %]" /><br /><span class="hint">Default: ReturnpathDefault system preference</span></li>
+ <li><label for="branchurl">URL: </label><input type="text" name="branchurl" id="branchurl"  size="80" value="[% library.branchurl |html %]" class="url" /></li>
+ <li><label for="opac_info">Hiển thị trên OPAC: </label><textarea name="opac_info" id="opac_info">[% library.opac_info |html %]</textarea></li>
+ <li><label for="branchip">Địa chỉ IP: </label><input type="text" name="branchip" id="branchip"  size="15" maxlength="15" value="[% library.branchip |html %]" /> <span class="hint">Can be entered as a single IP, or a subnet such as 192.168.1.*</span></li>
+ <li><label for="marcorgccode">MARC organization code</label> <input type="text" name="marcorgcode" id="marcorgcode" size="16" value="[% library.marcorgcode |html %]" /> <span class="hint">If not filled in defaults to system preference MARCOrgCode. You can obtain your code from <a href="http://www.loc.gov/marc/organizations/orgshome.html" target="_blank">Library of Congress</a>.</span>
+ <li><label for="branchnotes">Ghi chú: </label><input type="text" name="branchnotes" id="branchnotes" size="80" value="[% library.branchnotes |html %]" /></li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="submit" value="Tìm kiếm" />
+ <a class="cancel" href="/cgi-bin/koha/admin/branches.pl">Hủy bỏ</a>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'delete_confirm' and not ( items_count or patrons_count )%]
+ <div class="dialog alert">
+ <form action="/cgi-bin/koha/admin/branches.pl" method="post">
+ <h3>Are you sure you want to delete [% library.branchname |html %] ([% library.branchcode | html %])?</h3>
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="branchcode" value="[% library.branchcode |html %]" />
+ <input type="hidden" name="branchname" value="[% library.branchname |html %]">
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Xóa</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/branches.pl" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF op == 'list' %]
+ <h3>Thư viện</h3>
+ [% IF libraries.count %]
+ <table id="branchest">
+ <thead>
+ <tr>
+ <th>Tên</th>
+ <th>Mã</th>
+ <th>Địa chỉ</th>
+ <th>MARC organization code</th>
+ <th>Địa chỉ IP</th>
+ <th>Thao tác</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH library IN libraries %]
+ <tr>
+ <td>[% library.branchname |html %]</td>
+ <td>[% library.branchcode |html %]</td>
+ <td>
+ [% IF library.branchaddress1 %]
+ [% library.branchaddress1 |html %][% END %]
+ [% IF library.branchaddress2 %]
+ <br />[% library.branchaddress2 |html %][% END %]
+ [% IF library.branchaddress3 %]
+ <br />[% library.branchaddress3 |html %][% END %]
+ [% IF library.branchcity %]
+ <br />[% library.branchcity |html %][% END %][% IF ( library.branchstate ) %],
+ [% library.branchstate |html %][% END %]
+ [% IF library.branchzip %]
+ [% library.branchzip |html %][% END %]
+ [% IF library.branchcountry %]
+ <br />[% library.branchcountry |html %][% END %]
+ [% IF library.branchphone %]
+ <br />ĐT: [% library.branchphone |html %][% END %] [% IF library.branchfax %] <br />Số Fax: [% library.branchfax |html %][% END %] [% IF library.branchemail %] <br /><a href="mailto:[% library.branchemail %]">[% library.branchemail |html %]</a>[% END %]
+ [% IF library.branchurl %]
+ <br /><a href="[% library.branchurl %]">[% library.branchurl |html %]</a>[% END %]
+ [% IF library.opac_info %]
+ <br />Hiển thị trên OPAC: <div>[% library.opac_info %]</div>[% END %]
+ [% IF library.branchnotes %]
+ <br />Notes: [% library.branchnotes |html %][% END %]
+ </td>
+ <td>[% library.marcorgcode %]</td>
+ <td>[% library.branchip %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/branches.pl?op=add_form&amp;branchcode=[% library.branchcode |uri %]"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <form action="/cgi-bin/koha/admin/branches.pl" method="post">
+ <input type="hidden" name="branchcode" value="[% library.branchcode |html %]" />
+ <input type="hidden" name="op" value="delete_confirm" />
+ <button type="submit" id="delete_library_[% library.branchcode | html %]" class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Xóa</button>
+ </form>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog message">Không có thư viện được khai báo. <a href="/cgi-bin/koha/admin/branches.pl?op=add_form">Tạo thư viện</a>.</div>
+ [% END %]
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'admin-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("lib/tiny_mce/tiny_mce.js") %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $("#branchest").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                ],
+                "iDisplayLength": 10,
+                "sPaginationType": "four_button"
+            }));
+
+            [% UNLESS library %]
+                $("#Aform").on("submit", function( event ) {
+                    if ( $("#branchcode").val().match(/\s/) ) {
+                        event.preventDefault();
+                        alert(_("The library code entered contains whitespace characters. Please remove any whitespace characters from the library code"));
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+            [% END %]
+        });
+        tinyMCE.baseURL = "[% interface %]/lib/tiny_mce";
+        tinyMCE.init({
+            mode : "textareas",
+            theme : "advanced",
+            content_css : "[% interface %]/[% theme %]/css/tinymce.css",
+            plugins : "table,save,advhr,advlink,contextmenu",
+            theme_advanced_buttons1 : "save,|,bold,italic,|,cut,copy,paste,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,|,link,unlink,anchor,cleanup,help,code,advhr,",
+            theme_advanced_buttons2 : "tablecontrols,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,removeformat,|,visualaid,|,sub,sup,|,charmap",
+            // theme_advanced_buttons3 : "",
+            theme_advanced_toolbar_location : "top",
+            theme_advanced_toolbar_align : "left",
+            theme_advanced_path_location : "bottom",
+            theme_advanced_resizing : true,
+            apply_source_formatting : true
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

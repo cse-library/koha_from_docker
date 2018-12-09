@@ -1,0 +1,255 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% USE ColumnsSettings %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Đơn hàng chậm</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_lateorders" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; <a href="lateorders.pl">Đơn hàng chậm</a></div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ 
+<h1>[% IF ( Supplier ) %][% Supplier %] : [% END %]Đơn hàng chậm</h1>
+<div id="acqui_lateorders">
+
+[% IF error_claim %]
+ [% IF ( error_claim == "no_email" ) %]
+ <div class="error">Nhà cung cấp này không có địa chỉ thư điện tử. Bạn hãy kiểm tra lại</div>
+ [% ELSIF ( error_claim == "no_order_selected" ) %]
+ <div class="error">No order selected</div>
+ [% ELSE %]
+ <div class="error">[% error_claim %]</div>
+ [% END %]
+[% END %]
+[% IF info_claim %]
+ <div class="dialog message">Thư điện tử đã được chuyển tới bạn đọc.</div>
+[% END %]
+[% IF ( lateorders ) %]
+<form action="lateorders.pl" name="claim" method="post">
+ <input type="hidden" name="op" value="send_alert" />
+ <input type="hidden" name="delay" value="[% delay | html%]" />
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ [% IF ( letters ) %]
+ <p><label for="letter_code">Thông báo khiếu nại: </label><select name="letter_code" id="letter_code">
+ [% FOREACH letter IN letters %]
+ <option value="[% letter.code %]">[% letter.name %]</option>
+ [% END %]
+ </select>
+ </p>
+ [% END %]
+ <table id="late_orders">
+ <thead>
+ <tr>
+ [% IF Supplier %]
+ <th><a id="CheckAll" href="#">Chọn tất cả</a><br /><a id="CheckNone" href="#">Bỏ tất cả</a></th>
+ [% ELSE %]
+ <th></th>
+ [% END %]
+ <th class="title-string">Ngày đặt hàng</th>
+ <th class="title-string">Ngày nhận hàng</th>
+ <th>Nhà cung cấp</th>
+ <th class="anti-the">Thông tin tài liệu</th>
+ <th>Tổng giá trị</th>
+ <th>Giỏ đặt hàng</th>
+ <th>Nhóm giỏ đặt hàng</th>
+ <th>Thư viện</th>
+ <th>Quỹ</th>
+ <th>Số lần khiếu nại</th>
+ <th class="title-string">Ngày khiếu nại</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH lateorder IN lateorders %]
+ <tr>
+ <td>
+ <input type="checkbox" value="[% lateorder.ordernumber %]" data-booksellerid="[% lateorder.supplierid %]" name="ordernumber">
+ </td>
+ <td>
+ <span title="[% lateorder.orderdate %]">[% lateorder.orderdate | $KohaDates %] ([% lateorder.latesince %] days)</span>
+ </td>
+ <td>
+ [% IF ( lateorder.estimateddeliverydate ) %]
+ <span title="[% lateorder.estimateddeliverydate %]">[% lateorder.estimateddeliverydate | $KohaDates  %]</span>
+ [% ELSE %]
+ <span title="0000-00-00"></span>
+ [% END %]
+ </td>
+ <td>
+ [% lateorder.supplier %]
+ ([% lateorder.supplierid %])
+ </td>
+ <td>
+ <b>[% lateorder.title |html %]</b>
+ [% IF ( lateorder.author ) %]<br/><i>Tác giả:</i> [% lateorder.author %][% END %]
+ [% IF ( lateorder.publisher ) %]
+ <br/><i>Nhà xuất bản:</i> [% lateorder.publisher %]
+ [% IF ( lateorder.publicationyear ) %]
+ <i> trong </i>[% lateorder.publicationyear %]
+ [% END %]
+ [% END %]
+ </td>
+ <td>
+ [% lateorder.unitpricesupplier %]x[% lateorder.quantity %] = [% lateorder.subtotal %] </td>
+ <td>
+ [% IF ( CAN_user_acquisition_order_manage ) %]
+ <a title="Giỏ đặt hàng" href="basket.pl?basketno=[% lateorder.basketno %]">[% lateorder.basketname %] ([% lateorder.basketno %])</a>
+ [% ELSE %]
+ [% lateorder.basketname %] ([% lateorder.basketno %])
+ [% END %]
+ </td>
+ <td>
+ [% IF ( lateorder.basketgroupid ) %]
+ [% IF ( CAN_user_acquisition_group_manage ) %]
+ <a href="basketgroup.pl?op=add&booksellerid=[% lateorder.supplierid %]&basketgroupid=[% lateorder.basketgroupid %]" title="basketgroup">[% lateorder.basketgroupname %] ([% lateorder.basketgroupid %])</a>
+ [% ELSE %]
+ [% lateorder.basketgroupname %] ([% lateorder.basketgroupid %])</a>
+ [% END %]
+ [% END %]
+ </td>
+ <td>[% Branches.GetName( lateorder.branch ) %]
+ </td>
+ <td>[% lateorder.budget %]
+ </td>
+ <td>[% lateorder.claims_count %]</td>
+ <td>
+ [% IF ( lateorder.claimed_date ) %]
+ <span title="[% lateorder.claimed_date %]">[% lateorder.claimed_date | $KohaDates %]</span>
+ [% ELSE %]
+ <span title="0000-00-00"></span>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ <tfoot>
+ <tr>
+ <th colspan="5">Tổng số</th>
+ <th>[% total %]</th>
+ <th colspan="6">&nbsp;</th>
+ </tr>
+ </tfoot>
+ </table>
+ <div class="spacer"></div>
+
+ <p style="display:block;">
+ <input value="Xuất ra CSV" type="button" id="ExportSelected" />
+ [% UNLESS lateorder.budget_lock %]
+ <input type="submit" value="Khiếu nại đơn hàng" />
+ [% END %]
+ </p>
+</form>
+[% ELSE %]<p>Bạn không có đơn hàng chậm.</p>
+[% END %]
+</div>
+</div>
+</div>
+<div class="yui-b">
+<form action="lateorders.pl" method="get">
+<fieldset class="brief">
+<h4>Bộ lọc dữ liệu</h4>
+[% FOREACH ERROR_LOO IN ERROR_LOOP %]
+[% IF ( ERROR_LOO.delay_digits ) %]<p class="error">Số ngày ([% ERROR_LOO.bad_delay | html %]) phải là số có giá trị từ 0 đến 999.</p>[% END %]
+[% END %]
+<ol>
+ <li><label for="delay">Ngày đặt hàng:</label><input size="3" maxlength="3" id="delay" type="text" name="delay" value="[% delay | html%]" /> ngày trước đây</li>
+ <li><label for="from">Ngày giao hàng: </label>
+ <input type="text" size="10" id="from" name="estimateddeliverydatefrom" value="[% estimateddeliverydatefrom %]" class="datepickerfrom" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ <li><label for="to">Đến ngày: </label>
+ <input type="text" size="10" id="to" name="estimateddeliverydateto" value="[% estimateddeliverydateto %]" class="datepickerto" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+
+ <li><label for="booksellerid">Nhà cung cấp:</label>
+ <select id="booksellerid" size="1" tabindex="" name="booksellerid">
+ <option value=""></option>
+ [% FOREACH SUPPLIER_LOO IN SUPPLIER_LOOP %]
+ [% IF ( SUPPLIER_LOO.selected ) %]<option value="[% SUPPLIER_LOO.id %]" selected="selected">[% SUPPLIER_LOO.name %]</option>
+ [% ELSE %]<option value="[% SUPPLIER_LOO.id %]">[% SUPPLIER_LOO.name %]</option>[% END %]
+ [% END %]
+ </select>
+</ol>
+ <fieldset class="action"><input value="Bộ lọc dữ liệu" type="submit" /></fieldset>
+</fieldset>
+ </form>
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ [% Asset.js("lib/jquery/plugins/jquery.checkboxes.min.js") %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript">
+        var late_orderst;
+        function check_uncheck() {
+            var all_nodes = $(late_orderst.fnGetNodes());
+            if ( $(all_nodes).find("input:checkbox[name=ordernumber]:checked").length > 0) {
+                var booksellerid = $(all_nodes).find("input:checkbox[name=ordernumber]:checked:first").attr("data-booksellerid");
+                $(all_nodes).find("input:checkbox[name=ordernumber][data-booksellerid!="+booksellerid+"]").prop('disabled', true);
+            } else {
+                $("input:checkbox[name=ordernumber]").prop('disabled', false);
+            }
+        }
+
+        $(document).ready(function() {
+
+            var columns_settings = [% ColumnsSettings.GetColumns( 'acqui', 'lateorders', 'late_orders', 'json' ) %];
+            late_orderst = KohaTable("late_orders", {
+                "aoColumnDefs": [
+                    { "aTargets": [ 0 ], "bSortable": false, "bSearchable": false },
+                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                    { "sType": "title-string", "aTargets" : [ "title-string" ] }
+                ],
+                "sPaginationType": "four_button",
+                "bAutoWidth": false,
+                "fnDrawCallback": function() {
+                    if ( typeof late_orderst != 'undefined' ) {
+                        check_uncheck();
+                        $('input:checkbox[name=ordernumber]').bind('click', check_uncheck);
+                    };
+                }
+            }, columns_settings );
+            $('input:checkbox[name=ordernumber]').bind('click', check_uncheck);
+            $('#CheckAll').click(function(){ $(late_orderst.fnGetNodes()).find("td").checkCheckboxes();});
+            $('#CheckNone').click(function(){ $(late_orderst.fnGetNodes()).find("td").unCheckCheckboxes();});
+
+            // Generates a dynamic link for exporting the selection's data as CSV
+            $("#ExportSelected").click(function() {
+                var all_nodes = $(late_orderst.fnGetNodes());
+                var selected = $(all_nodes).find("input[name='ordernumber']:checked");
+
+                if (selected.length == 0) {
+                    alert(_("Bạn phải chọn ít nhất một tài liệu."));
+                    return false;
+                }
+
+                // Building the url from currently checked boxes
+                var url = '/cgi-bin/koha/acqui/lateorders-export.pl?op=export';
+                for (var i = 0; i < selected.length; i++) {
+                    url += '&amp;ordernumber=' + selected[i].value;
+                }
+                // And redirecting to the CSV page
+                location.href = url;
+                return false;
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

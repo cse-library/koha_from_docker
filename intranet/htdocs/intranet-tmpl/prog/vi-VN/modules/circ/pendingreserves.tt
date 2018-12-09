@@ -1,0 +1,262 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE ColumnsSettings %]
+[% USE AuthorisedValues %]
+[%- USE Branches -%]
+[%- USE ItemTypes -%]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ lưu thông &rsaquo; Đặt mượn chờ đáp ứng</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="circ_pendingreserves" class="circ">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Phân hệ lưu thông</a> &rsaquo;  Đặt mượn chờ đáp ứng</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% FOR m IN messages %]
+ <div class="dialog [% m.type %]">
+ [% SWITCH m.code %]
+ [% CASE 'letter_enqueued' %]
+ <span>The notice has been correctly enqueued.</span>
+ [% CASE 'no_email_address' %]
+ <span>The patron does not have an email address defined.</span>
+ [% CASE 'no_template_notice' %]
+ <span>There is no notice template with a code 'CANCEL_HOLD_ON_LOST' defined in your system.</span>
+ [% CASE 'hold_cancelled' %]
+ <span>The hold has been correctly cancelled.</span>
+ [% CASE 'hold_placed_at_biblio_level' %]
+ <span>The hold has been placed on biblio level. It is not possible to determine the item to mark as lost.</span>
+ [% CASE %]
+ [% m.code %]
+ [% END %]
+ </div>
+ [% END %]
+
+<h2>Holds to pull placed between [% from | $KohaDates %] and [% to | $KohaDates %]</h2>
+<h3>Thống kê vào ngày [% todaysdate | $KohaDates %]</h3>
+<p>Các yêu cầu đặt mượn dưới đây chưa được đáp ứng, bạn nên kiểm tra lại.</p>
+<div class="searchresults">
+ [% IF ( reserveloop ) %]
+ <table id="holdst">
+ <thead>
+ <tr>
+ <th>Số bản đặt mượn</th>
+ <th>Tài liệu sẵn sàng</th>
+ <th>Số bạn đọc đặt mượn</th>
+ <th>First patron</td>
+ <th class="anti-the">Nhan đề</th>
+ <th class="string-sort">Thư viện</th>
+ <th>Ký hiệu phân loại</th>
+ <th>Số bản sao sẵn sàng</th>
+ <th>Số kỳ ÂPĐK</th>
+ <th class="string-sort">Available item types</th>
+ <th class="string-sort">Kho tài liệu</th>
+ <th class="title-string">Đặt mượn đầu tiên</th>
+ <th>Thao tác</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH reserveloo IN reserveloop %]
+ <tr>
+ [% IF ( reserveloo.borrowernumber ) %]
+ <td><p><b>[% reserveloo.pullcount %]</b></p></td>
+ <td>[% reserveloo.count %]</td>
+ <td>[% reserveloo.rcount %]</td>
+ <td><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% reserveloo.borrowernumber %]">[% reserveloo.firstname %] [%reserveloo.surname %]</a></td>
+ <td>
+ <p>
+ [% INCLUDE 'biblio-default-view.inc' biblionumber = reserveloo.biblionumber %]
+ [% reserveloo.title |html %] [% FOREACH s IN reserveloo.subtitle %] [% s %][% END %]</a></p>
+ [% IF ( reserveloo.author ) %]<p> , Tác giả: [% reserveloo.author %]</p>[% END %]
+ </td>
+ [% ELSE %]
+ <td>"</td>
+ <td>"</td>
+ <td>"</td>
+ <td>"</td>
+ <td>"</td>
+ [% END %]
+ <td>
+ [% FOREACH holdingbranch IN reserveloo.holdingbranches %]
+ [% Branches.GetName ( holdingbranch ) %]
+ [% END %]
+ </td>
+ <td><p>[% reserveloo.itemcallnumber %]</p></td>
+ <td><p>[% reserveloo.copyno %]</p></td>
+ <td><p>[% reserveloo.enumchron %]</p></td>
+ <td>
+ [% FOREACH itemType IN reserveloo.itemTypes %]
+ [% ItemTypes.GetDescription( itemType ) %]
+ [% END %]
+ </td>
+ <td>
+ [% FOREACH loc IN reserveloo.locations %]
+ [% AuthorisedValues.GetByCode('LOC', loc) %]
+ [% END %]
+ </td>
+ <td>
+ <span title="[% reserveloo.reservedate %]">[% reserveloo.reservedate | $KohaDates %] in [% Branches.GetName ( reserveloo.branch ) %]</span>
+ </td>
+ <td>
+ <form name="cancelReserve" action="/cgi-bin/koha/circ/pendingreserves.pl" method="post">
+ <input type="hidden" name="op" value="cancel_reserve" />
+ <input type="hidden" name="reserve_id" value="[% reserveloo.reserve_id %]" />
+ [% IF reserveloo.holdingbranch != reserveloo.homebranch %]
+ <input type="submit" value="Cancel hold and return to : [% Branches.GetName( reserveloo.homebranch ) %]" />
+ [% ELSE %]
+ <input value="Hủy đặt mượn" type="submit" />
+ [% END %]
+ </form>
+
+ [% IF Koha.Preference('CanMarkHoldsToPullAsLost') != 'do_not_allow' %]
+ [% IF reserveloo.itemnumber %]
+ <form name="cancelReserve" action="/cgi-bin/koha/circ/pendingreserves.pl" method="post">
+ <input type="hidden" name="reserve_id" value="[% reserveloo.reserve_id %]" />
+ [% IF Koha.Preference('CanMarkHoldsToPullAsLost') == 'allow' %]
+ <input type="hidden" name="op" value="mark_as_lost" />
+ <input type="submit" value="Mark item as lost" />
+ [% ELSIF Koha.Preference('CanMarkHoldsToPullAsLost') == 'allow_and_notify' %]
+ <input type="hidden" name="op" value="mark_as_lost_and_notify" />
+ <input type="submit" value="Mark lost and notify patron" />
+ [% END %]
+ </form>
+ [% ELSE %]
+ <span>Biblio level hold.</span>
+ [% END %]
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ <tfoot>
+ <tr>
+ <td><input placeholder="Số bản đặt mượn" type="text" class="filter" data-column_num="0" style="width:95%" /></td>
+ <td><input type="text" placeholder="Tài liệu sẵn sàng" class="filter" data-column_num="1" style="width:95%" /></td>
+ <td><input placeholder="Số bạn đọc đặt mượn" type="text" class="filter" data-column_num="2" style="width:95%" /></td>
+ <td><input type="text" placeholder="Tên bạn đọc" data-column_num="3" class="filter" style="width:95%" /></td>
+ <td><input style="width:95%" class="filter" data-column_num="4" type="text" placeholder="Nhan đề" /></td>
+ <td id="homebranchfilter"></td>
+ <td><input placeholder="Ký hiệu phân loại" type="text" class="filter" data-column_num="6" style="width:95%" /></td>
+ <td><input placeholder="Số bản sao" type="text" class="filter" data-column_num="7" style="width:95%" /></td>
+ <td><input class="filter" data-column_num="8" placeholder="Số kỳ ÂPĐK" type="text" style="width:95%" /></td>
+ <td id="itemtype-filter"></td>
+ <td id="locationfilter"></td>
+ <td></td>
+ <td></td>
+ </tr>
+ </tfoot>
+ </table>
+ [% ELSE %]
+ <b>Không tìm thấy tài liệu</b>
+ [% END %]
+</div>
+
+</div>
+</div>
+<div class="yui-b">
+<div id="filters">
+
+<form action="/cgi-bin/koha/circ/pendingreserves.pl" method="post" >
+<fieldset class="brief">
+<h4>Bộ lọc dữ liệu</h4>
+<ol>
+<li>
+<label for="from">
+ Ngày bắt đầu: </label>
+<input type="text" size="10" id="from" name="from" value="[% from | $KohaDates %]" class="datepickerfrom" />
+</li>
+<li><label for="to">
+ Đến ngày: </label>
+<input type="text" size="10" id="to" name="to" value="[% to | $KohaDates %]" class="datepickerto" />
+</li>
+</ol>
+
+[% IF ( HoldsToPullEndDate ) %]
+ <p><i>(Inclusive, default is [% HoldsToPullStartDate %] days ago to [% HoldsToPullEndDate %] days ahead. Set other date ranges as needed.)</i></p>
+[% ELSE %]
+ <p><i>(Inclusive, default is [% HoldsToPullStartDate %] days ago to today. Set other date ranges as needed.)</i></p>
+[% END %]
+
+<fieldset class="action"><input type="submit" name="run_report" class="submit" value="Tìm kiếm" /></fieldset>
+</fieldset>
+</form>
+
+</div>
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+          var columns_settings = [% ColumnsSettings.GetColumns('circ', 'holds', 'holds-to-pull', 'json') %];
+          var holdst = KohaTable("holdst", {
+            "aoColumnDefs": [
+                { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                { "sType": "title-string", "aTargets" : [ "title-string" ] },
+                { "sType": "string", "aTargets": [ "string-sort" ] }
+            ],
+            "sPaginationType": "full_numbers"
+          }, columns_settings);
+          holdst.fnAddFilters("filter");
+          [%# add separateData function to cleanse jQuery select lists by breaking apart strings glued with BR tags and then de-duplicating any repeated library codes %]
+          function separateData ( ColumnData ){
+            var cD = ColumnData;
+            var new_array = new Array();
+            for ( j=0 ; j<cD.length ; j++ ) {
+                var split_array = cD[j].split(/\n/gi);
+                for ( k=0 ; k<split_array.length ; k++ ){
+                    var str = $.trim(split_array[k].replace(/[\n\r]/g, ''));
+                    if ($.inArray(str, new_array) == -1 && str.length > 0 ) {
+                        new_array.push(str);
+                    }
+                }
+            }
+            new_array.sort();
+            return new_array;
+          }
+          [%# add SeparateData function into createSelect function, so that it does the createSelect on clean data %]
+          function createSelect( data ) {
+              data = separateData(data);
+              var r='<select style="width:99%"><option value="">' + _("Bất kỳ") + '</option>', i, len=data.length;
+              for ( i=0 ; i<len ; i++ ) {
+                  r += '<option value="'+data[i]+'">'+data[i]+'</option>';
+              }
+              return r+'</select>';
+          }
+          $("#homebranchfilter").each( function () {
+              $(this).html( createSelect( holdst.fnGetColumnData(5) ) );
+              $('select', this).change( function () {
+                  var filter_value = $(this).val();
+                  holdst.fnFilter( filter_value, 5, true );
+              });
+          });
+          $("#itemtype-filter").each( function () {
+              $(this).html( createSelect( holdst.fnGetColumnData(9) ) );
+              $('select', this).change( function () {
+                  holdst.fnFilter( $(this).val(), 9 );
+              });
+          });
+          $("#locationfilter").each( function () {
+              $(this).html( createSelect( holdst.fnGetColumnData(10) ) );
+              $('select', this).change( function () {
+                  holdst.fnFilter( $(this).val(), 10 );
+              });
+          });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

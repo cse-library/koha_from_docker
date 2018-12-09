@@ -1,0 +1,106 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Công cụ bổ trợ &rsaquo; Lập lịch báo cáo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="tools_scheduler" class="tools">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/tools/tools-home.pl">Công cụ bổ trợ</a> &rsaquo; <strong>Lập lịch báo cáo</strong></div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+<div id="main">
+
+[% IF ( job_add_failed ) %]
+<div class="dialog message">Bị lỗi khi tạo lịch báo cáo</div>
+[% END %]
+
+<form name="form1" action="scheduler.pl" method="post">
+<input type="hidden" name="mode" value="job_add" />
+
+<fieldset class="rows">
+<legend>Lập lịch báo cáo</legend><ol>
+<li><span class="label">Thời gian hiện tại:</span>
+[% time %]</li>
+<li><label for="starttime">Thời gian chạy báo cáo:</label>
+<input type="text" name="starttime" id="starttime" value="" maxlength="5" size="5" /></li>
+<li><label for="startdate">Ngày chạy báo cáo: </label> <input type="text" size="10" id="startdate" name="startdate" value="" />
+<div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+</li>
+<li><label for="report">Loại báo cáo:</label>
+<select name="report" id="report">
+[% FOREACH savedreport IN savedreports %]
+ [% IF ( savedreport.selected ) %]
+ <option value="[% savedreport.id %]" selected="selected">[% savedreport.report_name %]</option>
+ [% ELSE %]
+ <option value="[% savedreport.id %]">[% savedreport.report_name %]</option>
+ [% END %]
+[% END %]
+</select>
+</li>
+<li>
+ <label for="format">Đinh dạng báo cáo:</label>
+ <select name="format" id="format">
+ <option value="text">Text (TSV)</option>
+ <option value="csv">CSV</option>
+ <option value="html">HTML</option>
+ </select>
+</li>
+<li><label for="email">Thư điện tử:</label>
+
+<input type="text" name="email" id="email" size="50" />
+</li>
+</ol></fieldset>
+<fieldset class="action"><input value="Lưu" type="submit" class="submit-button" /></fieldset>
+</form>
+
+[% IF ( JOBS ) %]<h2>Lịch báo cáo</h2>
+<table>
+<tr>
+<th>Ngày/Giờ</th>
+<th>Thao tác</th>
+<th>&nbsp;</th>
+</tr>
+[% FOREACH JOB IN JOBS %]
+<form action="scheduler.pl" method="post">
+<input type="hidden" name="mode" value="job_change" />
+
+<tr>
+<td>[% JOB.TIME %]</td>
+<td>[% JOB.TAG %]</td>
+<td><input type="submit" name="delete" value="Xóa" /></td>
+</tr>
+<input type="hidden" name="jobid" value="[% JOB.JOBID %]" />
+</form>
+[% END %]
+</table>[% END %]
+
+
+</div>
+</div>
+</div>
+<div class="yui-b noprint">
+[% INCLUDE 'tools-menu.inc' %]
+[% INCLUDE 'guided-reports-view.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/tools-menu.js") %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function(){
+            $("#startdate").datepicker({ minDate: "+0D" });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

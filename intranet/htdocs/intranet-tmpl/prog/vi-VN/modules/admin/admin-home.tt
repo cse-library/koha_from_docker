@@ -1,0 +1,139 @@
+[% USE Koha %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="admin_admin-home" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; Quản trị hệ thống</div>
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+ <h1>QUẢN TRỊ HỆ THỐNG THƯ VIỆN</h1>
+ <div class="row">
+ <div class="col-md-6 sysprefs">
+
+ <form action="/cgi-bin/koha/admin/preferences.pl" method="post">
+ <fieldset>
+ <h4><a href="/cgi-bin/koha/admin/preferences.pl">Thông số chung của hệ thống</a></h4>
+ <p>Quản lý toàn bộ thông số chung của hệ thống thư viện.</p>
+ <input type="hidden" name="op" value="search" />
+ <input type="text" name="searchfield" value="[% searchfield %]" />
+ <input name="ok" type="submit" class="submit" value="Tìm kiếm" />
+ </fieldset>
+ </form>
+
+ <div class="hint"><h4>Gợi ý:</h4><p>Cấu hình các thông số theo thứ tự xuất hiện.</p></div>
+ <h3>Thông số sơ bản</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/admin/branches.pl">Thư viện</a></dt>
+ <dd>Define libraries.</dd>
+ <dt><a href="/cgi-bin/koha/admin/library_groups.pl">Library groups</a></dt>
+ <dd>Define hierarchical library groups.</dd>
+ <dt><a href="/cgi-bin/koha/admin/itemtypes.pl">Kiểu tài liệu</a></dt>
+ <dd>Thiết lập kiểu tài liệu được sử dụng cho chính sách lưu thông.</dd>
+ <dt><a href="/cgi-bin/koha/admin/authorised_values.pl">Giá trị định trước</a></dt>
+ <dd>Thiết lập các nhóm và giá trị định trước cho dữ liệu của nhóm.</dd>
+ </dl>
+
+ <h3>Bạn đọc và lưu thông</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/admin/categories.pl">để kiểm tra lại.</a></dt>
+ <dd>Thiết lập kiểu bạn đọc.</dd>
+ [% IF CAN_user_parameters_manage_circ_rules %]
+ <dt><a href="/cgi-bin/koha/admin/smart-rules.pl">Chính sách lưu thông</a></dt>
+ <dd>Thiết lập chính sách lưu thông dựa trên ba thông số: Thư viện, kiểu bạn đọc và kiểu tài liệu.</dd>
+ [% END %]
+ <dt><a href="/cgi-bin/koha/admin/patron-attr-types.pl">Thuộc tính bạn đọc</a></dt>
+ <dd>Thiết lập thuộc tính mở rộng (định danh và nhóm thống kê) cho biểu ghi bạn đọc.</dd>
+ <dt><a href="/cgi-bin/koha/admin/branch_transfer_limits.pl">Chính sách chuyển tài liệu</a></dt>
+ <dd>Thiết lập chính sách chuyển tài liệu giữa các thư viện trong hệ thống.</dd>
+ <dt><a href="/cgi-bin/koha/admin/transport-cost-matrix.pl">Giá vận chuyển tài liệu</a></dt>
+ <dd>Thiết lập ma trận giá vận chuyển tài liệu giữa các thư viện</dd>
+ <dt><a href="/cgi-bin/koha/admin/item_circulation_alerts.pl">Cảnh báo lưu thông</a></dt>
+ <dd>Thiết lập thông báo mượn, trả tài liệu theo thư viện, kiểu bạn đọc, kiểu tài liệu.</dd>
+ <dt><a href="/cgi-bin/koha/admin/cities.pl">Thành phố</a></dt>
+ <dd>Thiết lập các thành phố trong địa chỉ bạn đọc.</dd>
+ </dl>
+ [% IF CAN_user_plugins && plugins_enabled %]
+ <h3>Tính năng bổ trợ</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/plugins/plugins-home.pl">Manage plugins</a></dt>
+ <dd>View, manage, configure and run plugins.</dd>
+ </dl>
+ [% END %]
+ </div>
+ <div class="col-md-6 sysprefs">
+ <h3>Tìm kiếm</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/admin/biblio_framework.pl">Khung mẫu biên mục</a></dt>
+ <dd>Tạo và quản lý các khung mẫu biên mục có chứa các trường MARC và được sử dụng trong quá trình biên mục.</dd>
+ <dt><a href="/cgi-bin/koha/admin/koha2marclinks.pl">Ánh xạ KOHA_MARC</a></dt>
+ <dd>Define the mapping between the Koha transactional database (SQL) and the MARC Bibliographic records.</dd>
+ <dt><a href="/cgi-bin/koha/admin/fieldmapping.pl">Từ khóa ánh xạ đến MARC</a></dt>
+ <dd>Define the mapping between keywords and MARC fields. The keywords are used to find some data independently of the framework.</dd>
+ <dt><a href="/cgi-bin/koha/admin/checkmarc.pl">Kiểm tra khung mẫu biên mục MARC</a></dt>
+ <dd>Sử dụng để kiểm tra cấu trúc MARC của mẫu biên mục sau khi bạn thay đổi lại các định nghĩa trong mẫu biên mục.</dd>
+ <dt><a href="/cgi-bin/koha/admin/authtypes.pl">Kiểu dữ liệu kiểm soát</a></dt>
+ <dd>Tạo và quản lý khung mẫu dữ liệu kiểm soát (định nghĩa các trường và trường con).</dd>
+ <dt><a href="/cgi-bin/koha/admin/classsources.pl">Khung phân loại</a></dt>
+ <dd>Thiết lập khung phân loại (VD: Sơ đồ ký hiệu phân loại) sử dụng cho bộ sưu tập. Cũng thiết lập các quy tắc sắp xếp ký kiệu phân loại.</dd>
+ <dt><a href="/cgi-bin/koha/admin/matching-rules.pl">Quy tắc kiểm soát biểu ghi</a></dt>
+ <dd>Quản lý các quy tắc để tự động kiểm soát biểu ghi khi nhập các biểu ghi MARC vào hệ thống.</dd>
+ <dt><a href="/cgi-bin/koha/admin/oai_sets.pl">Cấu hình bộ OAI</a></dt>
+ <dd>Quản lý các nhóm OAI</dd>
+ <dt><a href="/cgi-bin/koha/admin/items_search_fields.pl">Item search fields</a></dt>
+ <dd>Manage custom fields for item search.</dd>
+ [% IF Koha.Preference('SearchEngine') == 'Elasticsearch' %]
+ <dt><a href="/cgi-bin/koha/admin/searchengine/elasticsearch/mappings.pl">Search engine configuration</a></dt>
+ <dd>Manage indexes, facets, and their mappings to MARC fields and subfields.</dd>
+ [% END %]
+ </dl>
+
+ <h3>THÔNG SỐ PHÂN HỆ BỔ SUNG</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/admin/currency.pl">Tiền tệ và tỷ giá</a></dt>
+ <dd>Thiết lập các loại tiền tệ và tỷ giá quy đổi được sử dụng trong phân hệ bổ sung.</dd>
+
+ <dt><a href="/cgi-bin/koha/admin/aqbudgetperiods.pl">Ngân sách</a></dt>
+ <dd>Thiết lập các ngân sách của thư viện</dd>
+
+ <dt><a href="/cgi-bin/koha/admin/aqbudgets.pl">Quỹ</a></dt>
+ <dd>Thiết lập các quỹ trong ngân sách của thư viện</dd>
+
+ <dt><a href="/cgi-bin/koha/admin/edi_accounts.pl">EDI accounts</a></dt>
+ <dd>Manage vendor EDI accounts for import/export</dd>
+ <dt><a href="/cgi-bin/koha/admin/edi_ean_accounts.pl">Library EANs</a></dt>
+ <dd>Manage library EDI EANs</dd>
+ </dl>
+
+ <h3>Thông số khác</h3>
+ <dl>
+ <!-- <dt><a href="/cgi-bin/koha/admin/printers.pl">Network Printers</a></dt>
+ <dd>Printers (UNIX paths).</dd> -->
+ <dt><a href="/cgi-bin/koha/admin/z3950servers.pl">Z39.50/SRU servers</a></dt>
+ <dd>Define which external servers to query for MARC data.</dd>
+ <dt><a href="/cgi-bin/koha/admin/didyoumean.pl">Tùy chỉnh riêng?</a></dt>
+ <dd>Lựa chọn công cụ sẵn có để gợi ý cho bạn đọc và cán bộ thư viện tìm kiếm các đề xuất mua.</dd>
+ <dt><a href="/cgi-bin/koha/admin/columns_settings.pl">Configure columns</a></dt>
+ <dd>Hide or show columns for tables.</dd>
+ <dt><a href="/cgi-bin/koha/admin/audio_alerts.pl">Audio alerts</a></dt>
+ <dd>Define which events trigger which sounds</dd>
+ [% IF Koha.Preference('SMSSendDriver') == 'Email' %]
+ <dt><a href="/cgi-bin/koha/admin/sms_providers.pl">SMS cellular providers</a></dt>
+ <dd>Define a list of cellular providers for sending SMS messages via email.</dd>
+ [% END %]
+ <dt><a href="/cgi-bin/koha/admin/usage_statistics.pl">Share your usage statistics</a></dt>
+ <dd>Share with the Koha community the usage statistics of your Koha installation.</dd>
+ </dl>
+ </div>
+ </div>
+ </div>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

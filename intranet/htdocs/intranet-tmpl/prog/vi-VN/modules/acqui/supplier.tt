@@ -1,0 +1,425 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% BLOCK edit_contact %]
+ <ol id="contact-form">
+ <input type="hidden" name="contact_id" value="[% contact.id %]" />
+ <li><label for="contact_name[% contact.id %]">Người liên hệ </label>
+ <input type="text" size="40" id="contact_name[% contact.id %]" name="contact_name" value="[% contact.name %]" /></li>
+ <li><label for="contact_position[% contact.id %]">Chức vụ: </label>
+ <input type="text" size="40" id="contact_position[% contact.id %]" name="contact_position" value="[% contact.position %]" /></li>
+ <li><label for="contact_phone[% contact.id %]">Điện thoại: </label>
+ <input type="text" size="20" id="contact_phone[% contact.id %]" name="contact_phone" value="[% contact.phone %]" /> </li>
+ <li><label for="contact_altphone[% contact.id %]">Điện thoại 2: </label>
+ <input type="text" size="20" id="contact_altphone[% contact.id %]" name="contact_altphone" value="[% contact.altphone %]" /></li>
+ <li><label for="contact_fax[% contact.id %]">Số Fax: </label>
+ <input type="text" size="20" id="contact_fax[% contact.id %]" name="contact_fax" value="[% contact.fax %]" /></li>
+ <li><label for="contact_email[% contact.id %]">Thư điện tử: </label>
+ <input type="text" size="40" id="contact_email[% contact.id %]" name="contact_email" value="[% contact.email %]" class="email" /></li>
+ <li><label for="contact_notes[% contact.id %]">Ghi chú: </label>
+ <textarea id="contact_notes[% contact.id %]" name="contact_notes" cols="40" rows="4">[% contact.notes %]</textarea></li>
+ <li><label for="contact_acqprimary[% contact.id %]">Primary acquisitions contact:</label>
+ [% IF contact.acqprimary %]
+ <input type="checkbox" id="contact_acqprimary[% contact.id %]" class="contact_acqprimary" checked="checked"></input>
+ [% ELSE %]
+ <input type="checkbox" id="contact_acqprimary[% contact.id %]" class="contact_acqprimary"></input>
+ [% END %]
+ <input type="hidden" class="contact_acqprimary_hidden" name="contact_acqprimary" value="[% contact.acqprimary %]"></input>
+ <li><label for="contact_serialsprimary[% contact.id %]">Primary serials contact:</label>
+ [% IF contact.serialsprimary %]
+ <input type="checkbox" id="contact_serialsprimary[% contact.id %]" class="contact_serialsprimary" checked="checked"></input>
+ [% ELSE %]
+ <input type="checkbox" id="contact_serialsprimary[% contact.id %]" class="contact_serialsprimary"></input>
+ [% END %]
+ <input type="hidden" class="contact_serialsprimary_hidden" name="contact_serialsprimary" value="[% contact.serialsprimary %]"></input>
+ <li><label for="contact_orderacquisition[% contact.id %]">Contact when ordering?</label>
+ [% IF contact.orderacquisition %]
+ <input type="checkbox" id="contact_orderacquisition[% contact.id %]" class="contact_orderacquisition" checked="checked"></input>
+ [% ELSE %]
+ <input type="checkbox" id="contact_orderacquisition[% contact.id %]" class="contact_orderacquisition"></input>
+ [% END %]
+ <input type="hidden" class="contact_orderacquisition_hidden" name="contact_orderacquisition" value="[% contact.orderacquisition %]"></input>
+ <li><label for="contact_claimacquisition[% contact.id %]">Contact about late orders?</label>
+ [% IF contact.claimacquisition %]
+ <input type="checkbox" id="contact_claimacquisition[% contact.id %]" class="contact_claimacquisition" checked="checked"></input>
+ [% ELSE %]
+ <input type="checkbox" id="contact_claimacquisition[% contact.id %]" class="contact_claimacquisition"></input>
+ [% END %]
+ <input type="hidden" class="contact_claimacquisition_hidden" name="contact_claimacquisition" value="[% contact.claimacquisition %]"></input>
+ <li><label for="contact_claimissues[% contact.id %]">Contact about late issues?</label>
+ [% IF contact.claimissues %]
+ <input type="checkbox" id="contact_claimissues[% contact.id %]" class="contact_claimissues" checked="checked"></input>
+ [% ELSE %]
+ <input type="checkbox" id="contact_claimissues[% contact.id %]" class="contact_claimissues"></input>
+ [% END %]
+ <input type="hidden" class="contact_claimissues_hidden" name="contact_claimissues" value="[% contact.claimissues %]"></input>
+ </li>
+ [% IF contact.id %]<li><button class="btn btn-default delete-contact"><i class="fa fa-trash"></i> Delete contact</li>[% END %]
+ </ol>
+[% END %]
+
+[% BLOCK show_contact %]
+ <h3>[% contact.name |html %]</h3>
+ <p><span class="label">Chức vụ: </span>[% contact.position |html %]</p>
+ <p><span class="label">Điện thoại: </span>[% contact.phone |html %]</p>
+ <p><span class="label">Điện thoại 2: </span>[% contact.altphone |html %]</p>
+ <p><span class="label">Số Fax: </span>[% contact.fax |html %]</p>
+ [% IF ( contact.email ) %]
+ <p><span class="label">Thư điện tử: </span><a href="mailto:[% contact.email %]">[% contact.email %]</a></p>
+ [% END %]
+ [% IF ( contact.notes ) %]
+ <p><span class="label">Ghi chú: </span>[% contact.notes |html %]</p>
+ [% END %]
+ [% IF ( contact.acqprimary ) %]
+ <p><span class="label">Primary acquisitions contact</span></p>
+ [% END %]
+ [% IF ( contact.serialsprimary ) %]
+ <p><span class="label">Primary serials contact</span></p>
+ [% END %]
+ [% IF ( contact.orderacquisition ) %]
+ <p><span class="label">Receives orders</span></p>
+ [% END %]
+ [% IF ( contact.claimacquisition ) %]
+ <p><span class="label">Receives claims for late orders</span></p>
+ [% END %]
+ [% IF ( contact.claimissues ) %]
+ <p><span class="label">Receives claims for late issues</span></p>
+ [% END %]
+[% END %]
+
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Nhà cung cấp [% name %]</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_supplier" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; [% IF ( enter ) %][% IF ( booksellerid ) %] <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% name |html %]</a> &rsaquo; Chỉnh sửa nhà cung cấp: [% name |html %][% ELSE %]Tạo nhà cung cấp[% END %] [% ELSE %][% name |html %][% END %]</div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% IF ( enter ) %]
+ [% IF ( booksellerid ) %]
+ <h1>Chỉnh sửa nhà cung cấp: [% name |html %]</h1>
+ [% ELSE %]
+ <h1>Tạo nhà cung cấp</h1>
+ [% END %]
+ [% END %]
+[% UNLESS ( enter ) %][% INCLUDE 'acquisitions-toolbar.inc' %][% END %]
+[% IF ( enter ) %]
+ <form action="updatesupplier.pl" name="updatesupplier" class="validated" method="post">
+ <div class="yui-g">
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <fieldset class="rows">
+ <legend>Thông tin nhà cung cấp</legend>
+ <ol><li><label for="company" class="required">Tên:</label>
+ <input type="text" size="40" id="company" name="company" value="[% name %]" required="required" class="required" /><span class="required">Bắt buộc</span></li>
+ <li><label for="company_postal">Địa chỉ bưu điện: </label>
+ <textarea id="company_postal" name="company_postal" cols="40" rows="3">[% postal %]</textarea></li>
+ <li><label for="physical">Địa chỉ: </label>
+ <textarea id="physical" name="physical" cols="40" rows="3">[% address1 %][% address2 %][% address3 %][% address4 %]</textarea></li>
+ <li><label for="company_phone">Điện thoại: </label>
+ <input type="text" size="20" id="company_phone" name="company_phone" value="[% phone %]" /></li>
+ <li><label for="company_fax">Số Fax: </label>
+ <input type="text" size="20" id="company_fax" name="company_fax" value="[% fax %]" /></li>
+ <li><label for="website">Website: </label>
+ <input type="text" size="40" id="website" name="website" value="[% url %]" class="url" /></li>
+ <li><label for="accountnumber">Số tài khoản:  </label>
+ <input type="text" size="40" id="accountnumber" name="accountnumber" value="[% accountnumber %]" /></li></ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Contacts</legend>
+ <fieldset id="contact-template" class="supplier-contact">
+ <legend>Thông tin liên hệ</legend>
+ [% INCLUDE edit_contact %]
+ </fieldset>
+ [% FOREACH contact IN contacts %]
+ <fieldset class="supplier-contact">
+ <legend>Thông tin liên hệ</legend>
+ [% INCLUDE edit_contact %]
+ </fieldset>
+ [% END %]
+ <button id="add-contact" class="btn btn-default"><i class="fa fa-plus"></i> Add another contact</button>
+ </fieldset>
+ </div>
+ <div class="yui-g">
+ <fieldset class="rows">
+ <legend>Thông tin đơn hàng</legend>
+ <ol class="radio"><li><label for="activestatus" class="radio">Nhà cung cấp:</label>
+ [% IF ( active ) %]
+ <label for="activestatus">Kích hoạt</label> <input type="radio" id="activestatus" name="status" value="1" checked="checked" />
+ <label for="inactivestatus">Dừng hoạt động</label> <input type="radio" id="inactivestatus" name="status" value="0" />
+ [% ELSE %]
+ <label for="activestatus">Kích hoạt</label> <input type="radio" id="activestatus" name="status" value="1" />
+ <label for="inactivestatus">Dừng hoạt động</label> <input type="radio" id="inactivestatus" name="status" value="0" checked="checked" />
+ [% END %]</li>
+ </ol>
+ <ol>
+ <li><label for="list_currency">Đơn vị tiền tệ đơn giá: </label>
+ <select name="list_currency" id="list_currency">
+ [% FOREACH c IN currencies %]
+ [% IF booksellerid and c.currency == listprice or not booksellerid and c.active %]
+ <option value="[% c.currency %]" selected="selected">[% c.currency %]</option>
+ [% ELSIF not c.archived %]
+ <option value="[% c.currency %]">[% c.currency %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ <li><label for="invoice_currency">Đơn vị tiền tệ hóa đơn: </label>
+ <select name="invoice_currency" id="invoice_currency">
+ [% FOREACH c IN currencies %]
+ [% IF booksellerid and c.currency == invoiceprice or not booksellerid and c.active %]
+ <option value="[% c.currency %]" selected="selected">[% c.currency %]</option>
+ [% ELSIF not c.archived %]
+ <option value="[% c.currency %]">[% c.currency %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ <ol class="radio">
+ <li><label for="gstyes" class="radio">Mã số thuế:</label>
+ [% IF ( gstreg ) %]
+ <label for="gstyes">Có</label> <input type="radio" name="gst" id="gstyes" value="1" checked="checked" />
+ <label for="gstno">Không xóa</label> <input type="radio" name="gst" id="gstno" value="0" />
+ [% ELSE %]
+ <label for="gstyes">Có</label> <input type="radio" name="gst" id="gstyes" value="1" />
+ <label for="gstno">Không xóa</label> <input type="radio" name="gst" id="gstno" value="0" checked="checked" />
+ [% END %]</li>
+ 
+ <li><label for="list_gstyes" class="radio">Giá niêm yết:</label>
+ [% IF ( listincgst ) %]
+ <label for="list_gstyes">Sau thuế</label> <input type="radio" id="list_gstyes" name="list_gst" value="1" checked="checked" />
+ <label for="list_gstno">Trước thuế</label> <input type="radio" id="list_gstno" name="list_gst" value="0" />
+ [% ELSE %]
+ <label for="list_gstyes">Sau thuế</label> <input type="radio" id="list_gstyes" name="list_gst" value="1" />
+ <label for="list_gstno">Trước thuế</label> <input type="radio" id="list_gstno" name="list_gst" value="0" checked="checked" />
+ [% END %]</li>
+ 
+ <li><label for="invoice_gstyes" class="radio">Giá hóa đơn:</label>
+ [% IF ( invoiceincgst ) %]
+ <label for="invoice_gstyes">Sau thuế</label> <input type="radio" id="invoice_gstyes" name="invoice_gst" value="1" checked="checked" />
+ <label for="invoice_gstno">Trước thuế</label> <input type="radio" id="invoice_gstno" name="invoice_gst" value="0" />
+ [% ELSE %]
+ <label for="invoice_gstyes">Sau thuế</label> <input type="radio" id="invoice_gstyes" name="invoice_gst" value="1" />
+ <label for="invoice_gstno">Trước thuế</label> <input type="radio" id="invoice_gstno" name="invoice_gst" value="0" checked="checked" />
+ [% END %]</li>
+ </ol>
+ [% IF gst_values %]
+ <ol>
+ <li>
+ <label for="tax_rate">Thuế suất: </label>
+ <select name="tax_rate" id="tax_rate">
+ [% FOREACH gst IN gst_values %]
+ [% IF ( tax_rate == gst.option ) %]
+ <option value="[% gst.option %]" selected="selected">[% gst.option * 100 %] %</option>
+ [% ELSE %]
+ <option value="[% gst.option %]">[% gst.option * 100 %] %</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ [% ELSE %]
+ <input type="hidden" name="tax_rate" value="0" />
+ [% END %]
+ <ol>
+ <li><label for="discount">Giảm giá: </label>
+ <input %]"="%]"" value="[% discount | định dạng (" type="text" name="discount" id="discount" size="6" %.1f")="%.1f")" />%</li>
+ <li>
+ <label for="deliverytime">Thời gian giao hàng: </label>
+ <input type="text" size="2" id="deliverytime" name="deliverytime" value="[% deliverytime %]" /> ngày </li>
+ <li><label for="notes">Ghi chú: </label>
+ <textarea cols="40" rows="4" id="notes" name="notes" >[% notes %]</textarea></li></ol>
+ </fieldset>
+ <fieldset class="action"><input value="Lưu" type="submit" /> [% IF ( booksellerid ) %]
+ <a class="cancel" href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% ELSE %]<a class="cancel" href="/cgi-bin/koha/acqui/acqui-home.pl">
+ [% END %]Hủy bỏ</a></fieldset>
+ </div>
+ </form>
+[% ELSE %]
+ <h1>[% name |html %]</h1>
+ <div class="yui-g">
+ <div id="supplier-company-details" class="yui-u first">
+ <h2>Thông tin nhà cung cấp</h2>
+ <p><span class="label">Tên nhà cung cấp: </span>[% name |html %]</p>
+ <p><span class="label">Địa chỉ bưu điện: </span>[% postal |html %]</p>
+ <p><span class="label">Địa chỉ: </span>[% address1 |html %][% address2 |html %][% address3 |html %][% address4 |html %]</p>
+ <p><span class="label">Điện thoại: </span>[% phone |html %]</p>
+ <p><span class="label">Số Fax: </span>[% fax |html %]</p>
+ [% IF ( url ) %]
+ <p><span class="label">Website: </span><a href="[% url %]">[% url %]</a></p>
+ [% END %]
+ [% IF ( accountnumber ) %]
+ <p><span class="label">Số tài khoản:  </span>[% accountnumber |html %]</p>
+ [% END %]
+
+ <div id="supplier-ordering-information">
+ <h2>Thông tin đơn hàng</h2>
+ <p><strong>Nhà cung cấp: </strong>
+ [% IF ( active ) %] Đang hoạt động [% ELSE %] Dừng hoạt động [% END %]</p>
+ <p><strong>Đơn vị tiền tệ đơn giá: </strong>[% listprice %]</p>
+ <p><strong>Đơn vị tiền tệ hóa đơn: </strong>[% invoiceprice %]</p>
+ [% IF ( tax_rate ) %]<p><strong>Mã số thuế: </strong>
+ [% IF ( gstreg ) %]Có[% ELSE %]Không[% END %]</p>
+ <p><strong>Giá niêm yết (Có bao gồm thuế): </strong>
+ [% IF ( listincgst ) %]Có[% ELSE %]Không[% END %]</p>
+ <p><strong>Giá hóa đơn: </strong>
+ [% IF ( invoiceincgst ) %]Có[% ELSE %]Không[% END %]</p>[% END %]
+ <p><strong>Giảm giá: </strong>
+ [% discount | format("%.1f") %] %</p>
+ <p><strong>Thuế suất: </strong>
+ [% ( tax_rate || 0 ) * 100 %] %</p>
+ [% IF deliverytime.defined %]
+ <p><strong>Thời gian giao hàng: </strong>
+ [% deliverytime %] ngày</p>
+ [% END %]
+ [% IF ( notes ) %]<p><strong>Ghi chú: </strong>
+ [% notes |html %]</p>[% END %]
+ </div>
+ </div>
+
+ <div class="supplier-contact-details yui-u">
+ <h2>Thông tin liên hệ</h2>
+ [% FOREACH contact IN contacts %]
+ [% INCLUDE show_contact %]
+ [% END %]
+ </div>
+
+ <div>
+
+ <div class="subscription-details">
+ <h2>Chi tiết ÂPĐK</h2>
+ <p><strong>Number of subscriptions: </strong>[% subscriptioncount %]</p>
+ </div>
+
+ </div>
+
+ </div>
+
+ [% IF ( contracts ) %]
+ <div id="supplier-contracts" class="yui-g">
+ <h2>Hợp đồng của nhà cung cấp</h2>
+ <table id="contractst">
+ <thead>
+ <tr>
+ <th scope="col">Tên</th>
+ <th scope="col">Thông tin mô tả</th>
+ <th scope="col" class="title-string">Ngày bắt đầu</th>
+ <th scope="col" class="title-string">Ngày kết thúc</th>
+ <th scope="col">Thao tác</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH contract IN contracts %]
+ <tr>
+ <td>
+ <a href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;contractnumber=[% contract.contractnumber %]&amp;booksellerid=[% contract.booksellerid %]">[% contract.contractname %]</a>
+ </td>
+ <td>[% contract.contractdescription %]</td>
+ <td><span title="[% contract.contractstartdate %]">[% contract.contractstartdate | $KohaDates %]</span></td>
+ <td><span title="[% contract.contractenddate %]">[% contract.contractenddate | $KohaDates %]</span></td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;contractnumber=[% contract.contractnumber %]&amp;booksellerid=[% contract.booksellerid %]"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/aqcontract.pl?op=delete_confirm&amp;contractnumber=[% contract.contractnumber %]&amp;booksellerid=[% contract.booksellerid %]"><i class="fa fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'vendor-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        function confirm_deletion() {
+            if (confirm(_("Bạn xác nhận xóa nhà cung cấp này?"))) {
+                window.location="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]&op=delete";
+            }
+        }
+
+        function add_contact() {
+            var new_contact = $('#contact-template').clone();
+            var timestamp = new Date().getTime();
+            $(new_contact).removeAttr('id');
+            $('input, textarea', new_contact).each(function () {
+                $(this).attr('id', $(this).attr('id') + '_' + timestamp);
+            });
+            $('label', new_contact).each(function () {
+                $(this).attr('for', $(this).attr('for') + '_' + timestamp);
+            });
+            $(new_contact).insertBefore(this);
+            if ($('.supplier-contact').length === 2) { // First contact
+                $.each(['.contact_acqprimary', '.contact_serialsprimary', '.contact_orderacquisition', '.contact_claimacquisition', '.contact_claimissues'], function (idx, checkbox) {
+                    $(checkbox, new_contact).click();
+                });
+            }
+            $('input[name="contact_name"]', new_contact).focus();
+            return false;
+        }
+
+        function delete_contact(ev) {
+            $(this).parents('.supplier-contact').remove();
+            ev.preventDefault();
+        }
+
+         $(document).ready(function() {
+            var contractst = $("#contractst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                    { "sType": "title-string", "aTargets" : [ "title-string" ] }
+                ],
+                'sDom': 't'
+            } ) );
+            $('body').on('click', '.delete-contact', null, delete_contact);
+            $('#add-contact').click(add_contact);
+            $('body').on('click', '.contact_acqprimary', null, function () {
+                if ($(this).is(':checked')) {
+                    $('.contact_acqprimary').filter(':checked').not(this).prop('checked', false);
+                    $('.contact_acqprimary_hidden').each(function () {
+                        $(this).val('0');
+                    });
+                }
+                $(this).next('.contact_acqprimary_hidden').val('1');
+            });
+            $('body').on('click', '.contact_serialsprimary', null, function () {
+                if ($(this).is(':checked')) {
+                    $('.contact_serialsprimary').filter(':checked').not(this).prop('checked', false);
+                    $('.contact_serialsprimary_hidden').each(function () {
+                        $(this).val('0');
+                    });
+                }
+                $(this).next('.contact_serialsprimary_hidden').val($(this).is(':checked') ? '1' : '0');
+            });
+            $('body').on('click', '.contact_orderacquisition', null, function () {
+                $(this).next('.contact_orderacquisition_hidden').val($(this).is(':checked') ? '1' : '0');
+            });
+            $('body').on('click', '.contact_claimacquisition', null, function () {
+                $(this).next('.contact_claimacquisition_hidden').val($(this).is(':checked') ? '1' : '0');
+            });
+            $('body').on('click', '.contact_claimissues', null, function () {
+                $(this).next('.contact_claimissues_hidden').val($(this).is(':checked') ? '1' : '0');
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

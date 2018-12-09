@@ -1,0 +1,53 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Công cụ bổ trợ &rsaquo; Tính năng bổ trợ &rsaquo; Cập nhật tính năng bổ trợ </title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% INCLUDE 'calendar.inc' %]
+</head>
+
+<body id="plugins_plugins_upload" class="plugins">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Tính năng bổ trợ</a>
+&rsaquo; Cập nhật Plugins </div>
+
+<div id="doc3" class="yui-t2">
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ <div class="yui-g">
+ <div class="yui-u first">
+ <h1>Đăng tải tính năng bổ trợ cho Koha</h1>
+ [% IF ( ERRORS ) %]
+ <div class="dialog alert">
+ [% FOREACH ERROR IN ERRORS %]
+ [% IF ( ERROR.NOTKPZ ) %]<li><b>The upload file does not appear to be a kpz file. The extension is not '.kpz'.</b></li>
+ [% ELSIF ( ERROR.NOWRITETEMP ) %]<li><b>Bộ cài không thể khởi tạo/ghi dữ liệu cần thiết vào thư mục tạm thời.</b></li>
+ [% ELSIF ( ERROR.EMPTYUPLOAD ) %]<li><b>Tệp tin tải lên không có dữ liệu.</b></li>
+ [% ELSIF ( ERROR.UZIPFAIL ) %]<li><b>[% ERROR.UZIPFAIL %] có lỗi khi giải nén tệp tin.<br />Xin hãy kiểm tra lại tính đồng nhất của tệp tin nén và thử lại.</b></li>
+ [% ELSIF ( ERROR.NOWRITEPLUGINS ) %]<li><b>Không thể ghi dữ liệu vào thư mục bổ trợ.<br />Xin hãy kiểm tra và chắc chắn rằng người sử dụng Apache có quyền được ghi vào thư mục bổ trợ.</b></li>
+ [% ELSE %]<li><b>[% ERROR.CORERR %] Một lỗi không xác định đã xảy ra.<br />Bạn vui lòng kiểm tra lại nhật ký lỗi hệ thống để có thông tin chi tiết.</b></li>[% END %]
+ [% END %]
+ </div>
+ [% END %]
+ <form method="post" action="/cgi-bin/koha/plugins/plugins-upload.pl" enctype="multipart/form-data">
+ <fieldset class="brief">
+ <div class="hint"><b>Chú ý:</b> Chỉ có file định dạng KPZ được hỗ trợ.</div>
+ <ol>
+ <li>
+ <label for="uploadfile">Chọn tệp tin tải lên:  </label><input type="file" id="uploadfile" name="uploadfile" />
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="op" value="Upload" />
+ <input class="submit" type="submit" value="Tải lên" />
+ </fieldset>
+ </form>
+
+ </div>
+ </div>
+ </div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

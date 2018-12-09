@@ -1,0 +1,102 @@
+--- 
+Nhật ký hệ thống: 
+  Debugging: 
+    - 
+      - 
+        choices: 
+          "": Don't
+          1: Do
+        pref: DumpTemplateVarsIntranet
+      - dump all Template Toolkit variable to a comment in the html source for the staff intranet.
+    - 
+      - 
+        choices: 
+          "": Don't
+          1: Do
+        pref: DumpTemplateVarsOpac
+      - dump all Template Toolkit variable to a comment in the html source for the OPAC.
+  Logging: 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: LetterLog
+      - " khi m\xE1\xBB\x99t th\xC3\xB4ng b\xC3\xA1o khi\xE1\xBA\xBFu n\xE1\xBA\xA1i t\xE1\xBB\xB1 \xC4\x91\xE1\xBB\x99ng g\xE1\xBB\xADi \xC4\x91i."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: BorrowersLog
+      - " thay \xC4\x91\xE1\xBB\x95i c\xE1\xBB\xA7a c\xC3\xA1c bi\xE1\xBB\x83u ghi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: CataloguingLog
+      - " c\xC3\xA1c thay \xC4\x91\xE1\xBB\x95i c\xE1\xBB\xA7a bi\xE1\xBB\x83u ghi t\xC3\xA0i li\xE1\xBB\x87u ho\xE1\xBA\xB7c bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: AuthoritiesLog
+      - " c\xC3\xA1c thay \xC4\x91\xE1\xBB\x95i c\xE1\xBB\xA7a bi\xE1\xBB\x83u ghi nh\xE1\xBA\xA5t qu\xC3\xA1n."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: FinesLog
+      - " khi kho\xE1\xBA\xA3n ti\xE1\xBB\x81n ph\xE1\xBA\xA1t thay \xC4\x91\xE1\xBB\x95i, \xC4\x91\xC6\xB0\xE1\xBB\xA3c thanh to\xC3\xA1n ho\xE1\xBA\xB7c \xC4\x91\xC6\xB0\xE1\xBB\xA3c mi\xE1\xBB\x85n gi\xE1\xBA\xA3m."
+    - 
+      - 
+        choices: 
+          "": Don't log
+          1: Log
+        pref: HoldsLog
+      - any actions on holds (create, cancel, suspend, resume, etc).
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: IssueLog
+      - " khi c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u \xC4\x91\xC6\xB0\xE1\xBB\xA3c cho b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc m\xC6\xB0\xE1\xBB\xA3n."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: ReturnLog
+      - " khi t\xC3\xA0i li\xE1\xBB\x87u \xC4\x91\xC6\xB0\xE1\xBB\xA3c ghi tr\xE1\xBA\xA3."
+    - 
+      - 
+        choices: 
+          "": Don't log
+          1: Log
+        pref: RenewalLog
+      - when items are renewed.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ghi l\xE1\xBA\xA1i"
+          1: " Ghi l\xE1\xBA\xA1i"
+        pref: SubscriptionLog
+      - " khi c\xC3\xA1c \xE1\xBA\xA5n ph\xE1\xBA\xA9m \xC4\x91\xE1\xBB\x8Bnh k\xE1\xBB\xB3 \xC4\x91\xC6\xB0\xE1\xBB\xA3c th\xC3\xAAm v\xC3\xA0o, b\xE1\xBB\x8B x\xC3\xB3a ho\xE1\xBA\xB7c thay \xC4\x91\xE1\xBB\x95i."
+    - 
+      - 
+        choices: 
+          "": Don't log
+          1: Log
+        pref: CronjobLog
+      - information from cron jobs.
+    - 
+      - 
+        choices: 
+          "": Don't log
+          1: Log
+        pref: ReportsLog
+      - when reports are added, deleted or changed.

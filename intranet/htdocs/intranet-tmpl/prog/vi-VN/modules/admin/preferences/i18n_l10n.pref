@@ -1,0 +1,80 @@
+--- 
+nội dung nâng cao: 
+  - 
+    - " \xC4\x90\xE1\xBB\x8Bnh d\xE1\xBA\xA1ng ng\xC3\xA0y nh\xC6\xB0"
+    - 
+      choices: 
+        dmydot: dd.mm.yyyy
+        iso: " yyyy-mm-dd"
+        metric: " dd/mm/yyyy"
+        us: " mm/dd/yyyy"
+      default: us
+      pref: dateformat
+    - . <b>Note:</b> Do not change this preference on a production server with overdue items that are accruing fines. Doing so will result in duplicate fines!
+  - 
+    - " \xC4\x90\xE1\xBB\x8Bnh d\xE1\xBA\xA1ng th\xE1\xBB\x9Di gian"
+    - 
+      choices: 
+        12hr: " 12 gi\xE1\xBB\x9D ( v\xC3\xAD d\xE1\xBB\xA5 nh\xC6\xB0 \"02:18 PM\" )"
+        24hr: " 24 gi\xE1\xBB\x9D ( v\xC3\xAD d\xE1\xBB\xA5 nh\xC6\xB0 \"14:18\" )"
+      default: 24hr
+      pref: TimeFormat
+    - . <b>Note:</b> Do not change this preference on a production server with overdue items that are accruing fines. Doing so will result in duplicate fines!
+  - 
+    - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+    - 
+      choices: 
+        0: " Ch\xE1\xBB\xA7 nh\xE1\xBA\xADt"
+        1: " Th\xE1\xBB\xA9 2"
+        2: Tuesday
+        3: Wednesday
+        4: Thursday
+        5: Friday
+        6: Saturday
+      default: 0
+      pref: CalendarFirstDayOfWeek
+    - " l\xC3\xA0 ng\xC3\xA0y \xC4\x91\xE1\xBA\xA7u tu\xE1\xBA\xA7n."
+  - 
+    - " K\xC3\xADch ho\xE1\xBA\xA1t c\xC3\xA1c ng\xC3\xB4n ng\xE1\xBB\xAF sau tr\xC3\xAAn giao di\xE1\xBB\x87n nh\xC3\xA2n vi\xC3\xAAn:"
+    - 
+      pref: language
+      type: staff-languages
+    - This list can be sorted to modify the order of the languages on the interface.
+  - 
+    - 
+      choices: 
+        "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+        1: " Cho ph\xC3\xA9p"
+      default: 0
+      pref: opaclanguagesdisplay
+    - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc thay \xC4\x91\xE1\xBB\x95i ng\xC3\xB4n ng\xE1\xBB\xAF hi\xE1\xBB\x83n th\xE1\xBB\x8B tr\xC3\xAAn giao di\xE1\xBB\x87n OPAC."
+  - 
+    - " K\xC3\xADch ho\xE1\xBA\xA1t c\xC3\xA1c ng\xC3\xB4n ng\xE1\xBB\xAF sau \xC4\x91\xC3\xA2y tr\xC3\xAAn giao di\xE1\xBB\x87n OPAC:"
+    - 
+      pref: opaclanguages
+      type: opac-languages
+    - This list can be sorted to modify the order of the languages on the interface.
+  - 
+    - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng c\xC3\xA1c ch\xE1\xBB\xAF c\xC3\xA1i"
+    - 
+      class: long
+      pref: alphabet
+    - " cho vi\xE1\xBB\x87c th\xE1\xBB\x91ng k\xC3\xAA trong ph\xC3\xA2n h\xE1\xBB\x87 b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc. C\xC3\xA1c ch\xE1\xBB\xAF c\xC3\xA1i \xC4\x91\xC6\xB0\xE1\xBB\xA3c c\xC3\xA1ch nhau b\xE1\xBA\xB1ng ph\xC3\xADm c\xC3\xA1ch."
+    - "<br/> Hint: Changing collation in the database for the 'surname' column of the 'borrowers' table is helpful to make browsing by last name work in members-home.pl when using an alphabet outside of A-Z"
+  - 
+    - " \xC4\x90\xE1\xBB\x8Bnh d\xE1\xBA\xA1ng th\xE1\xBB\x9Di gian"
+    - 
+      choices: 
+        de: German style ([Address] [Street number] - [ZIP/Postal Code] [City] - [Country])
+        fr: French style ([Street number] [Address] - [ZIP/Postal Code] [City] - [Country])
+        us: US style ([Street number], [Address] - [City], [ZIP/Postal Code], [Country])
+      default: us
+      pref: AddressFormat
+  - 
+    - 
+      choices: 
+        "": Don't allow
+        1: Allow
+      pref: TranslateNotices
+    - notices to be translated.
+    - If set, notices will be translatable from the "Notices and Slips" interface. The language used to send a notice to a patron will be the one defined for the patron.

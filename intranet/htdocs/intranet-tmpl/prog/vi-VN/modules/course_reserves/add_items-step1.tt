@@ -1,0 +1,47 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; CSDL khóa học &rsaquo; Thêm tài liệu</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="courses_add_items_step1" class="course">
+
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/course_reserves/course-reserves.pl">CSDL khóa học</a> &rsaquo; Add reserves for <i><a href="/cgi-bin/koha/course_reserves/course-details.pl?course_id=[% course.course_id %]">[% course.course_name %]</a></i></div>
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ [% IF ERROR_ITEM_NOT_FOUND %]
+ [% IF UNKNOWN_BARCODE %]
+ <div class="dialog alert">Không tìm thấy tài liệu với đăng ký cá biệt [% UNKNOWN_BARCODE %]</div>
+ [% ELSE %]
+ <div class="dialog alert">No item found</div>
+ [% END %]
+ [% END %]
+
+ <form method="post" action="/cgi-bin/koha/course_reserves/add_items.pl">
+ <input type="hidden" name="course_id" value="[% course.course_id %]" />
+ <input type="hidden" name="action" value="lookup" />
+
+ <fieldset class="rows">
+ <legend>Nhập đăng ký cá biệt:</legend>
+ <ol>
+ <li>
+ <label class="required" for="barcode">Đăng ký cá biệt:</label>
+ <input id="barcode" name="barcode" class="focus" type="text" />
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="submit" type="submit" value="Tìm kiếm" />
+
+ <a href="/cgi-bin/koha/course_reserves/course-details.pl?course_id=[% course.course_id %]" class="cancel">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ </div>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

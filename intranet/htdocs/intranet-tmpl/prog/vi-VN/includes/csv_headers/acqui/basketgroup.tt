@@ -1,0 +1,4 @@
+[%- USE Koha -%]
+[%- SET delimiter = Koha.Preference( 'delimiter' ) || ',' -%]
+
+[%- BLOCK -%]Account number[% delimiter %]Basket name[% delimiter %]Order number[% delimiter %]Author[% delimiter %]Title[% delimiter %]Publisher[% delimiter %]Publication year[% delimiter %]Collection title[% delimiter %]ISBN[% delimiter %]Quantity[% delimiter %]RRP tax included[% delimiter %]RRP tax excluded[% delimiter %]Discount[% delimiter %]Estimated cost tax included[% delimiter %]Estimated cost tax excluded[% delimiter %]Note for vendor[% delimiter %]Entry date[% delimiter %]Bookseller name[% delimiter %]Bookseller physical address[% delimiter %]Bookseller postal address[% delimiter %]Contract number[% delimiter %]Contract name[% delimiter %]Basket group delivery place[% delimiter %]Basket group billing place[% delimiter %]Basket delivery place[% delimiter %]Basket billing place[%- END -%]

@@ -1,0 +1,203 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Công cụ bổ trợ</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="tools_tools-home" class="tools">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; Công cụ bổ trợ</div>
+
+<div id="doc3">
+<div id="bd">
+ <div class="yui-gb">
+
+<div class="yui-u first">
+<h3>Bạn đọc và lưu thông</h3>
+<dl>
+ [% IF (CAN_user_tools_manage_patron_lists) %]
+ <dt><a href="/cgi-bin/koha/patron_lists/lists.pl">Danh sách bạn đọc</a>
+ <dd>Quản lý danh sách bạn đọc.</dd>
+ [% END %]
+
+ [% IF (CAN_user_clubs) %]
+ <dt><a href="/cgi-bin/koha/clubs/clubs.pl">Patron clubs</a>
+ <dd>Manage patron clubs..</dd>
+ [% END %]
+
+[% IF ( CAN_user_tools_moderate_comments ) %]
+ <dt><a href="/cgi-bin/koha/reviews/reviewswaiting.pl">Bình luận</a> [% IF ( pendingcomments ) %]<span class="number_box"><a href="/cgi-bin/koha/reviews/reviewswaiting.pl">[% pendingcomments %]</a></span>[% END %]</dt>
+ <dd>Quản lý bình luận của bạn đọc. </dd>
+ [% END %]
+ 
+ [% IF ( CAN_user_tools_import_patrons ) %]
+ <dt><a href="/cgi-bin/koha/tools/import_borrowers.pl">Nhập bạn đọc theo lô</a></dt>
+ <dd>Nhập dữ liệu bạn đọc theo lô</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_edit_notices ) %]
+ <dt><a href="/cgi-bin/koha/tools/letter.pl">Thông báo &amp; Phiếu in</a></dt>
+ <dd>Thiết lập các mẫu thông báo và phiếu in được gửi tới bạn đọc.</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_edit_notice_status_triggers ) %]
+ <dt><a href="/cgi-bin/koha/tools/overduerules.pl">Thông báo quá hạn</a></dt>
+ <dd>Thiết lập các chính sách thông báo quá hạn của thư viện đối với các ghi mượn quá hạn</dd>
+ [% END %]
+ 
+ [% IF ( CAN_user_tools_label_creator ) %]
+ <dt><a href="/cgi-bin/koha/patroncards/home.pl">Tạo thẻ bạn đọc</a></dt>
+ <dd>Tạo và xuất dữ liệu thẻ bạn đọc cho thư viện</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_delete_anonymize_patrons ) %]
+ <dt><a href="/cgi-bin/koha/tools/cleanborrowers.pl">Xóa bạn đọc theo lô/Lịch sử ghi mượn</a></dt>
+ <dd>Xóa bạn đọc theo lô và lịch sử ghi mượn của bạn đọc</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_edit_patrons ) %]
+ <dt><a href="/cgi-bin/koha/tools/modborrowers.pl">Thay đổi nhóm bạn đọc theo lô</a></dt>
+ <dd>Sửa nhiều bạn đọc đồng thời</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_moderate_tags ) %]
+ <dt><a href="/cgi-bin/koha/tags/review.pl">Từ khóa</a> [% IF ( pendingtags ) %]<span class="number_box"><a href="/cgi-bin/koha/tags/review.pl">[% pendingtags %]</a></span>[% END %]</dt>
+ <dd>Quản lý các từ khóa bạn đọc gán cho tài liệu của thư viện</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_batch_upload_patron_images ) %]
+ <dt><a href="/cgi-bin/koha/tools/picture-upload.pl">Nhập ảnh bạn đọc</a></dt>
+ <dd>Tải ảnh đại diện bạn đọc lên cơ sở dữ liệu</dd>
+ [% END %]
+ </dl>
+</div>
+<div class="yui-u">
+<h3>Công cụ bổ trợ</h3>
+<dl>
+ [% IF ( CAN_user_tools_edit_calendar ) %]
+ <dt><a href="/cgi-bin/koha/tools/holidays.pl">Lập lịch làm việc</a></dt>
+ <dd>Thiết lập ngày nghỉ, ngày làm việc cho thư viện</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_manage_csv_profiles ) %]
+ <dt><a href="/cgi-bin/koha/tools/csv-profiles.pl">Mẫu CSV</a></dt>
+ <dd>Quản lý các trường CSV</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_view_system_logs ) %]
+ <dt><a href="/cgi-bin/koha/tools/viewlog.pl">Nhật ký</a></dt>
+ <dd>Xem nhật ký hệ thống</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_edit_news ) %]
+ <dt><a href="/cgi-bin/koha/tools/koha-news.pl">Tin tức</a></dt>
+ <dd>Soạn thảo các bản tin trên OPAC và giao diện nhân viên</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_schedule_tasks ) %]
+ <dt><a href="/cgi-bin/koha/tools/scheduler.pl">Lập lịch báo cáo</a></dt>
+ <dd>Thiết lập thời gian tự động gửi các báo cáo mặc định</dd>
+ [% END %]
+ 
+ [% IF ( CAN_user_tools_edit_quotes ) %]
+ <dt><a href="/cgi-bin/koha/tools/quotes.pl">Lập trích dẫn trên OPAC</a></dt>
+ <dd>Cho phép thủ thư tạo các trích dẫn, thông báo nhanh trên OPAC</dd>
+ [% END %]
+
+ [% IF ( UseKohaPlugins && CAN_user_plugins_tool ) %]
+ <dt><a href="/cgi-bin/koha/plugins/plugins-home.pl?method=tool">Tool plugins</a></dt>
+ <dd>Sử dụng công cụ bổ trợ</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_upload_general_files ) %]
+ <dt><a href="/cgi-bin/koha/tools/upload.pl">Tải lên</a></dt>
+ <dd>Upload any type of file, manage uploads</dd>
+ [% END %]
+
+ [% IF CAN_user_tools_access_files %]
+ <dt><a href="/cgi-bin/koha/tools/access_files.pl">Access files</a></dt>
+ <dd>Access files stored on the server, like log files or reports</dd>
+ [% END %]
+
+</dl>
+</div>
+
+<div class="yui-u">
+<h3>Tìm kiếm</h3>
+<dl>
+ [% IF ( CAN_user_tools_items_batchdel ) %]
+ <dt><a href="/cgi-bin/koha/tools/batchMod.pl?del=1">Xóa bản tài liệu theo lô</a></dt>
+ <dd>Thực hiện xóa nhiều bản tài liệu đồng thời</dd>
+ [% END %]
+ 
+ [% IF ( CAN_user_tools_items_batchmod ) %]
+ <dt><a href="/cgi-bin/koha/tools/batchMod.pl">Chỉnh sửa bản tài liệu theo lô</a></dt>
+ <dd>Chỉnh sửa nhiều bản tài liệu đồng thời</dd>
+ [% END %]
+
+ [% IF CAN_user_tools_records_batchdel %]
+ <dt><a href="/cgi-bin/koha/tools/batch_delete_records.pl">Batch record deletion</a></dt>
+ <dd>Delete a batch of records (bibliographic or authority)</dd>
+ [% END %]
+
+ [% IF CAN_user_tools_records_batchmod %]
+ <dt><a href="/cgi-bin/koha/tools/batch_record_modification.pl">Batch record modification</a></dt>
+ <dd>Modify a batch of records (biblios or authorities)</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_items_batchmod ) %]
+ <dt><a href="/cgi-bin/koha/tools/automatic_item_modification_by_age.pl">Automatic item modifications by age</a></dt>
+ <dd>Define rules to modify items by age</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_export_catalog ) %]
+ <dt><a href="/cgi-bin/koha/tools/export.pl">Xuất dữ liệu</a></dt>
+ <dd>Xuất dữ liệu biểu ghi thư mục, biểu ghi nhất quán và các bản tài liệu đính kèm ra tệp tin có định dạng tiêu chuẩn</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_inventory ) %]
+ <dt><a href="/cgi-bin/koha/tools/inventory.pl">Kiểm kê kho</a></dt>
+ <dd>Perform inventory of your catalog</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_label_creator ) %]
+ <dt><a href="/cgi-bin/koha/labels/label-home.pl">Tạo nhãn gáy</a></dt>
+ <dd>Thiết kế và in nhãn gáy tài liệu có trong cơ sở dữ liệu</dd>
+ [% END %]
+ 
+ [% IF ( CAN_user_tools_label_creator ) %]
+ <dt><a href="/cgi-bin/koha/labels/spinelabel-home.pl">Tạo nhanh nhãn gáy</a></dt>
+ <dd>Nhập đăng ký cá biệt để in các nhãn gáy đơn giản được khai báo trong phần cấu hình hệ thống</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_rotating_collections ) %]
+ <dt><a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl">Bộ sưu tập luân phiên</a></dt>
+ <dd>Manage rotating collections</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_marc_modification_templates ) %]
+ <dt><a href="/cgi-bin/koha/tools/marc_modification_templates.pl">Mẫu chỉnh sửa biểu ghi MARC</a></dt>
+ <dd>Quản lý các mẫu chỉnh sửa biểu ghi MARC trong quá trình nhập dữ liệu vào Koha.</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_stage_marc_import ) %]
+ <dt><a href="/cgi-bin/koha/tools/stage-marc-import.pl">Kiểm duyệt các bản ghi nhập theo lô</a></dt>
+ <dd>Phân tích và kiểm tra dữ liệu các biểu ghi MARC chứa trong tệp tin tải lên hệ thống.</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_manage_staged_marc ) %]
+ <dt><a href="/cgi-bin/koha/tools/manage-marc-import.pl">Quản lý biểu ghi MARC được duyệt</a></dt>
+ <dd>Quản lý các tệp tin biểu ghi MARC đã được duyệt và thực hiện việc nhập các biểu ghi đó vào cơ sở dữ liệu</dd>
+ [% END %]
+
+ [% IF ( CAN_user_tools_upload_local_cover_images ) %]
+ <dt><a href="/cgi-bin/koha/tools/upload-cover-image.pl">Thêm ảnh bìa cho biểu ghi</a></dt>
+ <dd>Tải lên hình ảnh bìa của các biểu ghi tài liệu</dd>
+ [% END %]
+
+</dl>
+</div>
+
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,127 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE AuthorisedValues  %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Bạn đọc &rsaquo; Đề xuất mua của [% INCLUDE 'patron-title.inc' no_html = 1 %]</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_purchase_suggestions" class="pat">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'patron-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Bạn đọc</a>
+&rsaquo; Purchase suggestions for [% INCLUDE 'patron-title.inc' %]
+</div>
+
+<div id="doc3" class="yui-t1">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ <div class="yui-g">
+ <h2>Purchase suggestions</h2>
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default btn-sm" id="newsuggestion" href="/cgi-bin/koha/suggestion/suggestion.pl?op=add&amp;suggestedby=[% patron.borrowernumber %]&amp;redirect=purchase_suggestions&amp;borrowernumber=[% patron.borrowernumber %]"><i class="fa fa-plus"></i> Tạo đề xuất mua</a>
+ </div>
+
+ [% IF suggestions %]
+ <table id="suggestions">
+ <thead>
+ <tr>
+ <th>Tóm tắt</th>
+ <th>Ghi chú</th>
+ <th>Người quản lý</th>
+ <th>Trạng thái</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH s IN suggestions %]
+ <tr>
+ <td>
+ <p>
+ <strong>
+ [% IF ( CAN_user_catalogue ) %]
+ <a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=[% s.suggestionid %]&amp;op=show">[% s.title |html %]</a>
+ [% ELSE %]
+ [% s.title |html %]
+ [% END %]
+ </strong>
+ </p>
+ <p>
+ [% IF ( s.author ) %][% s.author %],[% END %]
+ [% IF ( s.copyrightdate ) %] - [% s.copyrightdate %],[% END %]
+ [% IF ( s.publishercode ) %] - [% s.publishercode %][% END %]
+ [% IF ( s.place ) %]([% s.place %])[% END %]
+ [% IF ( s.collectiontitle ) %] , [% s.collectiontitle %][% END %]
+ [% IF ( s.itemtype ) %] - [% s.itemtype %][% END %]
+ </p>
+ </td>
+ <td>[% s.note %]
+ <td>
+ [% IF ( s.surnamemanagedby ) %]
+ [% s.surnamemanagedby %]
+ [% IF ( s.firstnamemanagedby ) %],[% END %]
+ [% s.firstnamemanagedby %]
+ [% ELSE %]
+ &nbsp;
+ [% END %]
+ </td>
+ <td>
+ [% SWITCH s.STATUS %]
+ [% CASE "ASKED" %]<span>Requested</span>
+ [% CASE "CHECKED" %]<span>Checked by the library</span>
+ [% CASE "ACCEPTED" %]<span>Accepted by the library</span>
+ [% CASE "ORDERED" %]<span>Ordered by the library</span>
+ [% CASE "REJECTED" %]<span>Suggestion declined<span>
+ [% CASE "AVAILABLE" %]<span>Available in the library</span>
+ [% CASE %]
+ [% SET status_description = AuthorisedValues.GetByCode('SUGGEST_STATUS', s.STATUS) %]
+ [% IF status_description %]
+ [% status_description %]
+ [% ELSE %]
+ <span>Unknown</span>
+ [% END %]
+ [% END %]
+ [% IF s.reason %]([% s.reason %])[% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog message">
+ <p>Bạn đọc chưa có bất kỳ đề xuất mua nào</p>
+ </div>
+ [% END %]
+ </div>
+ </div>
+ </div>
+<div class="yui-b">
+[% INCLUDE 'circ-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/members-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $("#suggestions").dataTable($.extend(true, {}, dataTablesDefaults, {
+                'bPaginate': false,
+                'bFilter': false,
+                'bInfo': false,
+                'sDom': 't'
+            } ));
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

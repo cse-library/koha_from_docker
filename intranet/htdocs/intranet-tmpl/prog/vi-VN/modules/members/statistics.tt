@@ -1,0 +1,91 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE AuthorisedValues %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Patrons &rsaquo;
+[% UNLESS blocking_error %]
+ Statistics for [% INCLUDE 'patron-title.inc' no_html = 1 %]
+[% END %]
+</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="pat_statistics" class="pat">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'patron-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Bạn đọc</a>
+&rsaquo; [% UNLESS blocking_error %]Statistics for [% INCLUDE 'patron-title.inc' invert_name = 1 %][% END %]
+</div>
+
+<div id="doc3" class="yui-t1">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% INCLUDE 'members-toolbar.inc' %]
+
+ <h3>Statistics for [% INCLUDE 'patron-title.inc' %]</h3>
+ [% IF ( datas.size ) %]
+ <table id="statistics">
+ <thead>
+ <tr>
+ [% FOREACH cn IN column_names %]
+ <th>
+ [% SWITCH cn %] [% CASE 'itype' %] Kiểu tài liệu [% CASE 'ccode' %] Mã bộ sưu tập [% CASE 'location' %] Kho tài liệu [% CASE 'homebranch' %] Thư viện chính [% CASE 'holdingbranch' %] Thư viện sở hữu [% CASE %] [% cn %] [% END %] </th>
+ [% END %]
+ <th>Số ghi mượn trước đây</th>
+ <th>Số ghi mượn trong ngày</th>
+ <th>Số ghi trả trong ngày</th>
+ <th>Tổng số ghi mượn</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH r IN datas %]
+ <tr>
+ [% FOREACH c IN r %]
+ <td>[% c %]</td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ <tfoot>
+ <tr>
+ <td colspan="[% column_names.size %]">Tổng số</td>
+ <td>[% count_total_precedent_state %]</td>
+ <td>[% count_total_issues %]</td>
+ <td>[% count_total_issues_returned %]</td>
+ <td>[% count_total_actual_state %]</td>
+ </tr>
+ </tfoot>
+ </table>
+ [% ELSE %]
+ <div class="dialog message">Không có thống kê lưu thông cho bạn đọc này.</div>
+ [% END %]
+ </div>
+ </div>
+<div class="yui-b">
+[% INCLUDE 'circ-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/members-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $("#statistics").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "sDom": 't',
+                "bPaginate": false
+            }));
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

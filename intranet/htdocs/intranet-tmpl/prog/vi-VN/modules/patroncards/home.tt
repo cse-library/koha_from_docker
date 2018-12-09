@@ -1,0 +1,26 @@
+ [% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha &rsaquo; Công cụ bổ trợ &rsaquo; Tạo thẻ bạn đọc</title>
+ [% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="pcard_home" class="tools pcard">
+ [% INCLUDE 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+ <div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo;
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Công cụ bổ trợ</a> &rsaquo; Tạo thẻ bạn đọc </div>
+ <div id="doc3" class="yui-t2">
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ <div class="yui-g">
+ [% INCLUDE 'patroncards-toolbar.inc' %]
+ <div class="yui-u first">
+ </div>
+ </div>
+ </div>
+ </div>
+ <div class="yui-b">
+ [% INCLUDE 'tools-menu.inc' %]
+ </div>
+ </div>
+ [% INCLUDE 'intranet-bottom.inc' %]

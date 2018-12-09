@@ -1,0 +1,101 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; SRU search fields mapping</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_sru_modmapping" class="admin">
+
+<div id="custom-doc" class="yui-t7">
+
+ <div id="bd">
+ <h1>Modify SRU search fields mapping</h1>
+ <form id="form01" method="post">
+ <fieldset class="rows">
+ <div class="yui-g">
+ <div class="yui-u first">
+ <ol>
+ <li>
+ <label for="title">Nhan đề: </label>
+ <input id="title" type="text" value="[% mapping.title %]" />
+ </li>
+ <li>
+ <label for="isbn">Số ISBN: </label>
+ <input id="isbn" type="text" value="[% mapping.isbn %]" />
+ </li>
+ <li>
+ <label for="lccall">Ký hiệu phân loại LC: </label>
+ <input id="lccall" type="text" value="[% mapping.lccall %]" />
+ </li>
+ <li>
+ <label for="controlnumber">Control number: </label>
+ <input id="controlnumber" type="text" value="[% mapping.controlnumber %]" />
+ </li>
+ <li>
+ <label for="srchany">Any: </label>
+ <input id="srchany" type="text" value="[% mapping.srchany %]" />
+ </li>
+ </ol>
+ </div>
+ <div class="yui-u">
+ <ol>
+ <li>
+ <label for="author">Tác giả: </label>
+ <input id="author" type="text" value="[% mapping.author %]" />
+ </li>
+ <li>
+ <label for="issn">Số ISSN: </label>
+ <input id="issn" type="text" value="[% mapping.issn %]" />
+ </li>
+ <li>
+ <label for="subject">Chủ đề: </label>
+ <input id="subject" type="text" value="[% mapping.subject %]" />
+ </li>
+ <li>
+ <label for="dewey">Dewey: </label>
+ <input id="dewey" type="text" value="[% mapping.dewey %]" />
+ </li>
+ <li>
+ <label for="stdid">Số ID tiêu chuẩn: </label>
+ <input id="stdid" type="text" value="[% mapping.stdid %]" />
+ </li>
+ </ol>
+ </div>
+ </div>
+ </fieldset>
+ <fieldset class="action">
+ <input value="Lưu" type="submit" class="submit" />
+ <a class="close cancel" href="#">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $("#form01").submit(function(event) {
+                if(window.opener) {
+                    var newmap=allInputs();
+                    window.opener.$('#show_sru_fields').val(newmap);
+                    window.close();
+                } else {
+                    // In this case not called as a popup. Just do nothing.
+                    event.preventDefault();
+                }
+            });
+        });
+        function allInputs () {
+            var aInput= new Array();
+            $("form :input").each(function() {
+                if( this.id && $(this).val() ) {
+                    aInput.push(this.id+'='+$(this).val());
+                }
+            });
+            return aInput.join(',');
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'popup-bottom.inc' %]

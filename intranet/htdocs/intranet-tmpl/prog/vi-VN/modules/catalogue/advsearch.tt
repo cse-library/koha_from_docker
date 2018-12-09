@@ -1,0 +1,303 @@
+[% USE Asset %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Tìm kiếm &rsaquo; Tìm kiếm nâng cao</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="catalog_advsearch" class="catalog">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'adv-search.inc' %]
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; Tìm kiếm nâng cao</div>
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+<form action="search.pl" method="get">
+<div id="advanced-search">
+<h1>Tìm kiếm nâng cao</h1>
+<p>
+ <a href="/cgi-bin/koha/catalogue/itemsearch.pl">Go to item search</a>
+</p>
+
+<!-- SEARCH BUTTONS -->
+<div id="toolbar" class="btn-toolbar">
+ <fieldset class="action" id="submit1">
+ <div class="btn-group">
+ <button class="btn btn-default btn-sm" type="submit" accesskey="s"><i class="fa fa-search"></i> Tìm kiếm</button>
+ </div>
+ <div class="btn-group">
+ [% IF ( expanded_options ) %]
+ <a href="/cgi-bin/koha/catalogue/search.pl?expanded_options=0" class="btn btn-sm btn-link"><i class="fa fa-search-minus"></i> Fewer options</a>
+ </div>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/catalogue/search.pl?expanded_options=1" class="btn btn-sm btn-link"><i class="fa fa-search-plus"></i> More options</a>
+ </div>
+ [% END %]
+ <div class="btn-group">
+ <a href="/cgi-bin/koha/catalogue/search.pl?do=Clear&expanded_options=[% expanded_options %]" class="btn btn-sm btn-link"><i class="fa fa-trash"></i> Clear fields</a>
+ </div>
+ </fieldset>
+</div>
+<!-- /SEARCH BUTTONS -->
+
+
+[% IF ( outer_servers_loop ) %]
+<!-- DATABASES -->
+
+<fieldset>
+ <legend>Chọn sơ sở dữ liệu nội bộ</legend>
+ [% FOREACH local_servers_loo IN local_servers_loop %]
+[% IF ( local_servers_loo.checked ) %]<input type="checkbox" id="[% local_servers_loo.id %]" name="[% local_servers_loo.name %]" checked="checked" value="[% local_servers_loo.value %]" />[% ELSE %]<input type="checkbox" id="[% local_servers_loo.id %]" name="[% local_servers_loo.name %]" value="[% local_servers_loo.value %]" />[% END %]<label for="[% local_servers_loo.id %]"><img width="16" height="16" alt="[% local_servers_loo.id %]" src="[% themelang %]/img/[% local_servers_loo.icon %]" /> [% local_servers_loo.label %]</label>[% END %]
+</fieldset>
+<!-- /DATABASES -->
+[% END %]
+
+[% IF ( outer_servers_loop ) %]
+<!-- REMOTE DATABASES -->
+<fieldset id="databases">
+ <legend>Chọn cơ sở dữ liệu ngoài</legend>
+ [% FOREACH outer_servers_loo IN outer_servers_loop %]
+ [% IF ( outer_servers_loo.checked ) %]<input type="checkbox" id="[% outer_servers_loo.id %]" name="[% outer_servers_loo.name %]" checked="checked" value="[% outer_servers_loo.value %]" />[% ELSE %]<input type="checkbox" id="[% outer_servers_loo.id %]" name="[% outer_servers_loo.name %]" value="[% outer_servers_loo.value %]" />[% END %]
+<label for="[% outer_servers_loo.id %]"><img alt="[% outer_servers_loo.id %]" src="[% themelang %]/images/[% outer_servers_loo.icon %]" />[% outer_servers_loo.label %]</label>
+ [% END %]
+ </fieldset>
+<!-- /REMOTE DATABASES -->
+[% END %]
+
+<!-- BOOLEAN SEARCH OPTIONS -->
+ <fieldset id="searchterms">
+ <legend>Thông tin tìm kiếm </legend>
+ [% FOREACH search_box IN search_boxes_loop %]
+ [% IF ( search_boxes_label ) %]<div style="text-indent: 4.5em;">[% ELSE %]<div>[% END %]
+ [% IF ( expanded_options ) %]
+ [% IF ( search_box.boolean ) %]
+ <select name="op">
+ <option value="and" selected="selected">và</option>
+ <option value="or">Hoặc</option>
+ <option value="not">không</option>
+ </select>
+ [% END %] 
+ [% END %]
+ [% INCLUDE 'search_indexes.inc' %]
+ <input type="text" name="q" title="Nhập từ khóa tìm kiếm" value="" size="30" />
+ [% IF ( expanded_options ) %]
+ [% IF ( search_box.add_field ) %]
+ <a title="Thêm trường tìm kiếm" href="JavaScript:add_field();" id="ButtonPlus">[+]</a>
+ [% END %]
+ [% IF ( search_box.scan_index ) %]
+ <label for="scan">Scan indexes:</label> <input type="checkbox" name="scan" id="scan" value="1" />
+ [% END %]
+ [% END %]
+ </div>
+ [% END %]
+ </fieldset>
+<!-- /BOOLEAN SEARCH OPTIONS -->
+
+</div>
+<!-- MC-TYPE LIMITS -->
+ <div id="advsearches" class="toptabs">
+ <ul>
+ [% FOREACH advsearchloo IN advancedsearchesloop %]
+ <li id="advsearch-tab-[% advsearchloo.advanced_search_type %]">
+ <a href="#advsearch-[% advsearchloo.advanced_search_type %]">
+ [% IF ( advsearchloo.advanced_search_type == 'itemtypes' ) %]Kiểu tài liệu [% ELSIF ( advsearchloo.advanced_search_type == 'ccode' ) %]Bộ sưu tập [% ELSIF ( advsearchloo.advanced_search_type == 'loc' ) %]Kho tài liệu [% ELSE %]Thông số khác [% END %] </a>
+ </li>
+ [% END %]
+ </ul>
+ [% FOREACH advsearchloo IN advancedsearchesloop %]
+ <div id="advsearch-[% advsearchloo.advanced_search_type %]" class="advsearch">
+ <h4>Giới hạn kết quả tìm kiếm trong các kiểu tài liệu sau đây:</h4>
+ <table>
+ <tr>
+ [% FOREACH itemtypeloo IN advsearchloo.code_loop %]
+ <td><input type="checkbox" id="[% itemtypeloo.ccl FILTER remove(',') %]-[% itemtypeloo.number %]" name="limit" value="mc-[% itemtypeloo.ccl %]:[% itemtypeloo.code %]"/><label for="[% itemtypeloo.ccl FILTER remove(',') %]-[% itemtypeloo.number %]">[% UNLESS ( noItemTypeImages ) %][% IF ( itemtypeloo.imageurl ) %]<img src="[% itemtypeloo.imageurl %]" alt="[% itemtypeloo.description %]" />[% END %]&nbsp;[% END %]
+ [% itemtypeloo.description %]</label></td>
+ [% IF ( loop.last ) %]</tr>[% ELSE %][% UNLESS ( loop.count % 5 ) %]</tr><tr>[% END %][% END %]
+ [% END %]
+ </table>
+ </div>
+ [% END %]
+<!-- /MC-TYPE LIMIT -->
+[% IF ( expanded_options ) %]
+<!-- BASIC LIMITS -->
+ <fieldset id="basiclimits">
+ <legend>Giới hạn</legend>
+<fieldset id="pubrange">
+<!-- PUB / COPY YEAR LIMIT --><!-- FIXME: add publication,copyright,acquisition options -->
+ <p><label for="limit-yr">Năm xuất bản: </label>
+ <input type="text" size="15" name="limit-yr" id="limit-yr" value=""/>&nbsp;&nbsp;(định dạng: yyyy-yyyy)</p>
+<!-- /PUB / COPY YEAR LIMIT -->
+</fieldset>
+<fieldset id="language">
+<!-- LANGUAGE LIMIT -->
+ <p><label for="language-limit">Ngôn ngữ: </label> 
+ <select name="limit" id="language-limit">
+ <option value="">Tất cả</option>
+ [% FOREACH search_languages_loo IN search_languages_loop %]
+ [% IF ( search_languages_loo.selected ) %]
+ <option value="ln,rtrn:[% search_languages_loo.iso639_2_code %]" selected="selected">[% search_languages_loo.language_description %]</option>
+ [% ELSE %]
+ <option value="ln,rtrn:[% search_languages_loo.iso639_2_code %]">[% search_languages_loo.language_description %]</option>
+ [% END %]
+ 
+ [% END %]
+ </select></p><!-- <a href="">Show all languages</a>-->
+<!-- /LANGUAGE LIMIT -->
+</fieldset>
+</fieldset>
+<!-- /BASIC LIMITS -->
+[% END %]
+
+
+[% IF ( UNIMARC ) %]
+[% INCLUDE 'subtypes_unimarc.inc' %]
+[% ELSE %]
+<!-- SUBTYPE LIMITS -->
+ <fieldset id="subtype">
+ <legend>Giới hạn chi tiết</legend><p>
+ 
+ <select name="limit" class="subtype">
+ <option value="" selected="selected" class="menuheader">Tất cả bạn đọc</option>
+ <option value="aud:a">Mầm non</option>
+ <option value="aud:b">Tiểu học</option>
+ <option value="aud:c">Thiếu niên</option>
+ <option value="aud:d">Thanh niên</option>
+ <option value="aud:e">Người lớn</option>
+ <option value="aud:f">Chuyên ngành</option>
+ <option value="aud:g">Tổng hợp</option>
+ <option value="aud:j">Vị thành niên</option>
+ </select>
+ 
+ <select name="limit" class="subtype">
+ <option value="" selected="selected" class="menuheader">Tất cả nội dung</option>
+ <option value="fic:1" >Viễn tưởng</option>
+ <option value="fic:0" >Non-fiction</option>
+ <option value="bio:b" >Hồi ký, tiểu sử</option>
+ <option value="mus:j" >Bản thu âm</option>
+ <option value="mus:i" >Không phải bản thu âm</option>
+ </select>
+
+ 
+ <select name="limit" class="subtype">
+ <option value="" selected="selected" class="menuheader">Tất cả định dạng</option>
+ <option value="l-format:ta" >In thường</option>
+ <option value="l-format:tb" >In khổ lớn</option>
+ <option value="l-format:fk" >Chữ nổi</option>
+ <option value="" >-----------</option>
+ <option value="l-format:sd" >CD âm thanh</option>
+ <option value="l-format:ss" >Băng Cassette</option>
+ <option value="l-format:vf" >Băng VHS</option>
+ <option value="l-format:vd" >Đĩa DVD</option>
+ <option value="l-format:co" >CD phần mềm</option>
+ <option value="l-format:cr" >Website</option>
+ </select>
+ 
+ <select name="limit" class="subtype">
+ <option value="" >Kiểu nội dung bổ sung</option>
+ <option value="ctype:a" >Tóm tắt / Tổng quát</option>
+ <option value="ctype:b" >Thư mục</option>
+ <option value="ctype:c" >Catalogs</option>
+ <option value="ctype:d" >Từ điển</option>
+ <option value="ctype:e" >Bách khoa toàn thư </option>
+ <option value="ctype:f" >Handbooks</option>
+ <option value="ctype:g" >Bài viết pháp luật</option>
+ <option value="ctype:i" >Chỉ dẫn</option>
+ <option value="ctype:j" >Tài liệu sáng chế</option>
+ <option value="ctype:k" >Danh sách đĩa nhạc</option>
+ <option value="ctype:l" >Pháp luật</option>
+ <option value="ctype:m" >Luận án, luận văn</option>
+ <option value="ctype:n" >Tài liệu điều tra</option>
+ <option value="ctype:o" >Bài phê bình</option>
+ <option value="ctype:p" >Tài liệu lập trình</option>
+ <option value="ctype:q" >Tài liệu điện ảnh</option>
+ <option value="ctype:r" >Danh bạ điện thoại</option>
+ <option value="ctype:s" >Thống kê</option>
+ <option value="ctype:t" >Báo cáo kỹ thuật</option>
+ <option value="ctype:v" >Ghi chú</option>
+ <option value="ctype:w" >Báo cáo luật</option>
+ <option value="ctype:z" >Điều ước quốc tế </option>
+ </select>
+ </p>
+
+</fieldset>
+[% END %]
+
+<!-- AVAILABILITY LIMITS -->
+ <fieldset id="availability"><legend>Giới hạn theo thư viện và trạng thái tài liệu</legend>
+<fieldset id="currently-avail">
+ <p><label for="available-items">Only items currently available:</label> <input type="checkbox" id="available-items" name="limit" value="available" /></p>
+</fieldset>
+
+<fieldset id="select-libs">
+ <p><label for="branchloop">Thư viện:</label><select name="limit" id="branchloop">
+ <option value="">Tất cả thư viện</option>
+ [%# FIXME Should not we filter the libraries displayed? %]
+ [% PROCESS options_for_libraries prefix => "branch:" libraries => Branches.all( selected => selected_branchcode, unfiltered => 1 ) %]
+ </select></p>
+ <!-- <input type="hidden" name="limit" value="branch: MAIN" /> -->
+ [% IF search_groups %]
+ <p>Hoặc</p> <!-- should addjs to grey out group pulldown if a library is selected. -->
+
+ <p>
+ <label for="categoryloop">Nhóm thư viện: </label>
+ <select name="multibranchlimit" id="categoryloop">
+ <option value=""> -- Không -- </option>
+ [% FOREACH sg IN search_groups %]
+ [% UNLESS sg.branchcode %]
+ <option value="[% sg.id %]">[% sg.title %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </p>
+ [% END %]
+</fieldset>
+ </fieldset>
+<!-- /AVAILABILITY LIMITS -->
+
+<!-- RANK LIMITS -->
+<fieldset id="sortby"><legend>Sắp xếp kết quả tìm kiếm</legend>
+ <p>
+ <label for="sort_by">Sắp xếp theo: </label><select id="sort_by" name="sort_by">
+ [% INCLUDE 'resort_form.inc' %]
+ </select>
+ </p>
+</fieldset>
+</div>
+<!-- /RANK LIMITS -->
+</form>
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("lib/jquery/plugins/jquery.fixFloat.js") %]
+ <script type="text/JavaScript">
+        /**
+         *  Function add_field();
+         *  This function allows to display a new field to search.
+         */
+        function add_field() {
+            var ButtonPlus = document.getElementById("ButtonPlus");
+            var line = ButtonPlus.parentNode;
+            var dad  = line.parentNode;
+            dad.appendChild(line.cloneNode(true));
+            line.removeChild(ButtonPlus);
+        }
+        $(document).ready(function() {
+            $("input[name=q]:eq(0)").focus();
+            $('#advsearches').tabs();
+            $('#toolbar').fixFloat();
+            $("#branchloop").on("change",function(){
+                if( this.value != ""){
+                    document.getElementById("categoryloop").disabled=true;
+                } else {
+                    document.getElementById("categoryloop").disabled=false;
+                }
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

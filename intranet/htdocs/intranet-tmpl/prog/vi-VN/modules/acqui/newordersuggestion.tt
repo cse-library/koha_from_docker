@@ -1,0 +1,98 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Tạo đơn hàng từ đề xuất mua</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_newordersuggestion" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'suggestions-add-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% name %]</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno %]">Giỏ đặt hàng số [% basketno %]</a> &rsaquo; Tạo đơn hàng từ đề xuất mua</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ 
+<h1>Để xuất mua</h1>
+ [% IF ( suggestions_loop ) %]
+ <a href="#" id="show_only_mine">Show only mine</a> | <a href="#" id="show_all">Show all suggestions</a>
+ <table id="suggestionst">
+ <thead>
+ <tr>
+ <th>Mine</th>
+ <th>Đề xuất mua</th>
+ <th>Người đề xuất</th>
+ <th>Người duyệt</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH suggestions_loo IN suggestions_loop %]
+ <tr>
+ <td>[% suggestions_loo.managedby %]</td>
+ <td>
+ <p>[% suggestions_loo.title |html %] - [% suggestions_loo.author %]</p>
+ <p>
+ [% IF ( suggestions_loo.copyrightdate ) %]&copy; [% suggestions_loo.copyrightdate %] [% END %]
+ [% IF ( suggestions_loo.volumedesc ) %]volume: <i>[% suggestions_loo.volumedesc %]</i> [% END %]
+ [% IF ( suggestions_loo.isbn ) %]ISBN: <i>[% suggestions_loo.isbn %]</i> [% END %]
+ [% IF ( suggestions_loo.publishercode ) %]<br />published by: [% suggestions_loo.publishercode %] [% END %]
+ [% IF ( suggestions_loo.publicationyear ) %] in <i>[% suggestions_loo.publicationyear %]</i> [% END %]
+ [% IF ( suggestions_loo.place ) %] in <i>[% suggestions_loo.place %]</i> [% END %]
+ [% IF ( suggestions_loo.note ) %]<p><i>([% suggestions_loo.note %])</i></p> [% END %]
+ </p>
+ </td>
+ <td>
+ [% suggestions_loo.surnamesuggestedby %][% IF ( suggestions_loo.firstnamesuggestedby ) %],[% END %] [% suggestions_loo.firstnamesuggestedby %]
+ </td>
+ <td>
+ [% suggestions_loo.surnamemanagedby %][% IF ( suggestions_loo.firstnamemanagedby ) %],[% END %] [% suggestions_loo.firstnamemanagedby %]
+ </td>
+ <td class="actions">
+ [% IF ( suggestions_loo.biblionumber ) %]
+ <a href="neworderempty.pl?booksellerid=[% booksellerid %]&amp;basketno=[% basketno %]&amp;suggestionid=[% suggestions_loo.suggestionid %]&amp;biblio=[% suggestions_loo.biblionumber %]" class="btn btn-default btn-xs"><i class="fa fa-plus"></i> Đơn hàng</a>
+ [% ELSE %]
+ <a href="neworderempty.pl?booksellerid=[% booksellerid %]&amp;basketno=[% basketno %]&amp;suggestionid=[% suggestions_loo.suggestionid %]" class="btn btn-default btn-xs"><i class="fa fa-plus"></i> Đơn hàng</a>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %] Không có đề xuất mua được thư viện chấp nhận. [% END %] </div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+    $(document).ready(function() {
+        var suggestionst = $("#suggestionst").dataTable($.extend(true, {}, dataTablesDefaults, {
+            "aoColumnDefs": [
+                { "aTargets": [ 0 ],  "bVisible": false, "bSearchable": true }, // must be searchable for fnFilter
+                { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+            ],
+            "sPaginationType": "four_button"
+        }));
+        $("#show_only_mine").on('click', function(e){
+            e.preventDefault();
+            suggestionst.fnFilter('^[% loggedinuser %]$', 0, true);
+        });
+        $("#show_all").on('click', function(e){
+            e.preventDefault();
+            suggestionst.fnFilter('', 0 );
+        });
+     });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,47 @@
+--- 
+công cụ bổ trợ: 
+  Batch item: 
+    - 
+      - Process up to
+      - 
+        class: integer
+        pref: MaxItemsToProcessForBatchMod
+      - items in a single item modification batch.
+    - 
+      - Display up to
+      - 
+        class: integer
+        pref: MaxItemsToDisplayForBatchDel
+      - items in a single item deletion batch.
+  News: 
+    - 
+      - "Show the author for news items:"
+      - 
+        choices: 
+          both: Both OPAC and staff client
+          none: Not at all
+          opac: OPAC only
+          staff: Staff client only
+        pref: NewsAuthorDisplay
+      - ~
+  Patron cards: 
+    - 
+      - Limit the number of creator images stored in the database to
+      - 
+        class: Integer
+        pref: ImageLimit
+      - images.
+  Reports: 
+    - 
+      - By default, show
+      - 
+        class: integer
+        pref: NumSavedReports
+      - reports on the Saved Reports page.
+  Upload: 
+    - 
+      - Automatically delete temporary uploads older than
+      - 
+        class: integer
+        pref: UploadPurgeTemporaryFilesDays
+      - "days in cleanup_database cron job. NOTE: If you leave this field empty, the cron job will not delete any files. On the other hand a value of 0 means: delete all temporary files."

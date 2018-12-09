@@ -1,0 +1,123 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE ItemTypes %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Thống kê chi phí</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_spent" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; Chi phí thanh toán của quỹ: [% fund_code %]</div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+<h1>Quỹ thanh toán: [% fund_code %]</h1>
+<h2>Chi phí thanh toán</h2>
+
+<table id="spent">
+ <thead>
+ <tr>
+ <th class="anti-the">Nhan đề</th>
+ <th>Đơn hàng</th>
+ <th>Nhà cung cấp</th>
+ <th>Invoice</th>
+ <th>Kiểu tài liệu</th>
+ <th>Nhận</th>
+ <th>Unit price</th>
+ <th class="title-string">Date ordered</th>
+ <th class="title-string">Ngày nhận</th>
+ <th>Subtotal</th>
+ </tr>
+ </thead>
+
+ [% FOREACH order IN spent %]
+ <tr>
+ <td class="cell">
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% order.biblionumber %]">
+ [% order.title %]
+ </a>
+ </td>
+ <td class="cell">
+ [% order.ordernumber %]
+ </td>
+ <td class="cell">
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% order.booksellerid %]">[% order.booksellerid %]</a>
+ </td>
+ <td class="cell">
+ <a href="/cgi-bin/koha/acqui/invoice.pl?invoiceid=[% order.invoiceid %]">[% order.invoicenumber %]</a>
+ </td>
+ <td class="cell">
+ [% ItemTypes.GetDescription( order.itype ) %]
+ </td>
+ <td class="cell">
+ [% order.quantityreceived %]
+ </td>
+ <td class="cell">
+ [% order.unitprice %]
+ </td>
+ <td class="cell">
+ <span title="[% order.entrydate %]">[% order.entrydate | $KohaDates %]</span>
+ </td>
+ <td class="cell">
+ <span title="[% order.datereceived %]">[% order.datereceived | $KohaDates %]</span>
+ </td>
+ <td class="data cell">
+ [% order.rowtotal %]
+ </td>
+ </tr>
+ [% END %]
+
+ <tfoot>
+ [% IF shipmentcosts.size %]
+ <tr valign="top">
+ <td colspan="9"> Tổng đơn hàng </td>
+ <td class="data"> [% subtotal %] </td>
+ </tr>
+ [% FOREACH shipmentcost IN shipmentcosts %]
+ <tr>
+ <td></td>
+ <td colspan="8">Phí vận chuyển cho hóa đơn [% shipmentcost.invoicenumber %]</td>
+ <td class="data total">[% shipmentcost.shipmentcost %]</td>
+ </tr>
+ [% END %]
+ [% END %]
+ <tr>
+ <td colspan="9">Tổng số</td>
+ <td class="data total">[% total %]</td>
+ </tr>
+ </tfoot>
+</table>
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $("#spent").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                    { "sType": "title-string", "aTargets" : [ "title-string" ] }
+                ],
+                "sPaginationType": "four_button"
+            } ) );
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

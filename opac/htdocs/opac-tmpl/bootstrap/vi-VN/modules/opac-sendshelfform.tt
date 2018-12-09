@@ -1,0 +1,60 @@
+[% USE Koha %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; Sending your list</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='sendshelf' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+ <div id="usersendshelfform">
+ [% IF ( email ) %]
+ [% IF ( SENT ) %]
+ <h1>Gửi tin nhắn cho bạn đọc</h1>
+ <div class="alert alert-success">
+ <p>Thông tin tài liệu trong giá sách ảo đã được gửi tới hòm thư: [% email | html %]</p>
+ </div>
+ <p><a class="focus close" href="/cgi-bin/koha/opac-shelves.pl?op=view&amp;shelfnumber=[% shelfid %]">Quay lại</a></p>
+ [% END %]
+ [% IF ( error ) %]
+ <div class="alert">
+ <p>There was an error sending the list.</p>
+ </div>
+ [% END %]
+ [% ELSE %]
+ [% IF ( invalidlist ) %]
+ <div class="alert">
+ <p>Bạn không được phép gửi thông tin của giá sách ảo này.</p>
+ </div>
+ <p><a class="button close" href="/cgi-bin/koha/opac-shelves.pl?op=view&amp;shelfnumber=[% shelfid %]">Quay lại</a></p>
+ [% ELSE %]
+ <h1>Gửi giá sách ảo của bạn</h1>
+ <form action="/cgi-bin/koha/opac-sendshelf.pl" method="post" id="sendshelfform">
+ <fieldset>
+ <label for="email">Địa chỉ Email:</label>
+ <input type="text" id="email" name="email" size="43" class="focus" />
+
+ <label for="comment">Bình luận:</label>
+ <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+
+ <input type="hidden" name="shelfid" value="[% shelfid %]" />
+ </fieldset>
+ [% IF Koha.Preference('RequestOnOpac') || Koha.Preference('OpacRenewalAllowed') %]<p id="donotrequestbymail">Please do not use this mail to request or renew books.</p>[% END %]
+ <fieldset class="action">
+ <input class="btn" type="submit" value="Gửi thư" />
+ <a class="cancel close" href="/cgi-bin/koha/opac-shelves.pl?op=view&amp;shelfnumber=[% shelfid %]">Hủy bỏ</a>
+ </fieldset>
+ </form>
+
+ [% END # / IF invalidlist %]
+ [% END # / IF email %]
+ </div> <!-- / #usersendshelfform -->
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]

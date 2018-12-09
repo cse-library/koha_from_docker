@@ -1,0 +1,109 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% PROCESS 'authorities.inc' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Dữ liệu kiểm soát &rsaquo; [% IF ( unknownauthid ) %] Biểu ghi nhất quán không tồn tại! [% ELSE %]  Chi tiết biểu ghi nhất quán số [% authid %] ([% authtypetext %]) [% END %] </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="auth_detail" class="auth">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'authorities-search.inc' %]
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/authorities/authorities-home.pl">Dữ liệu kiểm soát</a> &rsaquo; [% IF ( unknownauthid ) %] Biểu ghi nhất quán không tồn tại! [% ELSE %] Chi tiết biểu ghi nhất quán số [% authid %] ([% authtypetext %]) [% END %] </div>
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ [% INCLUDE 'authorities-toolbar.inc' %]
+ 
+[% IF ( displayhierarchy ) %]
+<div id="hierarchies">
+[% PROCESS showhierarchy trees = loophierarchies %]
+</div>
+[% END %]
+
+
+[% IF ( unknownauthid ) %]
+ <div class="dialog message">Biểu ghi nhất quán mà bạn yêu cầu không tồn tại ([% errauthid %]).</div>
+[% ELSE %]
+<h1>Biểu ghi nhất quán số [% authid %] ([% authtypetext %])</h1>
+
+<div id="action">
+ [% IF count %]
+ Used in <a href="/cgi-bin/koha/catalogue/search.pl?type=intranet&amp;op=do_search&amp;q=an=[% authid %]">[% count %] biểu ghi</a>
+ [% ELSE %]
+ This authority is not used in any records.
+ [% END %]
+</div>
+
+<div id="authoritiestabs" class="toptabs numbered">
+ <ul>
+ [% FOREACH BIG_LOO IN BIG_LOOP %]
+ <li>
+ <a href="#tab[% BIG_LOO.number %]XX">[% BIG_LOO.number %]</a>
+ </li>
+ [% END %]
+ </ul>
+
+[% FOREACH BIG_LOO IN BIG_LOOP %]
+ <div id="tab[% BIG_LOO.number %]XX">
+ [% FOREACH innerloo IN BIG_LOO.innerloop %]
+ [% IF ( innerloo.tag ) %]
+ <div class="tag">
+ <div class="tag_title">
+ [% innerloo.tag %]
+ </div>
+ [% ELSE %]
+ <div class="tag">
+ [% END %]
+ [% FOREACH subfiel IN innerloo.subfield %]
+ <p>
+ <label class="labelsubfield">&nbsp;
+ [% UNLESS ( subfiel.hide_marc ) %]<b>[% subfiel.marc_subfield %]</b>[% END %]
+ <span title="[% subfiel.long_desc %]">[% subfiel.short_desc %]</span></label>
+ [% subfiel.marc_value %]
+ [% IF ( subfiel.link ) %]
+ <a href="/cgi-bin/koha/catalogue/search.pl?op=do_search&amp;marclist=[% subfiel.link %]&amp;operator==&amp;type=intranet&amp;value=[% subfiel.marc_value |url %]">
+ <img title="Tìm kiếm [% subfiel.marc_value %]" height="15" src="[% interface %]/[% theme %]/images/filefind.png">
+ </a>
+ [% END %]
+ [% IF ( subfiel.authority ) %]
+ <a href="/cgi-bin/koha/authorities/detail.pl?authid=[% subfiel.authority %]" class="button">Dữ liệu kiểm soát</a>
+ [% END %]
+ </p>
+ [% END %]
+ </div>
+ [% END %]
+ </div>
+[% END %]
+</div>
+</div>
+</div>
+[% END %]
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'authorities_js.inc' %]
+ [% IF ( displayhierarchy ) %]
+ [% Asset.js("lib/jquery/plugins/jquery.jstree.js") %]
+ [% END %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $('#authoritiestabs').tabs();
+            [% IF ( displayhierarchy ) %]
+                var current_nodes = [];
+                $('.currentauth').each(function() {
+                    current_nodes.push('#' + $(this).parent().parents('li:first').attr('id'));
+                    });
+                $('#hierarchies').jstree({
+                        "plugins": [ "themes", "html_data"],
+                        "themes": { "theme": "classic",
+                                    "icons": false },
+                        "core": { "initially_open": current_nodes }
+                    });
+            [% END %]
+         });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

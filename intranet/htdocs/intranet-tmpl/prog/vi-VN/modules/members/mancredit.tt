@@ -1,0 +1,72 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Patrons &rsaquo; Create manual credit</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_mancredit" class="pat">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'patron-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Bạn đọc</a> &rsaquo; Tài khoản trả trước</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+[% INCLUDE 'members-toolbar.inc' %]
+
+<!-- The manual invoice and credit buttons -->
+<div class="statictabs">
+<ul>
+ <li><a href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=[% patron.borrowernumber %]">Thông tin tiền phạt</a></li>
+ <li><a href="/cgi-bin/koha/members/pay.pl?borrowernumber=[% patron.borrowernumber %]" >Thanh toán</a></li>
+ <li><a href="/cgi-bin/koha/members/maninvoice.pl?borrowernumber=[% patron.borrowernumber %]" >Tạo khoản tiền phạt</a></li>
+ <li class="active"><a href="/cgi-bin/koha/members/mancredit.pl?borrowernumber=[% patron.borrowernumber %]" >Thanh toán trả trước</a></li>
+</ul>
+<div class="tabs-container">
+
+<form action="/cgi-bin/koha/members/mancredit.pl" method="post" id="mancredit">
+<input type="hidden" name="borrowernumber" id="borrowernumber" value="[% patron.borrowernumber %]" />
+ <input type="hidden" name="csrf_token" value="[% csrf_token %]" />
+
+<fieldset class="rows">
+<legend>Tạo khoản thanh toán</legend><ol>
+ <li><label for="type">Kiểu thanh toán: </label><select name="type" id="type">
+<option value="credit">Nộp tiền vào tài khoản</option>
+<option value="forgiven">Miễn giảm tiền phạt</option>
+</select></li>
+ <li><label for="barcode">Đăng ký cá biệt: </label><input type="text" name="barcode" id="barcode" /></li>
+ <li><label for="desc">Thông tin mô tả: </label><input type="text" name="desc" size="50" id="desc" /></li>
+ <li><label for="note">Ghi chú: </label><input type="text" name="note" size="50" id="note" /></li>
+ <li><label for="amount">Số tiền: </label><input type="number" name="amount" id="amount" required="required" value="" step="any" min="0" /> Ví dụ như: 5.00</li>
+</ol></fieldset>
+
+<fieldset class="action"><input name="add" type="submit" value="Tạo" /> <a class="cancel" href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=[% patron.borrowernumber %]">Hủy bỏ</a></fieldset>
+</form>
+
+</div></div>
+
+</div>
+</div>
+
+<div class="yui-b">
+[% INCLUDE 'circ-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/members-menu.js") %]
+ <script type="text/javascript">
+        $(document).ready(function(){
+            $('#mancredit').preventDoubleFormSubmit();
+            $("fieldset.rows input, fieldset.rows select").addClass("noEnterSubmit");
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

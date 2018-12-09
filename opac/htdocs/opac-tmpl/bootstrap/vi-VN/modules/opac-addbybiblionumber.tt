@@ -1,0 +1,111 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; Add to your list</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='addtolist' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+ <div class="span12">
+ <div id="useraddbybiblionumber">
+ [% IF ( authorized ) %]
+ [% UNLESS ( newshelf ) %]
+ [% IF ( multiple ) %]
+ <h1>Thêm [% total %] tài liệu vào giá sách ảo [% IF ( singleshelf ) %]<em>[% shelfname | html %]</em>: [% ELSE %]giá sách ảo:[% END %]</h1>
+ [% ELSE %]
+ <h1>Thêm tài liệu vào giá sách ảo [% IF ( singleshelf ) %]<em>[% shelfname | html %]</em>[% ELSE %]giá sách ảo:[% END %]</h1>
+ [% END %]
+ <ul>
+ [% FOREACH biblio IN biblios %]
+ <li> <span class="title">[% biblio.title |html %]</span>
+ [% IF ( biblio.author ) %]<span class="author"> [% biblio.author %] </span>[% END %]
+ </li>
+ [% END %]
+ </ul>
+ [% IF private_shelves.count or public_shelves.count or private_shelves_shared_with_me.count %]
+ <form name="f1" action="/cgi-bin/koha/opac-addbybiblionumber.pl" method="post">
+ <fieldset>
+ <legend>Lựa chọn giá sách ảo</legend>
+ <label for="shelfnumber">Thêm vào giá sách ảo:</label> <select name="shelfnumber" id="shelfnumber">
+ [% IF private_shelves.count %]<optgroup label="Private lists">
+ [% FOREACH private_shelf IN private_shelves %]
+ <option value="[% private_shelf.shelfnumber %]">[% private_shelf.shelfname | html%]</option>
+ [% END %]
+ </optgroup>[% END %]
+ [% IF private_shelves_shared_with_me.count %]<optgroup label="Private lists shared with me">
+ [% FOREACH private_shelf IN private_shelves_shared_with_me %]
+ <option value="[% private_shelf.shelfnumber %]">[% private_shelf.shelfname | html%]</option>
+ [% END %]
+ </optgroup>[% END %]
+ [% IF public_shelves.count %]<optgroup label="Giá sách ảo cộng đồng">
+ [% FOREACH public_shelf IN public_shelves %]
+ <option value="[% public_shelf.shelfnumber %]">[% public_shelf.shelfname |html%]</option>
+ [% END %]
+ </optgroup>[% END %]
+ </select>
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber %]" />
+ [% END %]
+ <input type="hidden" name="modifyshelfcontents" value="1" />
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn" type="submit" value="Lưu" />
+ <a class="close cancel" href="#">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ <p>...or...</p>
+ [% ELSE %]
+ [% IF ( singleshelf ) %]
+ <form name="f1" action="/cgi-bin/koha/opac-addbybiblionumber.pl" method="post">
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber %]">
+ [% END %]
+ <input type="hidden" name="shelfnumber" value="[% shelfnumber %]" />
+ <input type="hidden" name="modifyshelfcontents" value="1" /></fieldset>
+ <fieldset class="action">
+ <input class="btn" type="submit" value="Lưu" />
+ <a class="close cancel" href="#">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ [% END %]
+ [% END # IF / existingshelves %]
+ [% END # / UNLESS newshelf %]
+
+ [% UNLESS ( singleshelf ) %]
+ <form name="f2" method="post" action="/cgi-bin/koha/opac-addbybiblionumber.pl">
+ <fieldset>
+ <legend>Thêm vào giá sách ảo mới:</legend>
+ <label for="newvirtualshelf">Tên giá sách ảo:</label>
+ <input type="text" name="newvirtualshelf" id="newvirtualshelf" size="40" />
+ <label for="category">Kiểu:</label>
+ <select name="category" id="category">
+ <option value="1">Cá nhân</option>
+ [% IF (OpacAllowPublicListCreation) %]
+ <option value="2">Cộng đồng</option>
+ [% END %]
+ </select>
+ </fieldset>
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html%]" />
+ [% END %]
+ <fieldset class="action">
+ <input type="hidden" name="sortfield" value="title" />
+ <input type="submit" value="Lưu" class="btn" />
+ <a class="close cancel" href="#">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ [% END # / UNLESS singleshelf %]
+ [% ELSE %]
+ <p>
+ [% IF (errcode==1) %] Bạn không thể tạo giá sách ảo mới. Hãy kiểm tra lại tên giá sách ảo của bạn. [% ELSE %] Xin lỗi! Bạn không thể thêm tài liệu vào giá sách ảo này. [% END %] </p>
+ [% END # IF authorized %]
+ <p><a href="#" class="close">Đóng.</a></p>
+ </div> <!-- / #useraddbybiblionumber -->
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]

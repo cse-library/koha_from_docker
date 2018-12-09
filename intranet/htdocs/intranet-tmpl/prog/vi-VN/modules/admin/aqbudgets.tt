@@ -1,0 +1,687 @@
+[% USE Asset %]
+[% USE AuthorisedValues %]
+[% USE Branches %]
+[% USE Price %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống &rsaquo; Quỹ[% IF op == 'add_form' %] &rsaquo; [% IF ( budget_id ) %]Chỉnh sửa quỹ[% IF ( budget_name ) %] '[% budget_name %]'[% END %][% ELSE %]Tạo quỹ [% END %][% END %]</title>
+[% Asset.css("css/datatables.css") %]
+[% Asset.css("lib/jquery/plugins/treetable/stylesheets/jquery.treetable.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_aqbudgets" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'budgets-admin-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo;
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a> &rsaquo; <a href="/cgi-bin/koha/admin/aqbudgetperiods.pl">Ngân sách</a> &rsaquo; [% IF op == 'list' %][% IF budget_period_id %]Funds for '[% budget_period_description %]'[% ELSE %]All funds[% END %][% END %]
+ [% IF op == 'add_form' %]
+ <a href="/cgi-bin/koha/admin/aqbudgets.pl?budget_period_id=[% budget_period_id %]">Quỹ</a> &rsaquo; [% IF ( budget_id ) %]Modify fund[% IF ( budget_name ) %] '[% budget_name %]'[% END %][% ELSE %]Add fund[% END %]
+ [% END %]
+ [% IF op == 'delete_confirm' %]
+ <a href="/cgi-bin/koha/admin/aqbudgets.pl">Quỹ</a> &rsaquo; Delete fund?
+ [% END %]
+</div>
+
+<div id="doc3" class="yui-t2">
+<div id="bd">
+<div id="yui-main">
+<div class="yui-b" id="content">
+
+
+[% UNLESS op == 'delete_confirm' %][% INCLUDE 'budgets-admin-toolbar.inc' %][% END %]
+
+[% IF (error_not_authorised_to_modify) %]
+ <div class="error">
+ <p>Bạn không được phân quyền để chỉnh sửa quỹ này.</p>
+ </div>
+[% END %]
+
+[% IF op == 'list' %]
+
+<h1>
+ [% IF budget_period_id %]
+ Funds for '[% budget_period_description %]'
+ [% ELSE %]
+ All funds
+ [% END %]
+</h1>
+
+[% INCLUDE 'budgets-active-currency.inc' %]
+
+[% IF budgets %]
+
+<table id="budgeth" class="group">
+ [% UNLESS budget_period_id %]
+ <caption>
+ <span class="actions"><a href="#" id="expand_all">Mở rộng tất cả</a>
+ | <a href="#" id="collapse_all">Thu gọn tất cả</a>
+ | <a href="#" id="hide_inactive">Ẩn ngân sách không hoạt động</a>
+ | <a href="#" id="show_inactive">Hiển thị ngân sách không hoạt động</a></span>
+ </caption>
+ [% END %]
+ <thead>
+ <tr>
+ <th>Kích hoạt</th>
+ <th>Mô tả thời hạn ngân sách</th>
+ <th>Mã quỹ</th>
+ <th>Tên quỹ</th>
+ <th>Được phân bổ</th>
+ <th>Đã đặt hàng</th>
+ <th>Tổng giá trị đặt hàng</th>
+ <th>Đã chi</th>
+ <th>Tổng chi</th>
+ <th>Base-level available</th>
+ <th>Total available</th>
+ <th>Thao tác</th>
+ </tr>
+ </thead>
+ <tfoot>
+ <tr>
+ <th></th>
+ <th></th>
+ <th colspan="2" style="text-align: left;" nowrap="nowrap">Ngân sách được cấp: [% IF budget_period_total %][% budget_period_total | $Price %][% END %] </th>
+ <th nowrap="nowrap" class="data"> [% period_alloc_total | $Price %]</th>
+ <th></th>
+ <th class="data">[% ordered_total | $Price %]</th>
+ <th></th>
+ <th class="data">[% spent_total | $Price %]</th>
+ <th></th>
+ <th class="data">[% available_total | $Price %]</th>
+ <th></th>
+ </tr>
+ </tfoot>
+ <tbody>
+ [% FOREACH budget IN budgets %]
+ [% IF budget.budget_parent_id %]
+ <tr data-tt-id="[% budget.budget_id %]" data-tt-parent-id="[% budget.budget_parent_id %]">
+ [% ELSE %]
+ <tr data-tt-id="[% budget.budget_id %]">
+ [% END %]
+ <td>[% budget.budget_period_active %]</td>
+ <td>Ngân sách [% budget.budget_period_description %] [ID=[% budget.budget_period_id %]][% UNLESS budget.budget_period_active %] (Ngừng hoạt động)[% END %]</td>
+ <td>[% budget.budget_code %]</td>
+ <td>[% budget.budget_name %]</td>
+ <td class="data">
+ [% IF budget.budget_parent_id %]
+ <span class="child_fund_amount">[% budget.budget_amount | $Price %]</span>
+ [% ELSE %]
+ <span class="total_amount">[% budget.budget_amount | $Price %]</span>
+ [% END %]
+ </td>
+ <td class="data">
+ [% IF budget.budget_parent_id %]
+ <span class="child_fund_amount">[% budget.budget_ordered | $Price %]</span>
+ [% ELSE %]
+ <span class="total_amount">[% budget.budget_ordered | $Price %]</span>
+ [% END %]
+ </td>
+ <td class="data">
+ [% IF budget.budget_parent_id %]
+ <span class="child_fund_amount">[% budget.total_ordered | $Price %]</span>
+ [% ELSE %]
+ <span class="total_amount">[% budget.total_ordered | $Price %]</span>
+ [% END %]
+ </td>
+ <td class="data">
+ [% IF budget.budget_parent_id %]
+ <span class="child_fund_amount">[% budget.budget_spent | $Price %]</span>
+ [% ELSE %]
+ <span class="total_amount">[% budget.budget_spent | $Price %]</span>
+ [% END %]
+ </td>
+ <td class="data">
+ [% IF budget.budget_parent_id %]
+ <span class="child_fund_amount">[% budget.total_spent | $Price %]</span>
+ [% ELSE %]
+ <span class="total_amount">[% budget.total_spent | $Price %]</span>
+ [% END %]
+ </td>
+
+
+ [% BLOCK colorcellvalue %]
+ [% IF parent %]
+ [% IF (value > 0) %]
+ <span class="child_fund_amount" style="color: green;">
+ [% ELSIF (value < 0) %]
+ <span class="child_fund_amount" style="color: red;">
+ [% ELSE %]
+ <span class="child_fund_amount">
+ [% END %]
+ [% ELSE %]
+ [% IF (value > 0) %]
+ <span class="total_amount" style="color: green;">
+ [% ELSIF (value < 0) %]
+ <span class="total_amount" style="color: red;">
+ [% ELSE %]
+ <span class="totalamount">
+ [% END %]
+ [% END %]
+ [% value | $Price %]
+ </span>
+ [% END %]
+ <td class="data">
+ [% INCLUDE colorcellvalue value=budget.budget_remaining parent=budget.budget_parent_id %]
+ </td>
+ <td class="data">
+ [% INCLUDE colorcellvalue value=budget.total_remaining parent=budget.budget_parent_id %]
+ </td>
+ [% IF ( budget.budget_lock ) %]
+ <td> <span></span> </td>
+ [% ELSE %]
+ <td>
+ <div class="dropdown dropup">
+ <a class="btn btn-default btn-xs dropdown-toggle" id="budgetactions[% budget.budget_id %]_[% budget.budget_period_id %]" role="button" data-toggle="dropdown" href="#">
+ Thao tác <b class="caret"></b>
+ </a>
+ <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="budgetactions[% budget.budget_id %]_[% budget.budget_period_id %]">
+ <li><a href="/cgi-bin/koha/admin/aqbudgets.pl?op=add_form&amp;budget_id=[% budget.budget_id %]&amp;budget_period_id=[% budget.budget_period_id %]"><i class="fa fa-pencil"></i> Chỉnh sửa</a></li>
+ [% IF budget.budget_has_children %]
+ <li class="disabled"><a href="#" class="deletefund-disabled" data-toggle="tooltip" data-placement="left" title="This fund has children"><i class="fa fa-trash"></i> Xóa</a></li>
+ [% ELSE %]
+ <li><a href="/cgi-bin/koha/admin/aqbudgets.pl?op=delete_confirm&amp;budget_id=[% budget.budget_id %]&amp;budget_period_id=[% budget.budget_period_id %]"><i class="fa fa-trash"></i> Xóa</a></li>
+ [% END %]
+ <li><a href="/cgi-bin/koha/admin/aqbudgets.pl?op=add_form&amp;budget_parent_id=[% budget.budget_id %]&amp;budget_period_id=[% budget.budget_period_id %]"><i class="fa fa-plus"></i> Thêm quỹ nhỏ</a></li>
+ </ul>
+ </div>
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+</table>
+
+[% ELSE %]
+ <p>No fund found</p>
+[% END %]
+
+[% END %] <!-- list -->
+
+<!-- ********************************************************************************************** -->
+<!-- create add/mod entry form -->
+[% IF op == 'add_form' && !error_not_authorised_to_modify %]
+<form action="/cgi-bin/koha/admin/aqbudgets.pl" id="edit_fund" name="Aform" method="post">
+ <fieldset class="rows">
+ <legend>[% IF ( budget_id ) %]Chỉnh sửa[% ELSE %]Tạo[% END %] quỹ [% IF ( budget_period_description ) %] [% budget_name %] của ngân sách '[% budget_period_description %]' [% END %] </legend>
+
+ <input type="hidden" name="op" value="add_validate" />
+ <input type="hidden" name="checked" value="0" />
+ <ol>
+ [% IF ( budget_parent_id ) %]
+ <li>
+ <span class="label">Quỹ gốc: </span>
+ [% budget_parent_name %]
+ [% budget_parent_id %] - [% budget_parent_name %]
+ <input type="hidden" name="budget_parent_id" value="[% budget_parent_id %]" />
+ </li>
+ [% END %]
+ <li>
+ <label class="required"  for="budget_code">Mã quỹ: </label>
+ <input type="text" name="budget_code" id="budget_code" value="[% budget_code %]" size="30" />
+ </li>
+
+ <li>
+ <label class="required" for="budget_name">Tên quỹ: </label>
+ <input type="text" name="budget_name" id="budget_name" value="[% budget_name %]" size="60" />
+ </li>
+
+ <li>
+ <label style="white-space: nowrap;" for="budget_amount" class="required">Số tiền: </label>
+ <input type="text" name="budget_amount" id="budget_amount" value="[% budget_amount | $Price on_editing => 1 %]" size="8" />
+ </li>
+
+ <li>
+ <label for="budget_encumb">Cảnh báo tại (%): </label>
+ <input type="text" name="budget_encumb" id="budget_encumb" value="[% budget_encumb %]" size="10" />
+ <span class="hint">Thiết lập 0 để không kích hoạt</span>
+ </li>
+
+ <li>
+ <label for="budget_expend">Cảnh báo tại (số tiền): </label>
+ <input type="text" name="budget_expend" id="budget_expend" value="[% budget_expend | $Price on_editing => 1 %]" size="10" />
+ <span class="hint">Thiết lập 0 để không kích hoạt</span>
+ </li>
+
+ <li>
+ <span class="label">Chủ sở hữu: </span>
+ [% IF  budget_owner %]
+ <span  id="budget_owner_name">
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% budget_owner.borrowernumber %]">
+ [% budget_owner.firstname %] [% budget_owner.surname %]
+ </a> |
+ </span>
+ [% ELSE %]
+ <span  id="budget_owner_name"></span>
+ [% END %]
+ <a id="edit_owner" class="new_window" href="#"><i class="fa fa-search"></i> Select owner</a>
+ <a id="remove_owner" href="#"><i class="fa fa-trash"></i> Loại bỏ</a>
+ <input type="hidden" name="budget_owner_id" id="budget_owner_id"
+            value="[% budget_owner.borrowernumber %]" />
+ </li>
+
+
+ [% IF budget_has_children %]
+ <li class="radio">
+ <label>
+ <input type="checkbox" id="set_owner_to_children" name="set_owner_to_children" value="1" />
+ Update all child funds with this owner
+ </label>
+ <span class="hint">Selecting this option will overwrite existing fund owners, if any</span>
+ </li>
+ [% END %]
+
+ <li>
+ <span class="label">Người sử dụng:</span>
+ <ul style="float:left;" id="budget_users">
+ [% FOREACH user IN budget_users %]
+ <li id="user_[% user.borrowernumber %]">
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% user.borrowernumber %]">
+ [% user.firstname %] [% user.surname %]
+ </a>
+ &bull; <a href="#" class="del_user" data-borrowernumber="[% user.borrowernumber %]"><i class="fa fa-trash"></i> Loại bỏ</a>
+ </li>
+ [% END %]
+ <li><a href="#" id="add_user_button"><i class="fa fa-plus"></i> Thêm người dùng</a></li>
+ </ul>
+ <input type="hidden" name="budget_users_ids" id="budget_users_id" value="[% budget_users_ids %]" />
+ </li>
+ <li>
+ <label for="budget_branchcode">Thư viện: </label>
+ <select name="budget_branchcode" id="budget_branchcode">
+ <option value=""></option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => budget_branchcode, unfiltered => 1 ) %]
+ </select>
+ </li>
+
+ <li>
+ <label for="budget_permission">Giới hạn truy cập: </label>
+ <select name="budget_permission" id="budget_permission">
+ [% IF ( budget_perm_0 ) %]
+ <option value="0" selected="selected">
+ [% ELSE %]
+ <option value="0">
+ [% END %] Không giới hạn </option>
+
+ [% IF ( budget_perm_1 ) %]
+ <option value="1" selected="selected">
+ [% ELSE %]
+ <option value="1">
+ [% END %] Chủ sở hữu </option>
+
+ [% IF ( budget_perm_3) %]
+ <option value="3" selected="selected">
+ [% ELSE %]
+ <option value="3">
+ [% END %] Chủ sở hữu và người sử dụng </option>
+
+ [% IF ( budget_perm_2 ) %]
+ <option value="2" selected="selected">
+ [% ELSE %]
+ <option value="2">
+ [% END %] Chủ sở hữu, người sử dụng và thư viện </option>
+ </select>
+ </li>
+
+ <li>
+ <label for="budget_notes">Ghi chú: </label>
+ <textarea name="budget_notes" id="budget_notes"  cols="80" rows="6">[% budget_notes %]</textarea>
+ </li>
+
+ <li>
+ <label  style="white-space: nowrap;" for="authorised_value_category1">Thống kê 1:  </label>
+ <select name="sort1_authcat" id="authorised_value_category1">
+ <option value=""></option>
+ [% PROCESS options_for_authorised_value_categories authorised_value_categories => AuthorisedValues.GetCategories( selected => sort1_authcat ) %]
+ </select>
+ </li>
+ <li>
+ <label  style="white-space: nowrap;" for="authorised_value_category2">Thống kê 2: </label>
+ <select name="sort2_authcat" id="authorised_value_category2">
+ <option value=""></option>
+ [% PROCESS options_for_authorised_value_categories authorised_value_categories => AuthorisedValues.GetCategories( selected => sort2_authcat ) %]
+ </select>
+ </li>
+ </ol>
+
+ [% IF ( budget_id ) %]
+ <input type="hidden" name="budget_id" value="[% budget_id %]" />
+ [% END %]
+ </fieldset>
+
+ <fieldset class="action">
+ <input value="Tìm kiếm" type="submit" /> <a class="cancel" href="/cgi-bin/koha/admin/aqbudgets.pl">Hủy bỏ</a>
+ <input type="hidden" name="budget_period_id" value="[% budget_period_id %]" />
+ </fieldset>
+</form>
+
+[% END %] <!-- add_form -->
+
+[% IF op == 'delete_confirm' %]
+ <div class="dialog alert">
+ <h3>Xóa quỹ [% budget_name %]?</h3>
+ If you delete this fund, all orders linked to this fund will be deleted!
+ <table>
+ <tr>
+ <th scope="row">Số lượng quỹ:</th>
+ <td>[% budget_amount | $Price %]</td>
+ </tr>
+ </table>
+
+ <form action="/cgi-bin/koha/admin/aqbudgets.pl" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="budget_id" value="[% budget_id %]" />
+ <input type="hidden" name="budget_period_id" value="[% budget_period_id %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Yes, delete this fund</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/aqbudgets.pl" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% IF op == 'list' %]
+ <form action="/cgi-bin/koha/admin/aqbudgets.pl" method="get">
+ <a href="#" id="filterbutton">Bộ lọc dữ liệu</a>
+ <fieldset class="brief" id="fundfilters">
+ <h4>Tìm kiếm quỹ</h4>
+ <ol>
+ <li>
+ <label for="filter_budgetbranch2">Thư viện: </label>
+ <select name="filter_budgetbranch" id="filter_budgetbranch2">
+ <option value=""></option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => budget_branchcode, unfiltered => 1 ) %]
+ </select>
+ </li>
+ <li class="radio">
+
+ <label for="show_mine">Show my funds only:</label>
+ [% IF ( show_mine ) %]
+ <input type="checkbox" id="show_mine"  name="show_mine" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="show_mine"  name="show_mine" value="1" />
+ [% END %]
+ </li>
+
+ [% IF periods %]
+ <li>
+ <label for="periods">Ngân sách:</label>
+ <select id="periods" name="budget_period_id">
+ <option value="">Tất cả ngân sách</option>
+ [% FOR period IN periods %]
+ [% IF budget_period_id && period.budget_period_id == budget_period_id %]
+ <option value="[% period.budget_period_id %]" selected="selected">[% period.budget_period_description %]</option>
+ [% ELSE %]
+ <option value="[% period.budget_period_id %]">[% period.budget_period_description %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ </ol>
+
+ <input type="hidden" name="op" value="list" />
+ <input value="Tìm kiếm" name="filter" type="submit" class="submit" />
+ </fieldset>
+</form>[% END %]
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acq.js") %]
+ <script type="text/javascript">
+        var MSG_BUDGET_PARENT_ALLOCATION = "- " + _("Số lượng của quỹ vượt quá số lượng ngân sách") + "\n";
+        var MSG_BUDGET_PERIOD_ALLOCATION = "- " + _("Thời gian hoạt động của quỹ vượt quá thời gian hoạt động của ngân sách") + "\n";
+        var MSG_PARENT_BENEATH_BUDGET = "- " + _("Tạo quỹ lớn trong một nguồn quỹ") + "\n";
+    </script>
+
+ [% Asset.js("js/acq.js") %]
+ [% IF op == 'add_form' %]
+ <script type="text/javascript">
+        //<![CDATA[
+
+            function userPopup() {
+                window.open("/cgi-bin/koha/admin/add_user_search.pl?selection_type=add",
+                    'PatronPopup',
+                    'width=740,height=450,location=yes,toolbar=no,'
+                    + 'scrollbars=yes,resize=yes'
+                );
+            }
+
+            function ownerPopup() {
+                window.open("/cgi-bin/koha/admin/add_user_search.pl?selection_type=select",
+                    'PatronPopup',
+                    'width=740,height=450,location=yes,toolbar=no,'
+                    + 'scrollbars=yes,resize=yes'
+                );
+            }
+
+            function select_user(borrowernumber, borrower) {
+                ownerRemove();
+                var borrowername = borrower.firstname + ' ' + borrower.surname;
+                if (borrowernumber) {
+                    var ownerlink = '<a href="/cgi-bin/koha/members/moremember.pl'
+                        + '?borrowernumber=' + borrowernumber + '">'
+                        + borrowername + '</a>';
+                    $('#budget_owner_name').html(ownerlink);
+                    $('#budget_owner_id').val(borrowernumber);
+                }
+            }
+
+            function ownerRemove() {
+                $('#budget_owner_name').empty();
+                $('#budget_owner_id').val('');
+            }
+
+            function add_user(borrowernumber, borrowername) {
+                var ids = $("#budget_users_id").val().split(':');
+                if(borrowernumber && ids.indexOf(borrowernumber.toString()) == -1) {
+                    var li = '<li id="user_' + borrowernumber + '">'
+                        + '<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber='
+                        + borrowernumber + '">' + borrowername + '</a> '
+                        + ' &bull; <a data-borrowernumber=" + borrowernumber +" class="del_user" href="#"><i class="fa fa-trash"></i> '+_("Loại bỏ")+'</a> '
+                        + '</li>';
+                    $("#budget_users").prepend(li);
+                    ids.push(borrowernumber);
+                    $("#budget_users_id").val(ids.join(':'));
+                } else {
+                    return -1;
+                }
+                return 0;
+            }
+
+            function del_user(borrowernumber) {
+                var ids = $("#budget_users_id").val().split(':');
+                if (borrowernumber) {
+                    var idx = ids.indexOf(borrowernumber+'');
+                    if (idx != -1) {
+                        ids.splice(idx, 1);
+                        $("#budget_users_id").val(ids.join(':'));
+                        $("li#user_" + borrowernumber).remove();
+                    }
+                }
+            }
+
+            function Check(f) {
+                var ok=1;
+                var _alertString="";
+                var alertString2;
+
+                if (!(isNotNull(f.budget_code,1))) {
+                    _alertString += _("- Mã quỹ không được phép bỏ trống") + "\n";
+                }
+
+                if (!(isNotNull(f.budget_name,1))) {
+                    _alertString += _("- Tên quỹ không được phép bỏ trống") + "\n";
+                }
+
+                if (!(isNotNull(f.budget_amount,1))) {
+                    _alertString += _("- Số lượng quỹ không được bỏ trống") + "\n";
+                }
+
+                var budgetId;
+                if   (typeof(f.budget_id ) != "undefined")  {
+                    budgetId = f.budget_id.value
+                }
+
+                var newBudgetParent;
+
+        //  hack to test if selected parent_id in scrolling-list...
+        //  if value == 'undef' its got a selected_parent :/
+                if(f.budget_parent_id){
+                    var chkAdd   =  f.budget_parent_id.value ;
+                    if  (     typeof(chkAdd ) != "undefined") {
+                        newBudgetParent  =  f.budget_parent_id.value
+                    } else {
+                        newBudgetParent  =  f.budget_parent_id.item(0).value
+                    }
+
+                    if   (budgetId  > 0)  {  ; //its a mod ...
+                        // if parent == curent-budget, fail...
+                        if ( newBudgetParent  ==  budgetId     ) {
+                                _alertString += _("- Quỹ nhỏ tạo mới không được bằng với quỹ hiện tại") + "\n";
+                        }
+
+                        else if (newBudgetParent) {
+                            var result = checkBudgetParent(  budgetId , newBudgetParent   );
+                            if (result) {
+                                _alertString += result;
+                            }
+                        }
+                    }
+                }
+
+                 // else do lookup
+                var budgetTotal = Math.abs(f.budget_amount.value);
+                var result =   budgetExceedsParent  (budgetTotal, budgetId, newBudgetParent, f.budget_period_id.value)
+                if (result) {
+                    _alertString += result;
+                }
+
+                if (_alertString.length==0) {
+                    document.Aform.submit();
+                } else {
+                    alertString2 = _("Phát hiện các lỗi sau đây, bạn vui lòng kiểm tra và chỉnh sửa lại:");
+                    alertString2 += "\n------------------------------------------------------------------------------------\n\n";
+                    alertString2 += _alertString;
+                    alert(alertString2);
+                }
+            }
+            $(document).ready(function(){
+                $("#remove_owner").on("click",function(e){
+                    e.preventDefault();
+                    ownerRemove();
+                });
+                $("#edit_owner").on("click",function(e){
+                    e.preventDefault();
+                    ownerPopup();
+                });
+                $("body").on("click",".del_user",function(e){
+                    e.preventDefault();
+                    var borrowernumber = $(this).data("borrowernumber");
+                    del_user(borrowernumber);
+                });
+                $("#add_user_button").on("click",function(e){
+                    e.preventDefault();
+                    userPopup();
+                });
+                $("#edit_fund").on("submit",function(e){
+                    e.preventDefault();
+                    Check(this);
+                });
+            });
+        //]]>
+        </script>
+ [% ELSIF op == 'list' %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("lib/jquery/plugins/treetable/jquery.treetable.js") %]
+
+ <script type="text/javascript">
+        //<![CDATA[
+            //
+            $(document).ready(function() {
+                var oTable = $("#budgeth").dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "fnDrawCallback": function ( oSettings ) {
+                        if ( oSettings.aiDisplay.length == 0 )
+                        {
+                            return;
+                        }
+
+                        var nTrs = $('#budgeth tbody tr');
+                        var iColspan = nTrs[0].getElementsByTagName('td').length;
+                        var sLastGroup = "";
+                        for ( var i=0 ; i<nTrs.length ; i++ )
+                        {
+                            var iDisplayIndex = oSettings._iDisplayStart + i;
+                            var sGroup = oSettings.aoData[ oSettings.aiDisplay[iDisplayIndex] ]._aData[1];
+                            if ( sGroup != sLastGroup )
+                            {
+                                var nGroup = document.createElement( 'tr' );
+                                var nCell = document.createElement( 'td' );
+                                nCell.colSpan = iColspan;
+                                nCell.className = "group";
+                                nCell.innerHTML = sGroup;
+                                nGroup.appendChild( nCell );
+                                nTrs[i].parentNode.insertBefore( nGroup, nTrs[i] );
+                                sLastGroup = sGroup;
+                            }
+                        }
+                    },
+                    "footerCallback": function ( row, data, start, end, display ) {
+                        var api = this.api(), data;
+                        footer_column_sum( api, [ 4, 6, 8, 10 ], 2 );
+                    },
+                    "aoColumnDefs": [
+                        { "bVisible": false, "aTargets": [ 0, 1 ] },
+                        { "bSortable": false, "aTargets": ["_all"] }
+                    ],
+                    'dom': '<"top pager"ilpf>tr<"bottom pager"ip>',
+                    'bSort': true,
+                    'aaSortingFixed': [[ 1, 'asc' ]],
+                    'bPaginate': false,
+                    "bAutoWidth": false
+                }));
+
+                $(oTable).treetable({
+                    expandable: true
+                });
+                $(oTable).treetable('expandAll');
+                $("#expand_all").click(function(e){
+                    e.preventDefault();
+                    $(oTable).treetable('expandAll');
+                });
+                $("#collapse_all").click(function(e){
+                    e.preventDefault();
+                    $(oTable).treetable('collapseAll');
+                });
+
+                [% UNLESS budget_period_id %]
+                  $("#hide_inactive").click(function(e){
+                    e.preventDefault();
+                    oTable.fnFilter( 1, 0 ); // Show only active=1
+                  });
+                  $("#show_inactive").click(function(e){
+                    e.preventDefault();
+                    oTable.fnFilter( '', 0 );
+                  });
+                  $("#hide_inactive").click();
+                [% END %]
+                oTable.fnAddFilters("filter", 750);
+
+                $("#filterbutton").click(function() {
+                    $("#fundfilters").slideToggle(0);
+                });
+
+                $(".deletefund-disabled").tooltip().on("click", function(e){
+                    e.preventDefault();
+                    alert(_("This fund has children. It cannot be deleted."));
+                });
+            });
+        //]]>
+        </script>
+ [% END %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

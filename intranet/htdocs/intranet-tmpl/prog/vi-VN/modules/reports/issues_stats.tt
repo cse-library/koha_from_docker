@@ -1,0 +1,380 @@
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Báo cáo &rsaquo; Báo cáo phân hệ lưu thông [% IF ( do_it ) %]&rsaquo; Kết quả báo cáo phân hệ lưu thông[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style type="text/css">
+	.sql {display:none;}
+</style>
+</head>
+
+<body id="rep_issues_stats" class="rep">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Báo cáo</a> [% IF ( do_it ) %]&rsaquo; <a href="/cgi-bin/koha/reports/issues_stats.pl">Báo cáo phân hệ lưu thông</a> &rsaquo; Kết quả báo cáo phân hệ lưu thông [% ELSE %]&rsaquo; Báo cáo phân hệ lưu thông[% END %]</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( do_it ) %]
+ [% FOREACH mainloo IN mainloop %]
+ <h1>Báo cáo phân hệ lưu thông</h1>
+ [% IF ( mainloo.loopfilter ) %]
+ <p>Bộ lọc dữ liệu:</p>
+ <ul>
+ [% FOREACH loopfilte IN mainloo.loopfilter %]
+ [% IF ( loopfilte.err ) %]
+ <li class="error">Error:
+ [% ELSIF ( loopfilte.sql ) %]
+ <li class="sql">
+ [% ELSE %]
+ <li>
+ [% END %]
+ [% SWITCH loopfilte.crit %]
+ [% CASE 0 %]Period From
+ [% CASE 1 %]Period To
+ [% CASE 2 %]Patron Category =
+ [% CASE 3 %]Item Type =
+ [% CASE 4 %]Issuing library =
+ [% CASE 5 %]Collection =
+ [% CASE 6 %]Location =
+ [% CASE 7 %]Item call number &gt;=
+ [% CASE 8 %]Item call number &lt;
+ [% CASE 9 %]Patron sort1 =
+ [% CASE 10 %]Patron sort2 =
+ [% CASE 11 %]Home library =
+ [% CASE 12 %]Holding library =
+ [% CASE 13 %]Patron library =
+ [% CASE 14 %]Issuing library =
+ [% CASE %][% loopfilte.crit %] =
+ [% END %]
+ [% loopfilte.filter %]
+ </li>
+ [% END %]
+ </ul>
+ [% END %]
+ 
+ <table> 
+ <tr>
+ <th>[% mainloo.line %] / [% mainloo.column %]</th>
+ [% FOREACH loopco IN mainloo.loopcol %]
+ <th>[% loopco.coltitle_display |html %]</th>
+ [% END %]
+ <th>Tổng số</th>
+ </tr>
+ [% FOREACH loopro IN mainloo.looprow %]
+ <tr>
+ <td>[% loopro.rowtitle_display or "UNKNOWN VALUE" |html %]</td>
+ [% FOREACH loopcel IN loopro.loopcell %]
+ <td>[% loopcel.value || 0 %]</td>
+ [% END %]
+ <td>[% loopro.totalrow %]</td>
+ </tr>
+ [% END %]
+ <tr>
+ <th>Tổng số</th>
+ [% FOREACH loopfoote IN mainloo.loopfooter %]
+ <th>[% loopfoote.totalcol %]</th>
+ [% END %]
+ <th>[% mainloo.total %]</th>
+ </tr>
+ </table>
+ [% END %]
+[% ELSE %]
+
+ <form method="post" action="/cgi-bin/koha/reports/issues_stats.pl">
+ <fieldset class="rows">
+ <legend>Báo cáo phân hệ lưu thông</legend><table>
+ <thead>
+ <tr>
+ <th>Nhan đề</th>
+ <th>Hàng</th>
+ <th>Cột</th>
+ <th>Bộ lọc dữ liệu</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Thời gian</td>
+ <td><input type="radio" name="Line" value="datetime" /></td>
+ <td><input type="radio" name="Column" value="datetime" /></td>
+ <td><label for="from">Từ</label> <input type="text" size="10" id="from" name="Filter" class="datepickerfrom" />
+ <label for="to">Đến ngày</label> <input size="10" id="to" name="Filter" value="" type="text" class="datepickerto" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="PeriodTypeSel">Kiểu:</label><select name="PeriodTypeSel" id="PeriodTypeSel">
+ <option value ="issue">Ghi mượn</option>
+ <option value ="renew">Gia hạn</option>
+ <option value ="return">Ghi trả</option>
+ <option value ="localuse">Sử dụng nội bộ</option>
+ </select></td>
+ <td colspan="2"><label for="DisplayBy">Nhóm theo:</label> <select name="DisplayBy" id="DisplayBy">
+ <option value="">Bất kỳ</option>
+ <option value ="4">Giờ</option>
+ <option value ="1">Ngày</option>
+ <option value ="2">Tháng</option>
+ <option value ="3">Năm</option>
+ </select>
+ </td>
+ <td>
+ <label for="PeriodDaySel">Chọn ngày: </label><select name="PeriodDaySel" id="PeriodDaySel">
+ <option value =""></option>
+ <option value ="Monday">Thứ 2</option>
+ <option value ="Tuesday">Thứ 3</option>
+ <option value ="Wednesday">Thứ 4</option>
+ <option value ="Thursday">Thứ 5</option>
+ <option value ="Friday">Thứ 6</option>
+ <option value ="Saturday">Thứ 7</option>
+ <option value ="Sunday">Chủ nhật</option>
+ </select>
+ <label for="PeriodMonthSel">Chọn tháng:</label> <select name="PeriodMonthSel" id="PeriodMonthSel">
+ <option value =""></option>
+ <option value ="January">Tháng 1</option>
+ <option value ="February">Tháng 2</option>
+ <option value ="March">Tháng 3</option>
+ <option value ="April">Tháng 4</option>
+ <option value ="May">Tháng 5</option>
+ <option value ="June">Tháng 6</option>
+ <option value ="July">Tháng 7</option>
+ <option value ="August">Tháng 8</option>
+ <option value ="September">Tháng 9</option>
+ <option value ="October">Tháng 10</option>
+ <option value ="November">Tháng 11</option>
+ <option value ="December">Tháng 12</option>
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Kiểu bạn đọc</td>
+ <td><input type="radio" name="Line" value="borrowers.categorycode" /></td>
+ <td><input type="radio" name="Column" value="borrowers.categorycode" /></td>
+ <td><select name="Filter" id="borcat">
+ <option value=""> </option>
+ [% FOREACH categoryloo IN categoryloop %]
+ <option value="[% categoryloo.categorycode %]">[% categoryloo.description %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Kiểu tài liệu</td>
+ <td><input type="radio" name="Line" value="itemtype" /></td>
+ <td><input type="radio" name="Column" value="itemtype" /></td>
+ <td><select name="Filter" id="itemtype">
+ <option value=""> </option>
+ [% FOREACH itemtype IN itemtypes %]
+ <option value="[% itemtype.itemtype %]">[% itemtype.translated_description %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Issuing library</td>
+ <td><input type="radio" name="Line" value="branch" /></td>
+ <td><input type="radio" name="Column" value="branch" /></td>
+ <td><select name="Filter" id="branch">
+ <option value=""> </option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Bộ sưu tập</td>
+ <td><input type="radio" name="Line"   value="items.ccode" /></td>
+ <td><input type="radio" name="Column" value="items.ccode" /></td>
+ <td><select name="Filter" id="ccode">
+ <option value=""> </option>
+ [% FOREACH ccodeloo IN ccodeloop %]
+ <option value="[% ccodeloo.code %]">[% ccodeloo.description %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Kho tài liệu</td>
+ <td><input type="radio" name="Line" value="items.location" /></td>
+ <td><input type="radio" name="Column" value="items.location" /></td>
+ <td><select name="Filter" id="location">
+ <option value=""> </option>
+ [% FOREACH locationloo IN locationloop %]
+ <option value="[% locationloo.code %]">[% locationloo.description %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Ký hiệu phân loại</td>
+ <td></td>
+ <td></td>
+ <td>Từ <input type="text" name="Filter" size="10" /> (bao gồm) đến <input type="text" name="Filter" size="10" /> (độc quyền) </td>
+ </tr>
+ [% IF ( hassort1 ) %]
+ <tr><td>Thống kê bạn đọc 1</td>
+ <td><input type="radio" name="Line" value="borrowers.sort1" /></td>
+ <td><input type="radio" name="Column" value="borrowers.sort1" /></td>
+ <td><select name="Filter" id="sort1">
+ <option value=""> </option>
+ [% FOREACH Bsort IN Bsort1 %]
+ <option value="[% Bsort.authorised_value %]" >[% Bsort.lib %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ [% END %]
+ [% IF ( hassort2 ) %]
+ <tr><td>Thống kê bạn đọc 2</td>
+ <td><input type="radio" name="Line" value="borrowers.sort2" /></td>
+ <td><input type="radio" name="Column" value="borrowers.sort2" /></td>
+ <td><select name="Filter" id="sort2">
+ <option value=""> </option>
+ [% FOREACH Bsort IN Bsort2 %]
+ <option value="[% Bsort.authorised_value %]" >[% Bsort.lib %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ [% END %]
+ <tr><td>Thư viện chính</td>
+ <td><input type="radio" name="Line" value="items.homebranch" /></td>
+ <td><input type="radio" name="Column" value="items.homebranch" /></td>
+ <td><select name="Filter" id="homebranch">
+ <option value=""> </option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ </td>
+ </tr>
+
+ <tr><td>Thư viện sở hữu</td>
+ <td><input type="radio" name="Line" value="items.holdingbranch" /></td>
+ <td><input type="radio" name="Column" value="items.holdingbranch" /></td>
+ <td><select name="Filter" id="holdingbranch">
+ <option value=""> </option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Patron library</td>
+ <td><input type="radio" name="Line" value="borrowers.branchcode" /></td>
+ <td><input type="radio" name="Column" value="borrowers.branchcode" /></td>
+ <td>
+ <select name="Filter" id="patronbranch">
+ <option value="">&nbsp;</option>
+ [% FOREACH branch IN branchloop %]
+ <option value="[% branch.value %]">
+ [% branch.branchname %]
+ </option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ [% IF (attribute_types_by_class.keys.size) %]
+ <tr>
+ <th colspan="4">Thuộc tính bạn đọc</th>
+ </tr>
+ [% FOREACH class IN attribute_types_by_class.keys.sort %]
+ [% IF (class) %]
+ <tr>
+ <th>[% class %]</th>
+ <th colspan="3"></th>
+ </tr>
+ [% END %]
+ [% FOREACH attr_type IN attribute_types_by_class.$class %]
+ <tr>
+ <td>[% attr_type.description %]</td>
+ <td><input type="radio" name="Line" value="borrower_attributes.[% attr_type.code %]" /> </td>
+ <td><input type="radio" name="Column" value="borrower_attributes.[% attr_type.code %]" /> </td>
+ <td>
+ [% IF attr_type.authorised_value_category %]
+ <select name="Filter_borrower_attributes.[% attr_type.code %]">
+ <option value="">&nbsp;</option>
+ [% FOREACH av IN attr_type.authorised_values %]
+ <option value="[% av.authorised_value %]">
+ [% av.lib %]
+ </option>
+ [% END %]
+ </select>
+ [% ELSE %]
+ <input type="text" name="Filter_borrower_attributes.[% attr_type.code %]" />
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ </tbody>
+ </table><br /></fieldset>
+
+<fieldset class="rows">
+ <legend>Cell value</legend>
+ <ol>
+ <li>
+ <label for="cellvalue1">Count total items:</label>
+ <input type="radio" name="Cellvalue" value="1" id="cellvalue1" checked="checked" />
+ </li>
+ <li>
+ <label for="cellvalue3">Count unique items:</label>
+ <input type="radio" name="Cellvalue" id="cellvalue3" value="3" />
+ </li>
+ <li>
+ <label for="cellvalue5">Count unique biblios:</label>
+ <input type="radio" name="Cellvalue" id="cellvalue5" value="5" />
+ </li>
+ </ol>
+</fieldset>
+ 
+ <fieldset class="rows">
+ <legend>Hiển thị báo cáo</legend>
+ <ol>
+ <li>
+ <label for="outputscreen">Trên màn hình hiển thị: </label><input type="radio" checked="checked" name="output" id="outputscreen" value="screen" />
+ </li>
+ <li>
+ <label for="outputfile">Xuất ra tệp tin:</label> <input type="radio" name="output" value="file" id="outputfile" />
+ <label class="inline" for="basename">Tên tệp tin: </label><input id="basename" type="text" name="basename" value="Xuất dữ liệu" />
+ <label class="inline" for="MIME">Into an application:</label>
+ <select name="MIME" id="MIME" size="1">
+ [% FOREACH value IN CGIextChoice %]
+ <option value="[% value %]">[% value %]</option>
+ [% END %]
+ </select>
+ <select name="sep" id="sep" size="1">
+ [% FOREACH value IN CGIsepChoice.values.sort() %]
+ [% IF ( value == CGIsepChoice.default ) %]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [% ELSE %]
+ <option value="[% value %]">[% value %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input value="Tìm kiếm" type="submit" />
+ <input type="hidden" name="report_name" value="[% report_name %]" />
+ <input type="hidden" name="do_it" value="1" />
+ </fieldset>
+ </form>
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'reports-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,202 @@
+/*
+ * This file contains CSS styles used only on the front page of Koha
+ *
+ * COLORS
+ * Very light blue  Module links background                 : #f4f8f9
+ * Light blue       Navbar, breadcrumb                      : #e6f0f2
+ * Blue             Module links and breadcrumb border      : #b9d8d9
+ * Dark blue        Links                                   : #004d99
+ * Green            Links:hover                             : #538200
+ * These colors are used in staff-global.css too
+ *
+ */
+
+#container-main {
+    /* Contains the news + both columns of links + pending box + userblock box */
+/*    background-image:url('../img/background_koha_logo.png');
+    background-repeat:no-repeat;*/
+    background-position:left top;
+    padding: 1em 0;
+}
+
+
+/* ==== NEWS - Start ==== */
+
+#area-news {
+    border: 1px solid #EEEEEE;
+    border-radius: 6px 6px 6px 6px;
+    margin: 0.2em;
+}
+
+#area-news h3 {
+    /* Title section for the news block : transparency to let the koha logo appear */
+    background-color: #EEEEEE;
+    filter:alpha(opacity=70);   /* for IE */
+    -moz-opacity: 0.7;          /* for Firefox before 0.9 */
+    opacity: 0.7;
+    padding : .3em; margin: 0;
+}
+
+.newsitem {
+    /* Block for one News entry */
+    padding: 3px;
+    margin: .3em;
+    border-bottom: 1px solid #EEE;
+    background-color : #ffffff;
+    border-radius: 6px;
+    filter:alpha(opacity=75);
+    -moz-opacity: 0.75;
+    opacity: .75;
+    }
+
+.newsfooter {
+    /* Footer containing the publication date and edition links for an News entry */
+    font-size: 80%;
+    color: #808080;
+}
+
+/* ==== NEWS - End ==== */
+
+
+/* ==== MODULE LINKS - Start ==== */
+
+ul.biglinks-list {
+    /* List containing the module links */
+    padding: 0px;
+}
+
+ul.biglinks-list li {
+    /* Standard attributes for the list elements */
+    list-style-type:none;
+}
+
+ul.biglinks-list li a.icon_general {
+    /* Class used for each module link */
+    background-image:url('../img/staff-home-icons-sprite.png');
+    display: block;
+    box-sizing: content-box;
+    max-width : 320px;
+    height: 46px;
+    margin: 0 1em 14px 0;
+    padding-left:57px;
+    padding-top:5px;
+
+    border: solid 2px #b9d8d9;
+    border-radius: 6px;
+
+    text-decoration: none;
+    font-family: verdana, arial;
+    font-weight: bold;
+    font-size: large;
+    color: #000000;
+
+    background-color:#f4f8f9;
+    background-position: 5px 3px;
+    background-repeat:no-repeat;
+}
+
+ul.biglinks-list li a:hover.icon_general {
+    /* Class used for each module link hover state */
+    color: #538200;
+    border-color: #538200;
+}
+
+/* CSS Sprites
+ * There is one sprite image which contains all icons in both
+ *  hover states (on and off)
+ */
+
+/* Classes used for each individual module link */
+ul.biglinks-list li a.icon_circulation {background-position:5px 0px;}
+ul.biglinks-list li a.icon_patrons {background-position:5px -99px;}
+ul.biglinks-list li a.icon_search {background-position:5px -198px;}
+ul.biglinks-list li a.icon_lists {background-position:5px -298px;}
+ul.biglinks-list li a.icon_cataloging {background-position:5px -397px;}
+ul.biglinks-list li a.icon_authorities {background-position:5px -496px;}
+ul.biglinks-list li a.icon_ill {background-position:5px -1291px;}
+
+ul.biglinks-list li a.icon_serials {background-position:5px -595px;}
+ul.biglinks-list li a.icon_acquisitions {background-position:5px -695px;}
+ul.biglinks-list li a.icon_reports {background-position:5px -794px;}
+ul.biglinks-list li a.icon_administration {background-position:5px -894px;}
+ul.biglinks-list li a.icon_tools {background-position:5px -993px;}
+ul.biglinks-list li a.icon_koha {background-position:5px -1091px;}
+ul.biglinks-list li a.icon_course_reserves {background-position:5px -1191px;}
+
+/* Classes used for each individual module link on hover*/
+ul.biglinks-list li a:hover.icon_circulation {background-position:5px -50px;}
+ul.biglinks-list li a:hover.icon_patrons {background-position:5px -149px;}
+ul.biglinks-list li a:hover.icon_search {background-position:5px -248px;}
+ul.biglinks-list li a:hover.icon_lists {background-position:5px -348px;}
+ul.biglinks-list li a:hover.icon_cataloging {background-position:5px -447px;}
+ul.biglinks-list li a:hover.icon_authorities {background-position:5px -546px;}
+ul.biglinks-list li a:hover.icon_ill {background-position:5px -1342px;}
+
+ul.biglinks-list li a:hover.icon_serials {background-position:5px -645px;}
+ul.biglinks-list li a:hover.icon_acquisitions {background-position:5px -744px;}
+ul.biglinks-list li a:hover.icon_reports {background-position:5px -844px;}
+ul.biglinks-list li a:hover.icon_administration {background-position:5px -943px;}
+ul.biglinks-list li a:hover.icon_tools {background-position:5px -1042px;}
+ul.biglinks-list li a:hover.icon_koha {background-position:5px -1140px;}
+ul.biglinks-list li a:hover.icon_course_reserves {background-position:5px -1241px;}
+/* ==== MODULE LINKS - End ==== */
+
+
+/* ==== PENDING - Start ==== */
+#area-pending {
+    /* Block containing links to pending tags, comments and suggestions */
+    width: 100%;
+    border: solid 1px #b9d8d9;
+    border-radius: 6px;
+    clear: left;
+}
+
+.pending-info {
+    /* For the div containing a "pending" link (useful to preserve width of area-pending box width) */
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 8px;
+}
+
+.pending-number-link {
+    /* Style for the "pending" links : the number of pending items appear bigger */
+    font-weight: bold;
+    font-size: 1.1em;
+}
+/* ==== PENDING - End ==== */
+
+
+/* ==== USERBLOCK - Start ==== */
+#area-userblock {
+    /* Appears if the "IntranetmainUserblock" system preference is defined */
+    margin-top: 10px;
+    width: 100%;
+    border: solid 1px #b9d8d9;
+    border-radius: 6px;
+
+}
+
+.user-info {
+    /* For the div containing the information (useful to preserve width of area-userblock box width) */
+    margin: 8px;
+}
+/* ==== USERBLOCK - End ==== */
+
+.intranet-main .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+ul.biglinks-list li a.icon_general {
+    /* Class used for each module link */
+    background-image:url('../img/staff-home-icons-sprite.png');
+    color: #000000;
+
+    background-color:#f4f8f9;
+}
+
+ul.biglinks-list li a:hover.icon_general {
+    /* Class used for each module link hover state */
+    color: #3a76a7!important;
+    border-color: #3a76a7;
+}

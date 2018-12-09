@@ -1,0 +1,88 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống &rsaquo; Từ khóa ánh xạ đến MARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_fieldmapping" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a> &rsaquo; Từ khóa ánh xạ đến MARC</div>
+<div id="doc3" class="yui-t2">
+ <div id="yui-main">
+ <div class="yui-b">
+ <h2>Từ khóa ánh xạ đến MARC</h2>
+ [% UNLESS ( fields.count ) %]
+ <div class="dialog message"><p>Không có ánh xạ cho [% IF framework.frameworktext %]<em>[% framework.frameworktext |html %]</em>khung mẫu [% ELSE %]khung mẫu mặc định[% END %]. </p></div>
+ [% END %]
+ <form method="get" action="/cgi-bin/koha/admin/fieldmapping.pl" id="selectframework">
+ <label for="framework">Khung mẫu biên mục:</label>
+ <select name="framework" id="framework" style="width:20em;">
+ <option value="">Mặc định</option>
+ [% FOREACH f IN frameworks %]
+ [% IF f.frameworkcode == framework.frameworkcode %]
+ <option selected="selected" value="[% f.frameworkcode %]">[% f.frameworktext |html %]</option>
+ [% ELSE %]
+ <option value="[% f.frameworkcode %]">[% f.frameworktext |html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <input type="submit" value="Tìm kiếm" />
+ </form>
+
+
+ <form method="post" action="" id="addfield">
+ <input type="hidden" name="framework" value="[% framework.frameworkcode %]" />
+ <fieldset class="rows">
+ <legend>Tạo ánh xạ</legend>
+ <ol>
+ <li><label for="fieldname">Tên trường: </label><input type="text" id="fieldname" name="fieldname" /></li>
+ <li><label for="marcfield">Trường MARC: </label><input type="text" id="marcfield" name="marcfield" size="3" /></li>
+ <li><label for="marcsubfield">Trường con MARC: </label><input type="text" id="marcsubfield" name="marcsubfield" size="1" /></li>
+ </ol>
+ <fieldset class="action">
+ <input type="submit" value="Tìm kiếm" />
+ </fieldset>
+ </fieldset>
+ </form>
+
+ [% IF ( fields.count ) %]
+ <table>
+ <caption>Ánh xạ cho [% IF framework.frameworktext %]<em>[% framework.frameworktext %]</em>khung mẫu [% ELSE %]khung mẫu mặc định[% END %]</caption>
+ <tr>
+ <th>Trường</th>
+ <th>Trường MARC</th>
+ <th>Trường con MARC</th>
+ <th>&nbsp;</th>
+ </tr>
+ [% FOREACH field IN fields %]
+ <tr>
+ <td>[% field.field |html %]</td>
+ <td>[% field.fieldcode %]</td>
+ <td>[% field.subfieldcode %]</td>
+ <td><a class="btn btn-default btn-xs" href="?op=delete&amp;id=[% field.id %]&amp;framework=[% field.frameworkcode %]"><i class="fa fa-trash"></i> Xóa</a></td>
+ </tr>
+ [% END %]
+ </table>[% END %]
+
+
+ </div>
+ </div>
+
+ <div class="yui-b">
+ [% INCLUDE 'admin-menu.inc' %]
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            $('#selectframework').find("input:submit").hide();
+            $('#framework').change(function() {
+                    $('#selectframework').submit();
+            });
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

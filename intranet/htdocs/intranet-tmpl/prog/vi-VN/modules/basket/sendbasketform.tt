@@ -1,0 +1,40 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %]  &rsaquo; Gửi giỏ tài liệu của bạn</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body style="padding: 1em;" id="cart_sendbasketform" class="cart">
+<div class="container">[% IF ( email_add ) %]
+
+ [% IF ( SENT ) %]
+ <h3>Gửi tin nhắn cho bạn đọc</h3>
+ <p>Thông tin giỏ tài liệu của bạn được gửi tới hòm thư: [% email_add |html %]</p>
+ <p><a class="focus close" href="#">Đóng</a></p>
+ [% END %]
+ [% IF ( error ) %]
+ <p>Quá trình gửi giỏ tài liệu của bạn bị lỗi...</p>
+ [% END %]
+ 
+[% ELSE %]
+
+<form action="/cgi-bin/koha/basket/sendbasket.pl" method="post">
+
+<fieldset class="rows"> 
+<legend>Gửi giỏ tài liệu của bạn</legend>
+<ol> <li>
+ <label for="email_add">Địa chỉ Email:</label>
+ <input type="text" id="email_add" name="email_add" size="43" class="focus" />
+ </li>
+ <li>
+ <label for="comment">Bình luận:</label>
+ <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action"> <input type="submit" value="Gửi thư" /> <a class="cancel close" href="#">Hủy bỏ</a> </fieldset>
+ <input type="hidden" name="bib_list" value="[% bib_list %]" />
+ <input type="hidden" name="csrf_token" value="[% csrf_token %]" />
+</form>
+
+[% END %]</div>
+</body>
+</html>

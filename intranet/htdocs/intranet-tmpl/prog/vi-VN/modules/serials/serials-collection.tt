@@ -1,0 +1,313 @@
+[% USE Asset %]
+[% USE AuthorisedValues %]
+[% USE Branches %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Ấn phẩm định kỳ &rsaquo; Thông tin bộ sưu tập ÂPĐK [% bibliotitle %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="ser_serials-collection" class="ser">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'serials-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Ấn phẩm định kỳ</a> &rsaquo; Thông tin bộ sưu tập ÂPĐK <i>[% bibliotitle %]</i></div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+ [% INCLUDE 'modals/serials_multi_receiving.inc' %]
+
+[% UNLESS ( popup ) %]
+ [% INCLUDE 'serials-toolbar.inc' %]
+
+ <h1>Thông tin bộ sưu tập ÂPĐK <i>[% bibliotitle %]</i>
+ [% IF location %] ([% AuthorisedValues.GetByCode( 'LOC', location ) %]) [% END %]
+ [% IF ( callnumber ) %]callnumber: [% callnumber %][% END %]</h1>
+[% END %]
+
+[% IF ( subscriptions ) %]
+<table>
+[% IF ( subscriptions.size == 1 ) %]
+<caption> Thông tin ấn phẩm định kỳ</caption>
+[% ELSE %]
+<caption> Thông tin ấn phẩm định kỳ</caption>
+[% END %]
+<tr>
+ <th>Số ÂPĐK</th>
+ <th>Tần suất phát hành</th>
+ <th>Mẫu số kỳ</th>
+ <th>Thư viện</th>
+ <th>Ký hiệu phân loại</th>
+ <th>Ghi chú</th>
+ <th>&nbsp;</th>
+</tr>
+[% FOREACH subscription IN subscriptions %]
+ <tr>
+ <td><a href="subscription-detail.pl?subscriptionid=[% subscription.subscriptionid %]"># [% subscription.subscriptionid %]</a> </td>
+ <td>[% subscription.frequency.description %]</td>
+ <td>[% subscription.numberpattern.label %]</td>
+ <td>[% IF subscription.branchcode %][% Branches.GetName( subscription.branchcode ) %][% END %]</td>
+ <td> [% subscription.callnumber %]</td>
+ <td> [% subscription.notes %]
+ [% UNLESS subscription.closed %]
+ [% IF ( subscription.subscriptionexpired ) %]
+ <br /><span class="problem"> ÂPĐK hết hạn</span>
+ [% END %]
+ [% ELSE %]
+ <br /> ÂPĐK kết thúc [% END %] </td>
+ [% IF ( subscription.abouttoexpire ) || ( subscription.subscriptionexpired ) %]<td class="problem actions">[% ELSE %]<td class="actions">[% END %]
+ [% UNLESS subscription.closed %]
+ [% IF ( routing && CAN_user_serials_routing ) %]
+ [% IF ( subscription.hasRouting ) %]
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/serials/routing.pl?subscriptionid=[% subscription.subscriptionid %]"><i class="fa fa-pencil"></i> Chỉnh sửa danh sách nhận ÂPĐK</a>
+ [% ELSE %]
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/serials/routing.pl?subscriptionid=[% subscription.subscriptionid %]&amp;op=new"><i class="fa fa-plus"></i> Tạo danh sách nhận</a>
+ [% END %]
+ [% END %]
+ [% IF ( subscription.abouttoexpire ) %]<a class="btn btn-default btn-xs" href="/cgi-bin/koha/serials/subscription-renew.pl?subscriptionid=[% subscription.subscriptionid %]" onclick="popup([% subscription.subscriptionid %]); return false;"><i class="fa fa-refresh"></i> Gia hạn</a>
+ [% ELSE %]
+ [% IF ( subscription.subscriptionexpired ) %]<a class="btn btn-default btn-xs" href="/cgi-bin/koha/serials/subscription-renew.pl?subscriptionid=[% subscription.subscriptionid %]" onclick="popup([% subscription.subscriptionid %]); return false;"><i class="fa fa-refresh"></i> Gia hạn</a>
+ [% ELSE %]
+ &nbsp;
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ &nbsp;
+ [% END %]
+ </td>
+ </tr>
+[% END %]
+[% IF ( subscr ) %]
+[% IF ( subscriptioncount > 1 ) %]
+<tr ><td colspan="8"> <a href="serials-collection.pl?biblionumber=[% biblionumber %]">Xem tất cả các kỳ ÂPĐK đính kèm với bản ghi này</a></td>
+</tr>
+[% END %]
+[% END %]
+</table>
+[% END %]
+
+
+[% IF ( years ) %]<form name="edition" action="serials-edit.pl" method="post">
+<div id="subscription_years" class="toptabs numbered">
+<ul>
+ [% FOREACH year IN years %]
+ [% IF ( year.year ) %]
+ [% IF year.year == 'manage' %]
+ <li><a href="#subscription-year-manage">Manage</a></li>
+ [% ELSE %]
+ <li><a href="#subscription-year-[% year.year %]">[% year.year %]</a></li>
+ [% END %]
+ [% END %]
+ [% END %]
+</ul>
+
+ [% FOREACH year IN years %]
+<div id="subscription-year-[% year.year %]">
+ [% IF ( CAN_user_serials_receive_serials ) %]
+ <p>
+ <div class="btn-group"><input class="btn btn-default btn-sm" type="submit" value="Chỉnh sửa ÂPĐK" /></div>
+ [% UNLESS subscription.closed %]
+ <div class="btn-group"><input class="btn btn-default btn-sm" type="button" value="Tạo kỳ tiếp theo" onclick="javascription:generateNext([% subscriptionidlist %])" /></div>
+ [% IF ( subscriptions.size == 1 and !serialsadditems ) %]&nbsp;
+ <div class="btn-group"><input value="Nhận nhiều kỳ" type="button" href="#multi_receiving" data-toggle="modal" class="btn btn-default btn-sm"></div>
+ [% END %]
+ [% END %]
+ </p>
+ [% END %]
+ <span class="checkall">
+ <a class="CheckAll" href="#" onclick="CheckAll('subscription-year-[% year.year %]'); return false;">Chọn tất cả</a>
+ </span> |
+ <span class="clearall">
+ <a class="CheckNone" href="#" onclick="CheckNone('subscription-year-[% year.year %]'); return false;">Bỏ tất cả</a>
+ </span>
+ <table class="subscription-year-table">
+ <thead>
+ <tr>
+ [% IF ( CAN_user_serials_receive_serials ) %]<th>Chỉnh sửa</th>[% END %]
+[% IF ( subscriptions.size > 1 ) %]
+ <th>Số ÂPĐK</th>
+[% END %]
+ <th class="title-string">Ngày phát hành </th>
+ <th class="title-string">Date published (text)
+ </th>
+ <th class="title-string">Ngày nhận </th>
+ <th>Số kỳ phát hành </th>
+ <th>Trạng thái </th>
+ <th>Ghi chú </th>
+ <th>Thư viện </th>
+ [% IF ( routing ) %]<th>Danh sách nhận</th>[% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH serial IN year.serials %]
+ <tr>
+ [% IF ( CAN_user_serials_receive_serials ) %]
+ <td>
+ [% UNLESS CAN_user_serials_receive_serials %] không được kích hoạt [% ELSE %] [% IF ( serial.subscriptionexpired ) %] <input type="checkbox" name="serialid" value="[% serial.serialid %]" disabled="disabled" />
+ [% ELSE %]
+ [% IF ( serial.checked ) %]
+ <input type="checkbox" class="checkboxed" name="serialid" checked="checked" value="[% serial.serialid %]" />
+ [% ELSE %]
+ <input type="checkbox" class="checkboxed" name="serialid" value="[% serial.serialid %]" />
+ [% END %]
+ [% END %]
+ [% END %]
+ </td>
+ [% END %]
+[% IF ( subscriptions.size > 1 ) %]
+ <td><a href="serials-collection.pl?subscriptionid=[% serial.subscriptionid %]">[% serial.subscriptionid %]</a></td>
+[% END %]
+ <td>
+ <span title="[% serial.publisheddate %]">
+ [% IF serial.publisheddate %]
+ [% serial.publisheddate | $KohaDates %]
+ [% ELSE %]
+ Unknown
+ [% END %]
+ </span>
+ </td>
+ <td>
+ [% IF serial.publisheddatetext %]
+ <span title="[% serial.publisheddatetext %]">
+ [% serial.publisheddatetext %]
+ </span>
+ [% END %]
+ </td>
+ <td>
+ <span title="[% serial.planneddate %]">
+ [% IF serial.planneddate %]
+ [% serial.planneddate | $KohaDates %]
+ [% ELSE %]
+ Unknown
+ [% END %]
+ </span>
+ </td>
+ <td>
+ [% IF ( matches = serial.serialseq.match('(.*)Spring(.*)') ) %]
+ [% matches.0 %]Spring[% matches.1 %]
+ [% ELSIF ( matches = serial.serialseq.match('(.*)Summer(.*)') ) %]
+ [% matches.0 %]Summer[% matches.1 %]
+ [% ELSIF ( matches = serial.serialseq.match('(.*)Fall(.*)') ) %]
+ [% matches.0 %]Fall[% matches.1 %]
+ [% ELSIF ( matches = serial.serialseq.match('(.*)Winter(.*)') ) %]
+ [% matches.0 %]Winter[% matches.1 %]
+ [% ELSIF ( matches = prediction.number.match('(.*)Spr(.*)') ) %]
+ [% matches.0 %]Spr[% matches.1 %]
+ [% ELSIF ( matches = prediction.number.match('(.*)Sum(.*)') ) %]
+ [% matches.0 %]Sum[% matches.1 %]
+ [% ELSIF ( matches = prediction.number.match('(.*)Fal(.*)') ) %]
+ [% matches.0 %]Fal[% matches.1 %]
+ [% ELSIF ( matches = prediction.number.match('(.*)Win(.*)') ) %]
+ [% matches.0 %]Win[% matches.1 %]
+ [% ELSE %]
+ [% serial.serialseq %]
+ [% END %]
+ </td>
+ <td>
+ [% IF ( serial.status1 ) %]Dự kiến[% END %] [% IF ( serial.status2 ) %]Đã về[% END %] [% IF ( serial.status3 ) %]Chậm[% END %] [% IF ( serial.status4 ) %]Thiếu[% END %] [% IF ( serial.status41 ) %]Thiếu (Không bao giờ nhận được)[% END %] [% IF ( serial.status42 ) %]Thiếu (Đã bán)[% END %] [% IF ( serial.status43 ) %]Thiếu (Hư hỏng)[% END %] [% IF ( serial.status44 ) %]Thiếu (Mất)[% END %] [% IF ( serial.status5 ) %]Không phát hành[% END %] [% IF ( serial.status6 ) %]Xóa[% END %] [% IF ( serial.status7 ) %]Đã khiếu nại[% END %] [% IF ( serial.status8 ) %]Ngừng phát hành[% END %] </td>
+ <td>
+ [% serial.notes %]
+ </td>
+ <td>
+ [% Branches.GetName( serial.branchcode ) %]
+ </td>
+ [% IF ( routing ) %]
+ <td class="actions">
+ <a href="" onclick="print_slip([% serial.subscriptionid |html %], '[% serial.serialseq.replace("'", "\\'") |html %] ([% serial.publisheddate | $KohaDates %])'); return false" class="btn btn-default btn-xs"><i class="fa fa-print"></i> In</a>
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+ <input type="hidden" name="subscriptionid" value="[% subscriptionidlist %]" />
+
+</div>
+</form>
+[% END %]
+
+</div>
+</div>
+
+<div class="yui-b">
+[% INCLUDE 'serials-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        var subscriptionid = "[% subscriptionid %]";
+        var MSG_CLOSE_SUBSCRIPTION = _("Bạn có chắc chắn muốn đóng ấn phẩm định kỳ này?");
+        var MSG_REOPEN_SUBSCRIPTION = _("Bạn chắc chắn muốn mở lại ấn phẩm định kỳ này?");
+        var CONFIRM_DELETE_SUBSCRIPTION = _("Bạn chắc chắn muốn xóa ấn phẩm định kỳ này?");
+    </script>
+ [% Asset.js("js/serials-toolbar.js") %]
+ [% Asset.js("lib/jquery/plugins/jquery.checkboxes.min.js") %]
+
+ <script type="text/javascript">
+
+        function print_slip(subscriptionid,issue){
+            var myurl = 'routing-preview.pl?ok=1&subscriptionid='+subscriptionid+'&issue='+issue;
+            window.open(myurl,'PrintSlip','width=500,height=500,toolbar=no,scrollbars=yes');
+        }
+
+        function popup(subscriptionid) {
+            newin=window.open('subscription-renew.pl?mode=popup&subscriptionid='+subscriptionid,'popup','width=500,height=400,toolbar=false,scrollbars=yes');
+        }
+
+        function generateNext(subscriptionid) {
+            if(confirm(_("Bạn có thật sự muốn khởi tạo ấn phẩm tiếp theo không?"))){
+                document.location = 'serials-collection.pl?op=gennext&subscriptionid='+subscriptionid;
+            }
+        }
+
+        function CheckAll( node ) {
+            $("#"+node).checkCheckboxes();
+            return false;
+        }
+        function CheckNone( node ) {
+            $("#"+node).unCheckCheckboxes();
+            return false;
+        }
+        $(document).ready(function() {
+            $('#subscription_years').tabs();
+            $(".subscription-year-table").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ 0,-1 ], "bSortable": false, "bSearchable": false },
+                    { "sType": "title-string", "aTargets" : [ "title-string" ] }
+                ],
+                "aaSorting": [[0, 'desc']],
+                "sDom": 't',
+                "bAutoWidth": false,
+                "bPaginate": false,
+                "bInfo": false,
+                "bFilter": false,
+            } ));
+
+            $('#multi_receiving').on('show', function () {
+               $(this).find(".modal-body").html($(".serials_multi_receiving")[0].outerHTML);
+            });
+
+            $("form[name='edition']").on('submit', function(e){
+                if ( $(this).find("input[name='serialid']:checked").size() == 0 ) {
+                    e.preventDefault();
+                    alert(_("You must select at least one serial to edit"));
+                    return 0;
+                }
+                return 1;
+            });
+        });
+
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

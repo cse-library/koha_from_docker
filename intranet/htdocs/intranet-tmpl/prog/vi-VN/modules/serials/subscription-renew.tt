@@ -1,0 +1,61 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+[% IF subscription %]
+<title>Koha &rsaquo; Gia hạn ÂPĐK số [% subscription.subscriptionid %]</title>
+[% ELSE %]
+<title>Koha &rsaquo; Serials subscription renew</title>
+[% END %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="ser_subscription-renew" class="ser">
+ <div class="container-fluid">
+
+[% IF op == 'renew' OR op =='multi_renew' %]
+ [% IF op == 'renew' %]
+ <span>Subscription renewed.<span>
+ [% ELSE %]
+ <span>Subscriptions renewed.<span>
+ [% END %]
+
+ <div id="closewindow">
+ <a class="btn btn-default btn-default close" href="#">Thoát</a>
+ </div>
+[% ELSE %]
+ <div id="bd">
+<form name="f" action="/cgi-bin/koha/serials/subscription-renew.pl" method="post">
+ <input type="hidden" name="op" value="renew" />
+ <input type="hidden" name="subscriptionid" value="[% subscription.subscriptionid %]" />
+ <fieldset class="rows"><legend>Gia hạn ÂPĐK: [% subscription.bibliotitle %]</legend>
+ <ol>
+ <li>
+ <label for="startdate">Ngày bắt đầu: </label>
+ <input type="text" size="10" id="startdate" name="startdate" value="[% startdate %]" class="datepicker"/>
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ <li><fieldset>
+ <legend>Số lượng ÂPĐK:</legend>
+ <ol><li><label for="numberlength">Số lượng ấn phẩm đặt mua:</label><input type="text" id="numberlength" name="numberlength" value="[% subscription.numberlength %]" /></li>
+ <li><label for="weeklength">Số tuần đặt mua: </label><input type="text" id="weeklength" name="weeklength" value="[% subscription.weeklength %]" /></li>
+ <li><label for="monthlength">Số tháng đặt mua: </label><input type="text" id="monthlength" name="monthlength" value="[% subscription.monthlength %]" /></li></ol></fieldset></li>
+ <li><label for="note">Ghi chú cho thủ thư quản lý yêu cầu gia hạn: </label>
+ <textarea name="note" id="note" rows="5" cols="50"></textarea></li></ol></fieldset>
+ <fieldset class="action"><input value="Tìm kiếm" type="submit" class="button" /></fieldset>
+</form>
+[% END %]
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function(){
+            $(".close").on("click", function(e){
+                e.preventDefault();
+                window.opener.location.reload(false);
+                self.close();
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]
+

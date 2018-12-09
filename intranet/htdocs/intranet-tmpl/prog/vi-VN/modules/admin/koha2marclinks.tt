@@ -1,0 +1,102 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Administration &rsaquo; Koha to MARC mapping</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="admin_koha2marclinks" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a> &rsaquo; <a href="/cgi-bin/koha/admin/koha2marclinks.pl">Ánh xạ KOHA_MARC</a></div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+<h1>Ánh xạ KOHA_MARC</h1>
+<br/>
+<form action="/cgi-bin/koha/admin/koha2marclinks.pl" method="post" id="koha2marc">
+
+[% IF error_add %]
+ <div class="dialog alert">Failed to add mapping for [% error_info %]</div>
+[% END %]
+
+<table id="kohafields">
+<thead><tr>
+ <th>Trường Koha</th>
+ <th>Trường</th>
+ <th>Trường con</th>
+ <th>Hiển thị cho thư viện</th>
+ <th>&nbsp;</th>
+</tr></thead>
+<tbody>
+[% FOREACH loo IN loop %]
+<tr>
+ <td>[% loo.kohafield %]</td>
+ <td>[% loo.tagfield %]</td>
+ <td>[% loo.tagsubfield %]</td>
+ <td>[% loo.liblibrarian %]</td>
+ <td class="actions">
+ [% IF !loo.readonly %]
+ <a onclick="AddFld('[% loo.kohafield %]');" class="btn btn-default btn-xs"><i class="fa fa-plus"></i> Tạo</a>
+ [% IF loo.tagfield %] <a onclick="RemFld('[% loo.tagfield %]','[% loo.tagsubfield %]');" class="btn btn-default btn-xs"><i class="fa fa-remove"></i> Loại bỏ</a> [% END %]
+ [% END %]
+ </td>
+ </td>
+</tr>
+[% END %]
+</tbody>
+</table>
+
+<input id="remove_field" name="remove_field" type="hidden" value=""/>
+<input id="add_field" name="add_field" type="hidden" value=""/>
+
+</form>
+
+</div>
+</div>
+
+<div class="yui-b">
+[% INCLUDE 'admin-menu.inc' %]
+</div>
+
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("js/admin-menu.js") %]
+ <script type="text/javascript">
+        function AddFld(kohafield) {
+            var fieldstr = prompt( _("Adding a mapping for: %s.").format(kohafield) + "\n" + _("Please enter field tag and subfield code, separated by a comma. (For control fields: add '@' as subfield code.)\nThe change will be applied immediately.") );
+            var temp = fieldstr.split(',');
+            if( temp.length == 2 ) {
+                $('#add_field').val( kohafield+','+fieldstr );
+                $('#koha2marc').submit();
+            } else {
+                alert( _("Invalid input. Enter something like: 245,a") );
+            }
+        }
+
+        function RemFld(tagfield, subfield ) {
+            if( confirm( _("Mapping will be removed for: %s.").format(tagfield + subfield) + "\n" + _("The change will be applied immediately." ))) {
+                $('#remove_field').val(tagfield+','+subfield);
+                $('#koha2marc').submit();
+            }
+        }
+        $(document).ready(function() {
+            $("#kohafields").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                ],
+                "paging":   false
+            } ));
+
+         });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

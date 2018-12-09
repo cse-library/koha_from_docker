@@ -1,0 +1,137 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Báo cáo &rsaquo; Bạn đọc không ghi mượn</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="rep_borrowers_out" class="rep">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Báo cáo</a> &rsaquo; Bạn đọc không ghi mượn</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( do_it ) %]
+ [% FOREACH mainloo IN mainloop %]
+ <h1>Bạn đọc không ghi mượn tài liệu</h1>
+ [% IF ( mainloo.loopfilter ) %]
+ <p>Bộ lọc dữ liệu:</p>
+ [% FOREACH loopfilte IN mainloo.loopfilter %]
+ <p>[% IF ( loopfilte.err ) %] [% END %] [% loopfilte.crit %] =[% loopfilte.filter %][% IF ( loopfilte.err ) %] [% END %]</p>
+ [% END %]
+ [% END %]
+ 
+ <table>
+ <tr>
+ <th>Số thẻ/Tên bạn đọc</th>
+ [% FOREACH loopco IN mainloo.loopcol %]
+ <th>[% loopco.coltitle %]</th>
+ [% END %]
+ </tr>
+ [% FOREACH loopro IN mainloo.looprow %]
+ <tr>
+ <td>[% loopro.rowtitle %]</td>
+ [% FOREACH loopcel IN loopro.loopcell %]
+ <td>[% IF ( loopcel.value ) %][% loopcel.value %][% END %]
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </table>
+ [% END %]
+[% ELSE %]
+ <h1>Bạn đọc không ghi mượn tài liệu</h1>
+ <form method="post" action="/cgi-bin/koha/reports/borrowers_out.pl">
+ <fieldset class="rows">
+ <ol>
+ <li><label for="patroncategory">Kiểu bạn đọc: </label> <select name="Filter" id="patroncategory"><option value="" > Tất cả</option>
+ [% FOREACH patron_category IN patron_categories %]
+ <option value="[% patron_category.categorycode %]" >[% patron_category.description %] </option>
+ [% END %]
+ </select>
+</li>
+ <li><label for="to">Không ghi mượn từ ngày: </label> <input size="10" id="to" name="Filter" value="" type="text" />
+</li>
+ </ol>
+ </fieldset>
+ 
+ <fieldset class="rows">
+ <legend>Giới hạn</legend>
+ <ol>
+ <li><label for="numberlimit">Số lượng hiển thị: </label><select name="Limit" id="numberlimit">
+ <option value ="" selected="selected">Bất kỳ</option>
+ <option value ="5"> 5</option>
+ <option value ="10">10</option>
+ <option value ="15">15</option>
+ <option value ="20">20</option>
+ <option value ="25">25</option>
+ <option value ="40">40</option>
+ <option value ="50">50</option>
+ <option value ="100">100</option>
+ </select></li>
+ <li><label for="criteria">Liệt kê theo: </label><select name="Criteria" id="criteria">
+ <option value ="" selected="selected">Bất kỳ</option>
+ <option value ="categorycode">Kiểu bạn đọc</option>
+ <option value ="branchcode">Thư viện</option>
+ </select></li>
+ </ol>
+ </fieldset>
+ 
+<fieldset class="rows">
+ <legend>Hiển thị báo cáo</legend>
+ <ol>
+ <li>
+ <label for="outputscreen">Trên màn hình hiển thị: </label><input type="radio" checked="checked" name="output" id="outputscreen" value="screen" />
+ </li>
+ <li>
+ <label for="outputfile">Xuất ra tệp tin:</label> <input type="radio" name="output" value="file" id="outputfile" />
+ <label class="inline" for="basename">Tên tệp tin: </label><input value="Xuất dữ liệu" name="basename" type="text" id="basename" />
+ <label class="inline" for="MIME">Into an application:</label>
+ <select name="MIME" id="MIME" size="1">
+ [% FOREACH value IN CGIextChoice %]
+ <option value="[% value %]">[% value %]</option>
+ [% END %]
+ </select>
+ <select name="sep" id="sep" size="1">
+ [% FOREACH value IN CGIsepChoice.values.sort() %]
+ [% IF ( value == CGIsepChoice.default ) %]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [% ELSE %]
+ <option value="[% value %]">[% value %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input type="submit" value="Tìm kiếm" />
+ <input type="hidden" name="report_name" value="[% report_name %]" />
+ <input type="hidden" name="do_it" value="1" />
+ </fieldset>
+ </form>
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'reports-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function(){
+            $("#to").datepicker({ maxDate: "-1D" });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

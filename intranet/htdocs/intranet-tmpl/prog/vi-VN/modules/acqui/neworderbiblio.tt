@@ -1,0 +1,136 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Tìm kiếm tài liệu</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_neworderbiblio" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% name %]</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno %]">Giỏ đặt hàng số [% basketno %]</a> &rsaquo; Tìm kiếm tài liệu</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ 
+<h1>Tìm kiếm tài liệu</h1>
+
+
+[% IF ( total ) %]
+<b>Tìm thấy [% total %] kết quả phù hợp với tìm kiếm của bạn </b> 
+<div class="pages">[% pagination_bar %]</div>
+[% ELSE %]
+<h3> Không tìm thấy kết quả phù hợp</h3>
+<p>
+ Không tìm thấy tài liệu phù hợp với tìm kiếm của bạn <span style="font-weight: bold;">&ldquo;[% query %]&rdquo;</span> trong thư viện [% LibraryName %] </p>
+[% END %]
+
+[% IF ( query_error ) %]
+ <div class="dialog alert"><p><strong>Lỗi:</strong> [% query_error %]</p></div>
+[% END %]
+
+[% IF ( total ) %]
+<div class="searchresults">
+ <table id="resultst">
+ <thead>
+ <tr>
+ <th>Tóm tắt</th>
+ <th>Nhà xuất bản</th>
+ <th>Năm xuất bản</th>
+ <th>&nbsp;</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH biblio IN resultsloop %]
+ <tr>
+ <td>
+ <p><span class="title"><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblio.biblionumber %]">[% biblio.title | html %]</a></span>
+ [% FOREACH subtitle IN biblio.subtitles %] <span class="subtitle">[% subtitle.subfield %]</span>[% END %]
+ [% IF ( biblio.author ) %] by <span class="author">[% biblio.author %]</span>,[% END %]</p>
+ <p>[% IF ( biblio.isbn ) %] [% biblio.isbn %][% END %]
+ [% IF ( biblio.pages ) %] - [% biblio.pages %][% END %]
+ [% IF ( biblio.notes ) %] : [% biblio.notes %][% END %]
+ [% IF ( biblio.size ) %] ; [% biblio.size %][% END %]
+ </p>
+ </td>
+ <td>
+ [% biblio.publishercode %]
+ [% IF ( biblio.place ) %] ; [% biblio.place %][% END %]
+ </td>
+ <td>
+ [% biblio.copyrightdate %]
+ </td>
+ <td>
+ <a href="/cgi-bin/koha/catalogue/showmarc.pl?id=[% biblio.biblionumber %]&amp;viewas=html" class="previewMARC">Hiển thị MARC</a>
+ </td>
+ <td>
+ <a title="Tạo đơn hàng cho tài liệu này" href="/cgi-bin/koha/acqui/neworderempty.pl?booksellerid=[% booksellerid %]&basketno=[% basketno %]&biblionumber=[% biblio.biblionumber %]">
+ Đơn hàng </a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ <div id="marcPreview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="marcPreviewLabel" aria-hidden="true">
+ <div class="modal-dialog">
+ <div class="modal-content">
+ <div class="modal-header">
+ <button type="button" class="closebtn" data-dismiss="modal" aria-hidden="true">×</button>
+ <h3 id="marcPreviewLabel">MARC preview</h3>
+ </div>
+ <div class="modal-body">
+ <div id="loading"> <img src="[% interface %]/[% theme %]/img/spinner-small.gif" alt="" /> Loading </div>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Thoát</button>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+[% END %]
+
+[% INCLUDE 'acquisitions-add-to-basket.inc' %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+         $(document).ready(function() {
+            var resultst = $("#resultst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                'sDom': 't',
+                'bPaginate': false,
+                'bFilter': false,
+                'bInfo': false,
+                'bSort': false,
+            } ) );
+            $(".previewMARC").on("click", function(e){
+                e.preventDefault();
+                var ltitle = $(this).text();
+                var page = $(this).attr("href");
+                $("#marcPreviewLabel").text(ltitle);
+                $("#marcPreview .modal-body").load(page + " table");
+                $('#marcPreview').modal({show:true});
+            });
+            $("#marcPreview").on("hidden", function(){
+                $("#marcPreviewLabel").html("");
+                $("#marcPreview .modal-body").html("<div id=\"loading\"><img src=\"[% interface %]/[% theme %]/img/spinner-small.gif\" alt=\"\" /> "+_("Đang tải")+"</div>");
+            });
+         });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

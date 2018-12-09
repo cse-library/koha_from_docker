@@ -1,0 +1,90 @@
+[% USE Koha %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Kiểm tra trùng lặp bạn đọc</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_moremember-brief" class="pat">
+ <div class="container-fluid">
+ <div class="row">
+
+ <div class="col-xs-12">
+ <h3>[% UNLESS ( I ) %]
+ [% title %] [% firstname %] [% END %] [% surname %] ([% cardnumber %])</h3>
+ </div>
+ </div>
+ <div class="row">
+ <div class="col-xs-6">
+ <div id="patron-information">
+
+ [% UNLESS ( I ) %][% IF ( othernames ) %]&ldquo;[% othernames %]&rdquo;[% END %]
+ <div class = "address">
+ <ul>
+ [% IF Koha.Preference( 'AddressFormat' ) %]
+ [% INCLUDE "member-display-address-style-${ Koha.Preference( 'AddressFormat' ) }.inc" %]
+ [% ELSE %]
+ [% INCLUDE 'member-display-address-style-us.inc' %]
+ [% END %]
+ </ul>
+ </div>
+ <div class="rows">
+ <ol>
+ [% IF ( phone ) %]<li><span class="label">Điên thoại: </span>[% phone %]</li>[% END %]
+ [% IF ( phonepro ) %]<li><span class="label">Di động: </span>[% phonepro %]</li>[% END %]
+ [% IF ( mobile ) %]<li><span class="label">Other phone: </span>[% mobile %]</li>[% END %]
+ [% IF ( fax ) %]<li><span class="label">Số Fax: </span>[% fax %]</li>[% END %]
+ [% IF ( email ) %]<li class="email"><span class="label">Thư điện tử:</span><a href="mailto:[% email %]">[% email %]</a></li>[% END %]
+ [% IF ( emailpro ) %]<li class="email"><span class="label">Thư điện tử 2: </span><a href="mailto:[% emailpro %]">[% emailpro %]</a></li>[% END %]
+ [% UNLESS ( I ) %]
+ [% IF ( inititals ) %]<li><span class="label">Tên viết tắt: </span>[% initials %]</li>[% END %]
+ [% IF ( dateofbirth ) %]<li><span class="label">Ngày sinh:</span>[% dateofbirth | $KohaDates %]</li>[% END %]
+ [% IF ( sex ) %]<li><span class="label">Giới tính:</span>[% IF ( sex == 'F' ) %]Nữ[% ELSIF ( sex == 'M' ) %]Nam[% ELSE %][% sex %][% END %]</li>[% END %][% END %]
+ [% END %]
+ [% IF ( isguarantee ) %]
+ [% IF ( guaranteeloop ) %]
+ <li><span class="label">Bạn đọc bảo lãnh:</span><ul>[% FOREACH guaranteeloo IN guaranteeloop %]<li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% guaranteeloo.borrowernumber %]">[% guaranteeloo.name %] </a></li>[% END %]</ul></li>
+ [% END %]
+ [% ELSE %]
+ [% IF ( guarantor.borrowernumber ) %]
+ <li><span class="label">Bạn đọc bảo lãnh:</span><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% guarantor.borrowernumber %]">[% guarantor.surname %], [% guarantor.firstname %]</a></li>
+ [% END %]
+ [% END %]
+ </ol>
+ </div>
+ </div>
+ </div>
+
+ <div class="col-xs-6">
+ <div id="patron-library-details">
+ <h3>Thông tin thư viện</h3>
+ <div class="rows">
+ <ol>
+ <li><span class="label">Số thẻ: </span>[% cardnumber %]</li>
+ <li><span class="label">Số bạn đọc: </span> [% borrowernumber %]</li>
+ <li><span class="label">Kiểu: </span>[% categoryname %] ([% categorycode %])</li>
+ <li><span class="label">Ngày đăng ký: </span>[% dateenrolled | $KohaDates %]</li>
+ <li><span class="label">Ngày hết hạn: </span>
+ [% IF ( was_renewed ) %]
+ <strong class="reregistrinfo">[% dateexpiry | $KohaDates %]</strong>
+ [% ELSE %]
+ [% dateexpiry | $KohaDates %]
+ [% END %]
+ </li>
+ <li><span class="label">Thư viện: </span>[% branchname %]</li>
+
+ [% IF ( sort1 ) %]<li><span class="label">Thống kê 1:</span>[% lib1 %]</li>[% END %]
+ [% IF ( sort2 ) %]<li><span class="label">Thống kê 2:</span>[% lib2 %]</li>[% END %]
+ </ol>
+ </div>
+ </div>
+ </div>
+</div>
+<div class="row">
+ <div class="col-xs-12">
+ <fieldset class="action"><input type="button" class="close" value="Đóng" /></fieldset>
+ </div>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

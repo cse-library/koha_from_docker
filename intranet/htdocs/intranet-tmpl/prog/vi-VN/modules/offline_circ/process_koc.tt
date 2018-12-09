@@ -1,0 +1,136 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ lưu thông &rsaquo; Tải tệp tin lưu thông ngoại tuyến lên Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="ocirc_process_koc" class="circ ocirc">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Phân hệ lưu thông</a> &rsaquo; [% IF ( transactions_loaded ) %] <a href="/cgi-bin/koha/offline_circ/process_koc.pl">Tải tệp tin lưu thông ngoại tuyến lên Koha</a> &rsaquo; Kết quả[% ELSE %] Kết quả tải tệp tin lưu thông ngoại tuyến lên Koha[% END %]</div>
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+[% IF ( transactions_loaded ) %]
+ <h2>Lưu thông ngoại tuyến Koha</h2>
+ <p>Dữ liệu của bạn đã được xử lý. Đây là kết quả sau khi xử lý:</p>
+ [% FOREACH message IN messages %]
+ [% IF ( message.message ) %]
+ <div class="dialog alert">
+ [% IF ( message.ERROR_file_version ) %]<p>Cảnh báo: Phiên bản của tệp tin này là [% message.upload_version %], phiên bản được hỗ trợ tốt nhất là phiên bản [% message.current_version %]. Do đó kết quả có thể không theo ý bạn.</p>[% END %]
+ </div>
+ [% END %]
+ [% IF ( message.ERROR_no_borrower_from_item ) %]<p>Cảnh báo: Bạn không thể xác định bạn đọc ghi mượn tài liệu từ đăng ký cá biệt của tài liệu ([% message.badbarcode %]). Do đó bạn không thể ghi trả cho bạn đọc.</p>[% END %]
+ [% IF ( message.issue ) %]<p>Được ghi mượn <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) tới bạn đọc <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %]
+ [% IF ( message.renew ) %]<p>Được gia hạn <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) cho bạn đọc <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %]
+ [% IF ( message.return ) %]<p>Được ghi trả <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) từ bạn đọc <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %]
+ [% IF ( message.payment ) %]<p>Chấp nhận thanh toán khoản tiền phạt ([% message.amount %]) từ bạn đọc <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %]
+ [% END %]
+[% ELSE %]
+ <h2>Tải dữ liệu lưu thông ngoại tuyến lên Koha</h2>
+
+ <div id="fileuploadform">
+ <form method="post" action="/cgi-bin/koha/offline_circ/process_koc.pl" enctype="multipart/form-data" class="validated">
+ <fieldset class="brief">
+ <ol><li><label for="fileToUpload">Chọn tệp tin .koc: </label>
+ <input class="required" required="required" type="file" id="fileToUpload" size="50" name="fileToUpload" />
+ <span class="required">Bắt buộc</span>
+ </li></ol>
+ <fieldset class="action"><input value="Tải lên" type="button" id="upload_file" class="submit" /></fieldset>
+ </fieldset>
+ </form>
+ <div id="fileuploadstatus" class="progress_panel" style="display:none">Tiến trình tải lên: <progress id="fileuploadprogress" max="100" value="0"></progress> <span class="fileuploadpercent"></span>%</div>
+ <div id="fileuploadfailed" style="display:none"></div>
+ </div>
+
+ <form action="enqueue_koc.pl" id="processfile" method="post" enctype="multipart/form-data">
+ <input type="hidden" name="uploadedfileid" id="uploadedfileid" value="" />
+ <input type="submit" id="queueformsubmit" value="Thêm vào dữ liệu lưu thông ngoại tuyến" />
+ </form>
+
+ <form action="process_koc.pl" id="enqueuefile" method="post" enctype="multipart/form-data">
+ <input type="hidden" name="uploadedfileid" id="uploadedfileid" value="" />
+ <input type="hidden" name="runinbackground" id="runinbackground" value="" />
+ <input type="hidden" name="completedJobID" id="completedJobID" value="" />
+ <!-- <input type="submit" value="Apply directly" id="mainformsubmit" /> -->
+ <!-- FIXME: Job freezes when submitted, disabling button as a temporary mitigation -->
+ <div id="jobstatus" style="display:none">Tiến trình xử lý: <div id="jobprogress"></div> <span id="jobprogresspercent"></span>%</div>
+ <div id="jobfailed" style="display:none"></div>
+ </form>
+[% END %]
+
+
+ </div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/background-job-progressbar.js") %]
+ [% Asset.js("js/file-upload.js") %]
+ <script type="text/javascript">
+        var xhr;
+        $(document).ready(function(){
+            $("#enqueuefile").hide();
+            $("#processfile").hide();
+            $("#upload_file").on("click",function(){
+                StartUpload();
+            });
+            $("#queueformsubmit").on("click",function(){
+                var processfile = document.getElementById("processfile");
+                return CheckForm( processfile );
+            });
+            $("#mainformsubmit").on("click",function(){
+                var enqueuefile = document.getElementById("enqueuefile");
+                return CheckForm( enqueuefile );
+            });
+        });
+
+        function StartUpload() {
+            if( $('#fileToUpload').prop('files').length == 0 ) return;
+            $('#fileuploadform input.submit').prop('disabled',true);
+            $("#fileuploadfailed").hide();
+            $("#processfile").hide();
+            $("#fileuploadstatus").show();
+            $("form#processfile #uploadedfileid").val('');
+            $("form#enqueuefile #uploadedfileid").val('');
+            xhr= AjaxUpload( $('#fileToUpload'), $('#fileuploadprogress'), 'temp=1', cbUpload );
+        }
+
+        function cbUpload( status, fileid, errors ) {
+            if( status=='done' ) {
+                $("form#processfile #uploadedfileid").val( fileid );
+                $("form#enqueuefile #uploadedfileid").val( fileid );
+                $('#fileToUpload').prop('disabled',true);
+                $("#processfile").show();
+                $("#enqueuefile").show();
+            } else {
+                var errMsgs = [ _("Error code 0 not used"), _("File already exists"), _("Directory is not writeable"), _("Root directory for uploads not defined"), _("Temporary directory for uploads not defined") ];
+                var errCode = errors[$('#fileToUpload').prop('files')[0].name].code;
+                $("#fileuploadstatus").hide();
+                $("#fileuploadfailed").show();
+                $("#fileuploadfailed").text( _("Upload status: ") +
+                    ( status=='failed'? _("Failed") + " - (" + errCode + ") " + errMsgs[errCode]:
+                    ( status=='denied'? _("Denied"): status ))
+                );
+            }
+        }
+
+        function CheckForm(f) {
+            if (f.uploadedfileid.value == '') {
+                alert(_("Vui lòng tải lên một tệp tin trước."));
+            } else {
+                $("#fileuploadstatus").hide();
+                $("#fileuploadform").slideUp();
+                $("#mainformsubmit").prop('disabled',true);
+                $("#queueformsubmit").prop('disabled',true);
+                return submitBackgroundJob(f);
+            }
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

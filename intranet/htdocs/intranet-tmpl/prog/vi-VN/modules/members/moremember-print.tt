@@ -1,0 +1,131 @@
+[% USE Koha %]
+[% USE Branches %]
+[% USE KohaDates %]
+[% USE Price %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Bạn đọc [% patron.firstname %] [% patron.surname %] ([% patron.cardnumber %])</title>
+ [% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_moremember-print" class="pat">
+ <div id="main">
+ <h3><a href="/cgi-bin/koha/circ/circulation.pl?findborrower=[% patron.cardnumber %]">Thông tin tài khoản bạn đọc:  [% patron.firstname %] [% patron.surname %] ([% patron.cardnumber %])</a></h3>
+
+ <ul>
+ [% IF Koha.Preference( 'AddressFormat' ) %]
+ [% INCLUDE "member-display-address-style-${ Koha.Preference( 'AddressFormat' ) }.inc" %]
+ [% ELSE %]
+ [% INCLUDE 'member-display-address-style-us.inc' %]
+ [% END %]
+ <li>[% IF ( patron.phone ) %][% patron.phone %][% ELSE %](Không có số điện thoại)[% END %]</li>
+ <li>[% IF ( patron.email ) %][% patron.email %][% ELSE %](Không có địa chỉ thư điện tử)[% END %]</li>
+ [% IF ( patron.emailpro ) %]
+ <li>[% patron.emailpro %]</li>
+ [% END %]
+ <li>Ngày đăng ký: [% patron.dateenrolled | $KohaDates %]</li>
+ <li>Ngày hết hạn: [% patron.dateexpiry | $KohaDates %]</li>
+ <li>Thư viện: [% Branches.GetName( patron.branchcode ) %]</li>
+ <li>Kiểu bạn đọc: [% patron.category.description %]</li>
+ </ul>
+
+ [% IF ( issues ) %]
+ <table>
+ <caption>Tài liệu được ghi mượn</caption>
+ <tr>
+ <th>Nhan đề</th>
+ <th>Tác giả</th>
+ <th>Ký hiệu phân loại</th>
+ <th>Kiểu tài liệu</th>
+ <th>Ngày hết hạn</th>
+ <th>Đăng ký cá biệt</th>
+ <th>Phí</th>
+ <th>Giá tiền</th>
+ <th>Trạng thái</th>
+ </tr>
+
+ [% FOREACH issue IN issues %]
+ [% IF ( issue.overdue ) %]<tr class="overdue">[% ELSE %]<tr>[% END %]
+ <td>
+ [% issue.title |html %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?item=[% issue.itemnumber %]&amp;biblionumber=[% issue.biblionumber %]&amp;bi=[% issue.biblioitemnumber %]"></a>
+ </td>
+ <td>[% issue.author %]</td>
+ <td>[% issue.itemcallnumber %]</td>
+ <td>[% issue.itemtype_description %]</td>
+ <td>[% issue.date_due | $KohaDates as_due_date => 1 %]</td>
+ <td>[% issue.barcode %]</td>
+ <td>[% issue.charge %]</td>
+ <td>[% issue.replacementprice %]</td>
+ <td>[% IF ( issue.overdue ) %]Quá hạn![% ELSE %]&nbsp;[% END %]</td>
+ </tr>
+ [% END %]
+
+ <tr>
+ <td colspan="6" style="text-align: right; font-weight:bold;">Tổng số:</td>
+ <td>[% totaldue %]</td>
+ <td>[% totalprice %]</td>
+ <td colspan="3">&nbsp;</td>
+ </tr>
+ </table>
+ [% END %]
+
+ [% IF ( reserves ) %]
+ <table>
+ <caption>Pending holds</caption>
+ <tr>
+ <th>Nhan đề</th>
+ <th>Tác giả</th>
+ <th>Ngày đặt hàng</th>
+ <th>Ngày hết hạn</th>
+ <th>Pick up location</th>
+ </tr>
+
+ [% FOREACH reserve IN reserves %]
+ <tr>
+ <td>[% reserve.title %]</td>
+ <td>[% reserve.author %]</td>
+ <td>[% reserve.reservedate | $KohaDates %]</td>
+ <td>[% reserve.expirationdate | $KohaDates %]</td>
+ <td>[% reserve.waiting_at %]</td>
+ </tr>
+ [% END %]
+ </table>
+ [% END %]
+ [% IF accounts && totaldue != 0 %]
+ <table>
+ <caption>Thông tin tài khoản</caption>
+ <tr>
+ <th>Thông tin khoản tiền phạt.</th>
+ <th>Thời gian</th>
+ <th>Số lượng</th>
+ <th>Còn nợ</th>
+ </tr>
+
+ [% FOREACH account IN accounts %]
+ <tr>
+ <td>
+ [% IF ( account.itemnumber ) %]<a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=[% account.item.biblionumber %]&amp;itemnumber=[% account.itemnumber %]">[% END %]
+ [% account.description %]&nbsp;[% IF account.itemnumber AND account.accounttype != 'F' AND account.accounttype != 'FU' %] [% account.item.biblio.title |html %][% END %]
+ [% IF ( account.itemnumber ) %]</a>[% END %]
+ </td>
+ <td>[% account.date | $KohaDates %]</td>
+ <td style="text-align:right;">[% account.amount | $Price %]</td>
+ <td style="text-align:right;">[% account.amountoutstanding | $Price %]</td>
+ </tr>
+ [% END %]
+
+ <tfoot>
+ <tr>
+ <td colspan="3">Tổng tiền phạt</td>
+ <td colspan="2" style="text-align:right;">[% totaldue | $Price %]</td>
+ </tr>
+ </tfoot>
+ </table>
+ [% END %]
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'slip-print.inc' #printThenClose %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

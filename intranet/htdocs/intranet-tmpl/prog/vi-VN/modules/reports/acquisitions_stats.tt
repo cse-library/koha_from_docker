@@ -1,0 +1,330 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Báo cáo [% IF ( do_it ) %]&rsaquo; Báo cáo phân hệ bổ sung &rsaquo; Kết quả báo cáo phân hệ bổ sung[% ELSE %]&rsaquo; Báo cáo phân hệ bổ sung [% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="rep_acquisitions_stats" class="rep">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Báo cáo</a> [% IF ( do_it ) %]&rsaquo; <a href="/cgi-bin/koha/reports/acquisitions_stats.pl">Báo cáo phân hệ bổ sung</a> &rsaquo; Kết quả báo cáo phân hệ bổ sung [% ELSE %] &rsaquo; Báo cáo phân hệ bổ sung [% END %]</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( do_it ) %]
+ [% FOREACH mainloo IN mainloop %]
+ <h1>Báo cáo phân hệ bổ sung </h1>
+ [% IF ( mainloo.loopfilter.size ) %]
+ <p><b>Bộ lọc dữ liệu:</b></p>
+ [% FOREACH loopfilte IN mainloo.loopfilter %]
+ <p>
+ [% SWITCH loopfilte.crit %] [% CASE '0' %] Ngày đặt hàng (từ) [% CASE '1' %] Ngày đặt hàng (đến) [% CASE '2' %] Ngày nhận hàng (từ) [% CASE '3' %] Ngày nhận hàng (đến)  [% CASE '4' %] Nhà cung cấp [% CASE '5' %] Thư viện chính [% CASE '6' %] Bộ sưu tập [% CASE '7' %] Kiểu tài liệu [% CASE '8' %] Nguồn quỹ [% CASE '9' %] Thống kê 1 [% CASE '10' %] Thống kê 2 [% CASE %] Không lọc dữ liệu [% END %] : [% loopfilte.filter %] </p>
+ [% END %]
+ [% END %]
+
+ <table>
+ <tr >
+ <th>[% mainloo.line %] / [% mainloo.column %]</th>
+ [% FOREACH loopco IN mainloo.loopcol %]
+ <th>[% loopco.coltitle %]</th>
+ [% END %]
+ <th>Tổng số</th>
+ </tr>
+ [% FOREACH loopro IN mainloo.looprow %]
+ <tr>
+ [% IF ( loopro.hilighted ) %]<td class="hilighted">[% ELSE %]<td>[% END %]
+ [% loopro.rowtitle %]</td>
+ [% FOREACH loopcel IN loopro.loopcell %]
+ [% IF ( loopcel.hilighted ) %]<td>[% ELSE %]<td>[% END %]
+ [% IF ( loopcel.value ) %][% loopcel.value %]
+ [% ELSE %] &nbsp;
+ [% END %]
+ </td>
+ [% END %]
+ [% IF ( loopro.hilighted ) %]<td>[% ELSE %]<td>[% END %]
+ [% loopro.totalrow %]
+ </td>
+ </tr>
+ [% END %]
+ <tr >
+ <th>Tổng số</th>
+ [% FOREACH loopfoote IN mainloo.loopfooter %]
+ <th>
+ [% loopfoote.totalcol %]
+ </th>
+ [% END %]
+ <th>[% mainloo.total %]</th>
+ </tr>
+ </table>
+ [% END %]
+[% ELSE %]
+ <form method="post" action="/cgi-bin/koha/reports/acquisitions_stats.pl">
+ <fieldset class="rows">
+ <legend>Báo cáo phân hệ bổ sung</legend>
+ <table>
+ <thead>
+ <tr>
+ <th>Nhan đề</th>
+ <th>Hàng</th>
+ <th>Cột</th>
+ <th>Bộ lọc dữ liệu</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr class="hilighted">
+ <td>Ngày đặt hàng</td>
+ <td><input type="radio" name="Line" value="aqbasket.closedate" /></td>
+ <td><input type="radio" checked="checked" name="Column" value="aqbasket.closedate" /> </td>
+ <td> Từ <input type="text" size="10" id="from" name="Filter" value="" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ đến <input size="10" id="to" name="Filter" type="text" value="" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </td>
+ </tr>
+ <tr class="hilighted">
+ <td>&nbsp;</td>
+ <td colspan="2">Nhóm theo <select name="PlacedOnDisplay">
+ <option value="">Bất kỳ</option>
+ <option value ="1">Ngày</option>
+ <option value ="2">Tháng</option>
+ <option value ="3">Năm</option>
+ </select>
+
+ </td>
+ <td>&nbsp;</td>
+ </tr>
+ <tr>
+ <td>Ngày nhận hàng</td>
+ <td><input type="radio" name="Line" value="aqorders.datereceived" /></td>
+ <td><input type="radio" name="Column" value="aqorders.datereceived" /></td>
+ <td> Từ <input type="text" size="10" id="fromRO" name="Filter" value="" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ đến <input type="text" size="10" id="toRO" name="Filter" value="" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </td>
+ </tr>
+ <tr>
+ <td>&nbsp;</td>
+ <td colspan="2">Nhóm theo <select name="ReceivedOnDisplay">
+ <option value="">Bất kỳ</option>
+ <option value ="1">Ngày</option>
+ <option value ="2">Tháng</option>
+ <option value ="3">Năm</option>
+ </select>
+
+ </td>
+ <td>&nbsp;</td>
+ </tr>
+ <tr class="hilighted">
+ <td>Nhà cung cấp</td>
+ <td><input type="radio" checked="checked" name="Line" value="aqbooksellers.name" /></td>
+ <td><input type="radio" name="Column" value="aqbooksellers.name" /></td>
+ <td>
+ <select name="Filter">
+ <option value="">Tất cả</option>
+ [% FOREACH bookseller IN booksellers %]
+ <option value="[% bookseller.name %]">[% bookseller.name %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Thư viện chính</td>
+ <td><input type="radio" name="Line" value="items.homebranch" /></td>
+ <td><input type="radio" name="Column" value="items.homebranch" /></td>
+ <td>
+ <select name="Filter">
+ <option value="" selected="selected">Tất cả thư viện</option>
+ [% FOREACH branch IN branches %]
+ <option value="[% branch.branchcode %]">[% branch.branchname %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>
+ [% IF ccode_label %]
+ [% ccode_label %]
+ [% ELSE %]
+ Collection
+ [% END %]
+ </td>
+ <td><input type="radio" name="Line" value="items.ccode" /></td>
+ <td><input type="radio" name="Column" value="items.ccode" /></td>
+ <td>
+ [% IF ccode_avlist.size %]
+ <select name="Filter">
+ <option value="" selected="selected">Tất cả</option>
+ [% FOREACH ccode_av IN ccode_avlist %]
+ <option value="[% ccode_av.value %]">[% ccode_av.lib %]</option>
+ [% END %]
+ </select>
+ [% ELSE %]
+ <input type="text" name="Filter" />
+ [% END %]
+ </td>
+ </tr>
+ <tr>
+ <td>Kiểu tài liệu</td>
+ <td><input type="radio" name="Line" value="biblioitems.itemtype" /></td>
+ <td><input type="radio" name="Column" value="biblioitems.itemtype" /></td>
+ <td>
+ <select name="Filter" size="1" id="itemtypes">
+ <option value="">Tất cả kiểu tài liệu</option>
+ [% FOREACH itemtype IN itemtypes %]
+ <option value="[% itemtype.itemtype %]">[% itemtype.translated_description %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td>Quỹ</td>
+ <td><input type="radio" name="Line" value="aqbudgets.budget_code" /></td>
+ <td><input type="radio" name="Column" value="aqbudgets.budget_code" /></td>
+ <td>
+ <select name="Filter" size="1" id="budget">
+ <option value="">Tất cả quỹ</option>
+ [% FOREACH value IN Budgets.values %]
+ <option value="[% value %]">[% Budgets.labels.$value %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ [% IF ( hassort1 ) %]
+ <tr class="hilighted">
+ <td>Thống kê 1</td>
+ <td><input type="radio" name="Line" value="aqorders.sort1" /></td>
+ <td><input type="radio" name="Column" value="aqorders.sort1" /></td>
+ <td>
+ <select name="Filter" size="1" id="sort1">
+ <option value="">Tất cả</option>
+ [% FOREACH value IN Sort1.values %]
+ <option value="[% value %]">[% Sort1.labels.$value %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ [% END %]
+ [% IF ( hassort2 ) %]
+ [% IF ( HglghtSort2 ) %]<tr class="hilighted"> [% ELSE %]<tr>[% END %]
+ <td>Thống kê 2</td>
+ <td><input type="radio" name="Line" value="aqorders.sort2" /></td>
+ <td><input type="radio" name="Column" value="aqorders.sort2" /></td>
+ <td>
+ <select name="Filter" size="1" id="sort2">
+ <option value="">Tất cả</option>
+ [% FOREACH value IN Sort2.values %]
+ <option value="[% value %]">[% Sort2.labels.$value %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table><br />
+ </fieldset>
+
+<fieldset class="rows">
+ <legend> Giá trị các ô </legend>
+ <ol>
+ <li>
+ <label for="cellvalue1">Count items:</label><input type="radio" name="Cellvalue" id="cellvalue1" value="1" checked="checked" />
+ </li>
+ <li>
+ <label for="cellvalue2">Count unique biblios:</label><input type="radio" name="Cellvalue" id="cellvalue2" value="2" />
+ </li>
+ <li>
+ <label for="cellvalue3">Amount:</label><input type="radio" name="Cellvalue" id="cellvalue3" value="3" />
+ </li>
+ <li>
+ <label for="cellvalue4">Ordered amount:</label><input type="radio" name="Cellvalue" id="cellvalue4" value="4" />
+ </li>
+ <li>
+ <label for="cellvalue5">Spent amount:</label><input type="radio" name="Cellvalue" id="cellvalue5" value="5" />
+ </li>
+ </ol>
+</fieldset>
+
+ <fieldset class="rows">
+ <legend>Hiển thị báo cáo</legend>
+ <ol>
+ <li>
+ <label for="outputscreen">Trên màn hình hiển thị: </label><input type="radio" checked="checked" name="output" id="outputscreen" value="screen" />
+ </li>
+ <li>
+ <label for="outputfile">Xuất ra tệp tin:</label> <input type="radio" name="output" value="file" id="outputfile" />
+ <label class="inline" for="basename">Tên tệp tin: </label> <input value="Xuất dữ liệu" id="basename" type="text" name="basename" />
+ <label class="inline" for="MIME">Into an application:</label>
+ <select name="MIME" id="MIME" size="1">
+ <option value="CSV">CSV</option>
+ </select>
+ <select name="sep" id="sep" size="1">
+ [% FOREACH value IN CGIsepChoice.values.sort() %]
+ [% IF ( value == CGIsepChoice.default ) %]
+ <option value="[% value %]" selected="selected">[% value %]</option>
+ [% ELSE %]
+ <option value="[% value %]">[% value %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input value="Tìm kiếm" type="submit" />
+ <input type="hidden" name="report_name" value="[% report_name %]" />
+ <input type="hidden" name="do_it" value="1" />
+ </fieldset>
+ </form>
+[% END %]
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'reports-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            // http://jqueryui.com/demos/datepicker/#date-range
+            var dates = $( "#from, #to" ).datepicker({
+                changeMonth: true,
+                numberOfMonths: 1,
+                onSelect: function( selectedDate ) {
+                    var option = this.id == "from" ? "minDate" : "maxDate",
+                        instance = $( this ).data( "datepicker" );
+                        date = $.datepicker.parseDate(
+                            instance.settings.dateFormat ||
+                            $.datepicker._defaults.dateFormat,
+                            selectedDate, instance.settings );
+                    dates.not( this ).datepicker( "option", option, date );
+                }
+            });
+            var datesRO = $( "#fromRO, #toRO" ).datepicker({
+                changeMonth: true,
+                numberOfMonths: 1,
+                onSelect: function( selectedDate ) {
+                    var option = this.id == "fromRO" ? "minDate" : "maxDate",
+                        instance = $( this ).data( "datepicker" );
+                        date = $.datepicker.parseDate(
+                            instance.settings.dateFormat ||
+                            $.datepicker._defaults.dateFormat,
+                            selectedDate, instance.settings );
+                    datesRO.not( this ).datepicker( "option", option, date );
+                }
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

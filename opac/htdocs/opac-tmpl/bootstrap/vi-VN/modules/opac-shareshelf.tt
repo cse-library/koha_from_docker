@@ -1,0 +1,108 @@
+[% USE Koha %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; Share a list</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+
+[% INCLUDE 'bodytag.inc' bodyid='opac-shareshelf' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+<div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Trang chủ</a> <span class="divider">&rsaquo;</span></li>
+ [% IF ( loggedinusername ) %]
+ <li><a href="/cgi-bin/koha/opac-user.pl">[% USER_INFO.title %] [% USER_INFO.firstname %] [% USER_INFO.surname %]</a> <span class="divider">&rsaquo;</span></li>
+ [% END %]
+ <li><a href="/cgi-bin/koha/opac-shelves.pl">Giá sách ảo</a> <span class="divider">&rsaquo;</span></li>
+ <li>Share a list</li>
+ </ul> <!-- / .breadcrumb -->
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ [% END %]
+
+ <div class="span10">
+ <div id="shareshelf" class="maincontent">
+
+[%# This section contains the essential code for error messages and three operations: invite, confirm_invite and accept. %]
+ <h2>Chia sẻ giá sách ảo cho bạn đọc khác</h2>
+
+ [% IF errcode %]
+ [% IF errcode==1 && op %]<div class="alert">Thao tác [% op | html %] không được hỗ trợ.</div>[% END %]
+ [% IF errcode==1 && !op %]<div class="alert">Không có thông số hoạt động nào được thông qua.</div>[% END %]
+ [% IF errcode==2 %]<div class="alert">Invalid shelf number.</div>[% END %]
+ [% IF errcode==3 %]<div class="alert">Tính năng chia sẻ giá sách ảo không được sử dụng trong thư viện này.</div>[% END %]
+ [% IF errcode==4 %]<div class="alert">Bạn chỉ có thể chia sẻ giá sách ảo nếu bạn là người tạo ra giá sách ảo.</div>[% END %]
+ [% IF errcode==5 %]<div class="alert">Bạn không thể chia sẻ một giá sách ảo cộng đồng.</div>[% END %]
+ [% IF errcode==6 %]<div class="alert">Xin lỗi, Thông tin thư điện tử của bạn không hợp lệ.</div>[% END %]
+ [% IF errcode==7 %]<div class="alert">Xin lỗi, chúng tôi không thể chấp nhận đáp ứng của bạn. Lời mời có thể đã hết hạn. Bạn vui lòng liên hệ với bạn đọc đã gửi lời mời cho bạn.</div>[% END %]
+ [% IF errcode==8 %]<div class="alert">Là chủ sở hữu giá sách ảo, bạn không thể chấp nhập lời mời chia sẻ giá sách ảo này.</div>[% END %]
+ <p><a href="/cgi-bin/koha/opac-shelves.pl?op=list&amp;category=1">Return to your lists</a></p>
+
+ [% ELSIF op=='invite' %]
+ <div id="invite">
+ <form id="share_list">
+ <fieldset class="rows">
+ <ol>
+ <input type="hidden" name="op" value="conf_invite"/>
+ <input type="hidden" name="shelfnumber" value="[% shelfnumber %]"/>
+ <li><label for="name">Tên giá sách ảo:</label> [% shelfname | html %]</li>
+ <li>
+ <label for="invite_address">Địa chỉ Email:</label>
+ <input id="invite_address" name="invite_address" size="40" />
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn" value="Gửi thư" type="submit" />
+ <a href="/cgi-bin/koha/opac-shelves.pl?op=list&amp;category=1" class="cancel">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ </div>
+
+ [% ELSIF op=='conf_invite' %]
+ <div id="conf_invite">
+ [% IF approvedaddress %]
+ <p>Lời mời chia sẻ giá sách ảo <i>[% shelfname | html %]</i> will be sent shortly to [% approvedaddress %].</p>
+ [% END %]
+ [% IF failaddress %]
+ <p>Phát hiện lỗi khi hệ thống xử lý địa chỉ sau đây. Bạn vui lòng kiểm tra lại. Địa chỉ: [% failaddress %]</p>
+ [% END %]
+ [% IF approvedaddress %]
+ <p>Bạn sẽ nhận được thư thông báo nếu bạn đọc khác chấp nhận lời mời chia sẻ của bạn trong 02 tuần.</p>
+ [% END %]
+ <p><a href="/cgi-bin/koha/opac-shelves.pl?op=list&amp;category=1">Return to your lists</a></p>
+ </div>
+
+ [% ELSIF op=='accept' %]
+ [%# Nothing to do: we already display an error or we redirect. %]
+ [% END %]
+
+ </div> <!-- / .span10 -->
+ </div> <!-- / .maincontent -->
+[%# End of essential part %]
+
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+<script>
+//<![CDATA[
+    $(document).ready(function(){
+        $("#share_list").on('submit', function(e) {
+            var address = $("#invite_address").val();
+            if ( address.length == 0) {
+                e.preventDefault();
+            }
+        });
+    });
+//]]>
+</script>
+[% END %]

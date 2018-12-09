@@ -1,0 +1,508 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Ấn phẩm định kỳ &rsaquo; [% IF ( modify ) %][% bibliotitle |html %] &rsaquo; Chỉnh sửa ấn phẩm định kỳ[% ELSE %]Tạo ấn phẩm định kỳ[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style type="text/css">
+fieldset.rows li.radio { width: 100%; } /* override staff-global.css */
+.yui-u li p label.widelabel {
+    width: 300px;  /* not enough for IE7 apparently */
+}
+</style>
+</head>
+
+<body id="ser_subscription-add" class="ser">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'serials-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Ấn phẩm định kỳ</a> &rsaquo; [% IF ( modify ) %]<a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=[% subscriptionid %]"><i>[% bibliotitle |html %]</i></a> &rsaquo; Chỉnh sửa ấn phẩm định kỳ[% ELSE %]Tạo ấn phẩm định kỳ[% END %]</div>
+
+<div class="main container-fluid">
+ <div class="row">
+
+ <h1>[% IF ( modify ) %] Chỉnh sửa ấn phẩm định kỳ <i>[% bibliotitle |html %]</i>[% ELSE %]Tạo ấn phẩm định kỳ[% END %] (<span id="page_number">1/2</span>)</h1>
+ <form method="post" id="subscription_add_form" name="f" action="/cgi-bin/koha/serials/subscription-add.pl" class="validated">
+ [% IF ( modify ) %]
+ <input type="hidden" name="op" value="modsubscription" />
+ <input type="hidden" name="subscriptionid" value="[% subscriptionid %]" />
+ [% ELSE %]
+ <input type="hidden" name="op" value="addsubscription" />
+ [% END %]
+ <input type="hidden" name="user" value="[% loggedinusername %]" />
+ <input type="hidden" name="irreg_check" value="0" />
+
+ <div id="page_1">
+ <div class="col-md-6">
+ <fieldset id="subscription_add_information" class="rows">
+ <legend>Chi tiết ÂPĐK</legend>
+ <ol>
+ [% IF ( subscriptionid ) %]
+ <li><span class="label">Ấn phẩm định kỳ số</span> [% subscriptionid %]</li>
+ [% END %]
+ <li>
+ <label for="aqbooksellerid">Nhà cung cấp: </label>
+ <input type="text" name="aqbooksellerid" id="aqbooksellerid" value="[% aqbooksellerid %]" size="8" /> (<input type="text" name="aqbooksellername" id="aqbooksellername" value="[% aqbooksellername %]" disabled="disabled" readonly="readonly" />) <a href="#" id="vendor_search"><i class="fa fa-search"></i> Tìm kiếm nhà cung cấp</a>
+ </li>
+ <li>
+ <label for="biblionumber" class="required" title="Ấn phẩm định kỳ phải được liên kết tới biểu ghi thư mục">Record:</label>
+ <input type="text" name="biblionumber" id="biblionumber" value="[% bibnum %]" size="8" />
+ (<input type="text" name="title" value="[% bibliotitle %]" disabled="disabled" readonly="readonly" />) <span title="Ấn phẩm định kỳ phải được liên kết tới biểu ghi thư mục" class="required">Bắt buộc</span>
+ <div class="inputnote"> <a href="#" id="record_search"><i class="fa fa-search"></i> Search for record</a>
+ [% IF ( CAN_user_editcatalogue ) %]
+ [% IF ( modify ) %]
+ | <a href="#" id="biblio_add_edit" data-biblionumber="[% bibnum %]"><i class="fa fa-pencil"></i> Sửa biểu ghi</a>
+ [% ELSE %]
+ | <a href="#" id="biblio_add_edit"><i class="fa fa-plus"></i> Create record</a>
+ [% END %]
+ [% END %]
+ </div>
+ </li>
+ <li class="radio">
+ [% IF ( serialsadditems ) %]
+ <p><input type="radio" id="serialsadditems-yes" name="serialsadditems" value="1" checked="checked" /><label class="widelabel" for="serialsadditems-yes">Tạo tài liệu đính kèm tới biểu ghi thư mục khi nhận ÂPĐK</label></p>
+ <p><input type="radio" id="serialsadditems-no" name="serialsadditems" value="0" /><label class="widelabel" for="serialsadditems-no">Không tạo tài liệu đính kèm tới biểu ghi thư mục khi nhận ÂPĐK </label></p>
+ [% ELSE %]
+ <p><input type="radio" id="serialsadditems-yes" name="serialsadditems" value="1"/><label class="widelabel" for="serialsadditems-yes">Tạo tài liệu đính kèm tới biểu ghi thư mục khi nhận ÂPĐK</label></p>
+ <p><input type="radio" id="serialsadditems-no" name="serialsadditems" value="0" checked="checked" /><label class="widelabel" for="serialsadditems-no">Không tạo tài liệu đính kèm tới biểu ghi thư mục khi nhận ÂPĐK</label></p>
+ [% END %]
+ </li>
+ <li class="radio">
+ <p>Khi có kỳ phát hành bổ sung:</p>
+ [% IF (skip_serialseq) %]
+ <p>
+ <input type="radio" id="skip_serialseq_yes" name="skip_serialseq" value="1" checked="checked" />
+ <label for="skip_serialseq_yes">Bỏ qua kỳ phát hành số</label>
+ </p>
+ <p>
+ <input type="radio" id="skip_serialseq_no" name="skip_serialseq" value="0" />
+ <label for="skip_serialseq_no">Kỳ ấn phẩm đang có</label>
+ </p>
+ [% ELSE %]
+ <p>
+ <input type="radio" id="skip_serialseq_yes" name="skip_serialseq" value="1" />
+ <label for="skip_serialseq_yes">Bỏ qua kỳ phát hành số</label>
+ </p>
+ <p>
+ <input type="radio" id="skip_serialseq_no" name="skip_serialseq" value="0" checked="checked" />
+ <label for="skip_serialseq_no">Kỳ ấn phẩm đang có</label>
+ </p>
+ [% END %]
+ </li>
+ <li>
+ <label for="manualhistory">Manual history:</label>
+ [% IF (manualhistory) %]
+ <input type="checkbox" id="manualhistory" name="manualhist" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="manualhistory" name="manualhist" />
+ [% END %]
+ </li>
+ <li>
+ <label for="callnumber">Ký hiệu phân loại:</label>
+ <input type="text" name="callnumber" id="callnumber" value="[% callnumber %]" size="20" />
+ </li>
+ <li>
+ <label for="branchcode">Thư viện:</label>
+ <select name="branchcode" id="branchcode" style="width: 20em;">
+ [% UNLESS ( Independentbranches ) %]
+ <option value="">Bất kỳ</option>
+ [% END %]
+ [% IF CAN_user_serials_superserials %]
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1 ) %]
+ [% ELSE %]
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode ) %]
+ [% END %]
+ </select> (chọn một thư viện) </li>
+ <li>
+ <label for="notes">Ghi chú:</label>
+ <textarea name="notes" id="notes" cols="30" rows="2">[% notes %]</textarea>
+ </li>
+ <li>
+ <label for="internalnotes">Ghi chú nội bộ:</label>
+ <textarea name="internalnotes" id="internalnotes" cols="30" rows="2">[% internalnotes %]</textarea>
+ </li>
+ <li>
+ [% IF ( letterloop ) %]
+ <label for="letter">Thông báo bạn đọc: </label>
+ <select name="letter" id="letter">
+ <option value="">Bất kỳ</option>
+ [% FOREACH letterloo IN letterloop %]
+ [% IF ( letterloo.selected ) %]
+ <option value="[% letterloo.value %]" selected="selected">[% letterloo.lettername %]</option>
+ [% ELSE %]
+ <option value="[% letterloo.value %]">[% letterloo.lettername %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <div class="hint">Lựa chọn thông báo gửi tới bạn đọc khi kỳ mới của ÂPĐK được nhận về thư viện.</div>
+ [% ELSE %]
+ <span class="label">Thông báo bạn đọc: </span>
+ <div class="hint">Để thông báo cho bạn đọc khi một kỳ ấn phẩm mới được nhận về, bạn phải <a href="/cgi-bin/koha/tools/letter.pl">khai báo một mẫu thông báo phù hợp</a>.</div>
+ [% END %]
+ </li>
+ <li>
+ <label for="location">Kho tài liệu:</label>
+ <select name="location" id="location">
+ <option value="">Bất kỳ</option>
+ [% FOREACH locations_loo IN locations_loop %]
+ [% IF locations_loo.authorised_value == location %]
+ <option value="[% locations_loo.authorised_value %]" selected="selected">[% locations_loo.lib %]</option>
+ [% ELSE %]
+ <option value="[% locations_loo.authorised_value %]">[% locations_loo.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="itemtype">Kiểu tài liệu:</label>
+ <select name="itemtype" id="itemtype">
+ <option value=""></option>
+ [% FOREACH type IN typeloop %]
+ [% IF ( type.selected ) %]
+ <option value="[% type.code %]" selected="selected">[% type.value %]</option>
+ [% ELSE %]
+ <option value="[% type.code %]">[% type.value %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [%IF makePreviousSerialAvailable %]
+ <li>
+ <label for="previousitemtype">item type for older issues:</label>
+ <select name="previousitemtype" id="previousitemtype">
+ <option value=""></option>
+ [% FOREACH previous IN previoustypeloop %]
+ [% IF ( previous.selected ) %]
+ <option value="[% previous.code %]" selected="selected">[% previous.value %]</option>
+ [% ELSE %]
+ <option value="[% previous.code %]">[% previous.value %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ <li>
+ <label for="graceperiod">Thời gian chuyển trạng thái:</label>
+ <input type="text" name="graceperiod" id="graceperiod" value="[% graceperiod %]" size="5"/> ngày </li>
+ <li>
+ <label class="widelabel" for="staffdisplaycount">Số kỳ ấn phẩm hiển thị tới thủ thư: </label>
+ <input type="text" name="staffdisplaycount" id="staffdisplaycount" value="[% staffdisplaycount %]" size="4"/>
+ </li>
+ <li>
+ <label class="widelabel" for="opacdisplaycount">Số kỳ phát hành để hiển thị cho bạn đọc: </label>
+ <input type="text" name="opacdisplaycount" id="opacdisplaycount" value="[% opacdisplaycount %]" size="4"/>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input value="Tiếp tục >>" style="float:right;" type="button" id="subscription_add_next" />
+ </fieldset>
+ </div>
+ </div>
+
+ <div id="page_2">
+ <div class="col-md-6">
+ <div id="subscription_form_planning">
+ <fieldset class="rows">
+ <legend>Lịch phát hành và số lượng ấn phẩm định kỳg</legend>
+ <ol>
+ <li>
+ <label for="firstacquidate" class="required">Ngày phát hành kỳ ấn phẩm đầu tiên:</label>
+ [% UNLESS (more_than_one_serial) %]
+ <input type="text" size="10" id="acqui_date" name="firstacquidate" value="[% firstacquidate | $KohaDates %]" class="datepicker required" required="required" />
+ [% ELSE %]
+ [% firstacquidate | $KohaDates %]
+ <input type="hidden" size="10" id="acqui_date" name="firstacquidate" value="[% firstacquidate | $KohaDates %]"/>
+ [% END %]
+ </li>
+ [% IF (more_than_one_serial) %]
+ <li>
+ <label for="nextacquidate">Ngày phát hành kỳ ấn phẩm kế tiếp:</label>
+ <input type="text" size="10" id="nextacquidate" name="nextacquidate" value="[% nextacquidate | $KohaDates %]" class="datepicker" />
+ </li>
+ [% END %]
+ <li>
+ <label for="frequency" class="required">Tuần suất phát hành:</label>
+ <select name="frequency" size="1" id="frequency" class="required" required="required">
+ <option value="">-- Chọn tại đây --</option>
+ [% FOREACH frequency IN frequencies %]
+ [% IF (frequency.selected) %]
+ <option value="[% frequency.id %]" selected="selected">
+ [% ELSE %]
+ <option value="[% frequency.id %]">
+ [% END %]
+ [% frequency.label %]
+ </option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="subtype">Số lượng ÂPĐK:</label>
+ <select name="subtype" id="subtype">
+ [% FOREACH st IN subtypes %]
+ [% SWITCH st %]
+ [% CASE 'numberlength' %]
+ [% IF st == subtype %]
+ <option value="issues" selected="selected">
+ [% ELSE %]
+ <option value="issues">
+ [% END %]
+ issues
+ [% CASE 'weeklength' %]
+ [% IF st == subtype %]
+ <option value="weeks" selected="selected">
+ [% ELSE %]
+ <option value="weeks">
+ [% END %]
+ weeks
+ [% CASE 'monthlength' %]
+ [% IF st == subtype %]
+ <option value="months" selected="selected">
+ [% ELSE %]
+ <option value="months">
+ [% END %]
+ months
+ [% CASE %][% st %]
+ [% END %]
+ </option>
+ [% END %]
+ </select>
+ <input type="text" name="sublength" id="sublength" value="[% sublength %]" size="3" /> (Nhập số lượng vào ô) <input type="hidden" name="issuelengthcount">
+ </li>
+ <li>
+ <label for="startdate" class="required"> Subscription start date:</label>
+ <input type="text" size="10" id="from" name="startdate" value="[% startdate | $KohaDates %]" class="datepickerfrom required" required="required" />
+ </li>
+ <li>
+ <label for="enddate">Ngày kết thúc:</label>
+ <input type="text" size="10" id="to" name="enddate" value="[% enddate | $KohaDates %]" class="datepickerto" />
+ </li>
+ <li>
+ <label for="numberpattern" class="required">Mẫu số kỳ:</label>
+ <select name="numbering_pattern" size="1" id="numberpattern" class="required" required="required">
+ <option value="">-- Chọn tại đây --</option>
+ [% FOREACH numberpattern IN numberpatterns %]
+ [% IF (numberpattern.selected) %]
+ <option value="[% numberpattern.id %]" selected="selected">
+ [% ELSE %]
+ <option value="[% numberpattern.id %]">
+ [% END %]
+ [% numberpattern.label %]
+ </option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="locale">Locale:</label>
+ <select id="locale" name="locale">
+ <option value=""></option>
+ [% FOREACH l IN locales %]
+ [% IF l.language == locale %]
+ <option value="[% l.language %]" selected="selected">[% l.description %]</option>
+ [% ELSE %]
+ <option value="[% l.language %]">[% l.description %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <span class="hint">Nếu bỏ trống, hệ thống mặc định sử dụng tiếng Anh</span>
+ </li>
+ <li id="more_options">
+ <table id="moreoptionst">
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th id="headerX">&nbsp;</th>
+ <th id="headerY">&nbsp;</th>
+ <th id="headerZ">&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>
+ [% IF (more_than_one_serial) %] Giá trị cuối [% ELSE %] Bắt đầu với [% END %] </td>
+ <td id="beginsX"><input type="text" id="lastvaluetemp1" name="lastvaluetemp1" value="[% lastvalue1 %]" /></td>
+ <td id="beginsY"><input type="text" id="lastvaluetemp2" name="lastvaluetemp2" value="[% lastvalue2 %]" /></td>
+ <td id="beginsZ"><input type="text" id="lastvaluetemp3" name="lastvaluetemp3" value="[% lastvalue3 %]" /></td>
+ </tr>
+ <tr>
+ <td>Truy cập bên trong</td>
+ <td id="innerX"><input type="text" id="innerlooptemp1" name="innerlooptemp1" value="[% innerloop1 %]" /></td>
+ <td id="innerY"><input type="text" id="innerlooptemp2" name="innerlooptemp2" value="[% innerloop2 %]" /></td>
+ <td id="innerZ"><input type="text" id="innerlooptemp3" name="innerlooptemp3" value="[% innerloop3 %]" /></td>
+ </tr>
+ </tbody>
+ </table>
+ </li>
+ <li>
+ <a href="#" class="toggle_advanced_pattern show_advanced_pattern"><i class="fa fa-plus-square"></i> Show advanced pattern</a>
+ <a href="#" style="display:none;" class="toggle_advanced_pattern hide_advanced_pattern"><i class="fa fa-minus-square"></i> Hide advanced pattern</a>
+ </li>
+ <div id="advancedpredictionpattern" style="display:none">
+ <li>
+ <label for="patternname" class="required">Tên phần:</label>
+ <input id="patternname" name="patternname" type="text" readonly="readonly" class="required" required="required" />
+ </li>
+ <li>
+ <label for="numberingmethod">Ký hiệu kỳ ấn phẩm:</label>
+ <input readonly="readonly" type="text" name="numberingmethod" id="numberingmethod" size="50" value="[% numberingmethod %]" />
+ </li>
+ <table id="advancedpredictionpatternt">
+ <thead>
+ <tr>
+ <th colspan="4">Mẫu dự đoán nâng cao</th>
+ </tr>
+ <tr>
+ <th>&nbsp;</th>
+ <th>X</th>
+ <th>Y</th>
+ <th>Z</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Nhãn</td>
+ <td><input type="text" readonly="readonly" id="label1" name="label1" /></td>
+ <td><input type="text" readonly="readonly" id="label2" name="label2" /></td>
+ <td><input type="text" readonly="readonly" id="label3" name="label3" /></td>
+ </tr>
+ <tr>
+ <td>Bắt đầu với</td>
+ <td><input type="text" readonly="readonly" id="lastvalue1" name="lastvalue1" /></td>
+ <td><input type="text" readonly="readonly" id="lastvalue2" name="lastvalue2" /></td>
+ <td><input type="text" readonly="readonly" id="lastvalue3" name="lastvalue3" /></td>
+ </tr>
+ <tr>
+ <td>Tạo</td>
+ <td><input type="text" readonly="readonly" id="add1" name="add1" /></td>
+ <td><input type="text" readonly="readonly" id="add2" name="add2" /></td>
+ <td><input type="text" readonly="readonly" id="add3" name="add3" /></td>
+ </tr>
+ <tr>
+ <td>Every</td>
+ <td><input type="text" readonly="readonly" id="every1" name="every1" /></td>
+ <td><input type="text" readonly="readonly" id="every2" name="every2" /></td>
+ <td><input type="text" readonly="readonly" id="every3" name="every3" /></td>
+ </tr>
+ <tr>
+ <td>Thiết lập lại</td>
+ <td><input type="text" readonly="readonly" id="setto1" name="setto1" /></td>
+ <td><input type="text" readonly="readonly" id="setto2" name="setto2" /></td>
+ <td><input type="text" readonly="readonly" id="setto3" name="setto3" /></td>
+ </tr>
+ <tr>
+ <td>Khi nhiều hơn một</td>
+ <td><input type="text" readonly="readonly" id="whenmorethan1" name="whenmorethan1" /></td>
+ <td><input type="text" readonly="readonly" id="whenmorethan2" name="whenmorethan2" /></td>
+ <td><input type="text" readonly="readonly" id="whenmorethan3" name="whenmorethan3" /></td>
+ </tr>
+ <tr>
+ <td>Truy cập bên trong</td>
+ <td><input type="text" readonly="readonly" id="innerloop1" name="innerloop1" /></td>
+ <td><input type="text" readonly="readonly" id="innerloop2" name="innerloop2" /></td>
+ <td><input type="text" readonly="readonly" id="innerloop3" name="innerloop3" /></td>
+ </tr>
+ <tr>
+ [% BLOCK numbering_select %]
+ <select disabled="disabled" id="[% name %]" name="[% name %]">
+ <option value=""></option>
+ <option value="dayname">Tên cho ngày</option>
+ <option value="dayabrv">Name of day (abbreviated)</option>
+ <option value="monthname">Tên cho tháng</option>
+ <option value="monthabrv">Name of month (abbreviated)</option>
+ <option value="season">Tên cho mùa</option>
+ <option value="seasonabrv">Name of season (abbreviated)</option>
+ </select>
+ [% END %]
+ <td>Định dạng</td>
+ <td>[% PROCESS numbering_select name="numbering1" %]</td>
+ <td>[% PROCESS numbering_select name="numbering2" %]</td>
+ <td>[% PROCESS numbering_select name="numbering3" %]</td>
+ </tr>
+ </tbody>
+ </table>
+ <input type="button" id="modifyadvancedpatternbutton" value="Chỉnh sửa mẫu đánh số ÂPĐK" />
+ <input type="button" id="restoreadvancedpatternbutton" style="display:none" value="Hủy bỏ chỉnh sửa" />
+ <input value="Lưu mẫu mới" style="display:none" id="saveadvancedpatternbutton" type="button" />
+ </div>
+ </ol>
+ </fieldset>
+
+ [% IF additional_fields_for_subscription %]
+ <div id="subscription_additional_fields">
+ <fieldset class="rows">
+ <legend>Additional fields</legend>
+ <ol>
+ [% FOR field IN additional_fields_for_subscription %]
+ <li>
+ <label for="additional_field_[% field.id %]"> [% field.name %]: </label>
+ [% IF field.authorised_value_choices %]
+ <select name="additional_field_[% field.id %]" id="additional_field_[% field.id %]">
+ [% FOREACH av IN field.authorised_value_choices %]
+ [% IF av.authorised_value == additional_fields.${field.name} %]
+ <option value="[% av.authorised_value %]" selected="selected">[% av.lib %]</option>
+ [% ELSE %]
+ <option value="[% av.authorised_value %]">[% av.lib %]</option>
+ [% END %]
+ [% END %]
+ </select> (Authorised values for [% field.authorised_value_category %])
+ [% ELSE %]
+ [% IF field.marcfield %]
+ <input type="text" value="[% additional_fields.${field.name} %]" id="additional_field_[% field.id %]" name="additional_field_[% field.id %]" readonly="readonly" />
+ This value will be filled with the [% field.marcfield %] subfield of the selected biblio.
+ [% ELSE %]
+ <input type="text" value="[% additional_fields.${field.name} %]" id="additional_field_[% field.id %]" name="additional_field_[% field.id %]" />
+ [% END %]
+ [% END %]
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+ </div>
+ [% END %]
+
+ <fieldset class="action">
+ <input style="float:left;" value="<< Trang trước" id="subscription_add_previous" type="button" />
+ <input value="Kiểm tra cách đánh số" type="button" id="testpatternbutton" />
+ <input accesskey="w" value="Lưu ÂPĐK" style="float:right;" type="submit" />
+ </fieldset>
+ </div>
+ </div>
+ <div class="col-md-6">
+ <li id="displayexample"></li>
+ </div>
+ </div>
+ </form>
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript">
+        var subscriptionid = "[% subscriptionid %]";
+        var irregularity = "[% irregularity %]";
+        var more_than_one_serial = "[% more_than_one_serial %]";
+        var tags = [];
+        [% FOREACH field IN dont_export_field_loop %]
+            tags.push("[% field.fieldid %]");
+        [% END %]
+        var MSG_LINK_TO_VENDOR = _("Nếu bạn muốn gửi khiếu nại các ấn phẩm chậm hoặc thiếu, bạn phải khai báo nhà cung cấp. Bạn chọn 'Đồng ý' để bỏ qua hoặc 'Hủy bỏ' để quay lại và khai báo thêm thông tin nhà cung cấp");
+        var MSG_LINK_BIBLIO = _("You must choose or create a bibliographic record");
+        var MSG_REQUIRED_SUB_LENGTH = _("Bạn phải chọn số lượng ấn phẩm định kỳ hoặc ngày kết thúc.");
+        var MSG_TEST_PREDICTION = _("Vui lòng chọn 'Kiểm tra cách đánh số' trước khi lưu ấn phẩm định kỳ.");
+        var MSG_REQUIRED_PUB_DATE = _("Bạn phải chọn ngày phát hành đầu tiên");
+        var MSG = _("Bạn đã chỉnh sửa mẫu dự báo nâng cao. Bạn vui lòng lưu lại thay đổi của bạn hoặc chọn hủy bỏ việc chỉnh sửa.");
+        var MSG_PATTERN_IRREG = _("Warning! Present pattern has planned irregularities. Click on 'Test prediction pattern' to check if it's still valid")
+        var MSG_PATTERN_NAME = _("Vui lòng nhập tên cho mẫu đánh số này");
+        var MSG_PATTERN_NAME_EXISTS = _("Mẫu đánh số ÂPĐK này đã tồn tại. Bạn muốn chỉnh sửa mẫu đánh số này?");
+        var MSG_OVERWRITE_PATTERNS = _("Cảnh báo: Việc chỉnh sửa mẫu đánh số sẽ được cập nhật cho tất cả các ấn phẩm định kỳ sử dụng mẫu đánh số đó.");
+        var MSG_PATTERN_CREATE_FAILED = _("Phát hiện lỗi! Bạn không thể tạo mẫu đánh số ÂPĐK.");
+        var MSG_PATTERN_TEST_FAILED = _("Không thể kiểm tra trước mẫu đánh số ÂPĐK do một số nguyên nhân sau đây: %s");
+        var MSG_FREQUENCY_UNDEFINED = _("Frequency is not defined");
+        var MSG_PUB_DATE_UNDEFINED = _("First publication date is not defined");
+        var MSG_NEXT_ISSUE_UNDEFINED = _("Next issue publication date is not defined");
+    </script>
+ [% Asset.js("js/subscription-add.js") %]
+ [% Asset.js("js/showpredictionpattern.js") %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

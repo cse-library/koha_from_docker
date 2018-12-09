@@ -1,0 +1,139 @@
+[%- USE Price -%]
+[%- USE KohaDates -%]
+[%- USE AuthorisedValues -%]
+[%- USE Branches -%]
+
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Bạn đọc &rsaquo; Thông tin tiền phạt của [% INCLUDE 'patron-title.inc' %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="pat_discharges" class="pat">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'patron-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Bạn đọc</a> &rsaquo; <a href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=[% patron.borrowernumber %]">Account for [% INCLUDE 'patron-title.inc' %]</a> &rsaquo; Details for account line [% accountline.id %]</div>
+
+<div id="doc3" class="yui-t2">
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% IF accountline %]
+ [% IF type == 'credit' %]
+ <h2>Details for payment</h2>
+ [% ELSIF type == 'debit' %]
+ <h2>Details for fee</h2>
+ [% END %]
+
+ <table id="table_account_fines">
+ <thead>
+ <tr>
+ <th class="title-string">Thời gian</th>
+ <th>Thông tin khoản tiền phạt.</th>
+ <th>Ghi chú</th>
+ <th>Số lượng</th>
+ <th>Còn nợ</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ <tr>
+ <td>
+ <span title="[% accountline.date %]">[% accountline.date |$KohaDates %]</span>
+ </td>
+ <td>
+ [%- INCLUDE 'accounttype.inc' account => accountline -%]
+ [%- IF accountline.payment_type -%]
+ , [% AuthorisedValues.GetByCode('PAYMENT_TYPE', accountline.payment_type) %]
+ [%- END =%]
+ [%- IF accountline.description -%]
+ , [% accountline.description %]
+ [%- END -%]
+
+ &nbsp;
+ [% IF ( accountline.itemnumber ) %]
+ [% SET biblio = accountline.item.biblio %]
+ <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=[% biblio.biblionumber %]&amp;itemnumber=[% accountline.itemnumber %]">[% biblio.title |html %]</a>
+ [% END %]
+ </td>
+
+ <td>
+ [% accountline.note | html_line_break %]
+ </td>
+
+ <td>
+ [% accountline.amount | $Price %]
+ </td>
+
+ <td>
+ [% accountline.amountoutstanding | $Price %]
+ </td>
+ </tr>
+ </tbody>
+ </table>
+
+ [% IF type == 'credit' %]
+ <h3>Fees paid</h3>
+ [% ELSIF type == 'debit' %]
+ <h3>Payments</h3>
+ [% END %]
+
+ [% IF account_offsets %]
+ <table class="accountline-offsets-table" id="accountline-debits-table">
+ <thead>
+ <tr>
+ <th>Date created</th>
+ <th>Date updated</th>
+ <th>Số lượng</th>
+ <th>Còn nợ</th>
+ <th>Type</th>
+ <th>Ghi chú</th>
+ <th>Transacting librarian</th>
+ <th>Date/Time of change</th>
+ <th>Amount of change</th>
+ <th>Type of change</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH ao IN account_offsets %]
+ [% IF type == 'credit' %]
+ [% SET offset_accountline = ao.debit %]
+ [% ELSIF type == 'debit' %]
+ [% SET offset_accountline = ao.credit %]
+ [% END %]
+
+ [% IF offset_accountline %]
+ <tr>
+ <td>[% offset_accountline.date | $KohaDates %]</td>
+ <td>[% offset_accountline.timestamp | $KohaDates with_hours => 1 %]</td>
+ <td>[% offset_accountline.amount | $Price %]</td>
+ <td>[% offset_accountline.amountoutstanding | $Price %]</td>
+ <td>[% INCLUDE 'accounttype.inc' account => offset_accountline %]</td>
+ <td>[% offset_accountline.note %]</td>
+ <td>[% IF offset_accountline.manager_id %]<a href="moremember.pl?borrowernumber=[% offset_accountline.manager_id %]">[% offset_accountline.manager_id %]</a>[% END %]</td>
+ <td>[% ao.created_on | $KohaDates with_hours => 1 %]</td>
+ <td>[% ao.amount | $Price %]</td>
+ <td>[% INCLUDE 'account_offset_type.inc' account_offset => ao %]</td>
+ <td><a href="accountline-details.pl?accountlines_id=[% offset_accountline.id %]" class="btn btn-default btn-xs"><i class="fa fa-list"></i> Thông tin cá nhân</a></td>
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ No details available for this payment.
+ [% END %]
+ [% ELSE %]
+ <div class="dialog message">
+ <p>Account line not found.</p>
+ </div>
+ [% END %]
+ </div>
+ </div>
+
+ <div class="yui-b">
+ [% INCLUDE 'circ-menu.inc' %]
+ </div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

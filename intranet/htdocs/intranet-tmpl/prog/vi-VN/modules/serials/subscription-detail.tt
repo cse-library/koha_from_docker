@@ -1,0 +1,371 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE Branches %]
+[% USE AuthorisedValues %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Ấn phẩm định kỳ &rsaquo; Thông tin chi tiết ÂPĐK số [% subscriptionid %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="ser_subscription-detail" class="ser">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'serials-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Ấn phẩm định kỳ</a> &rsaquo; Thông tin chi tiết ấn phẩm định kỳ số [% subscriptionid %]</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% INCLUDE 'serials-toolbar.inc' %]
+
+ <h1>Thông tin chi tiết ấn phẩm định kỳ: [% bibliotitle%] [% IF closed %](Đã đóng)[% END %]</h1>
+ [% IF ( abouttoexpire ) %]
+ [% UNLESS closed %]
+ <div class="dialog message">Ấn phẩm định kỳ này sẽ hết hạn vào ngày [% enddate %]. <a href="#" id="renewsub">gia hạn cho ấn phẩm định kỳ này</a>.</div>
+ [% END %]
+ [% END %]
+ [% IF ( NEEDSCONFIRMATION ) %]
+ <div id="circ_needsconfirmation" class="dialog alert">
+ <h3>Please confirm subscription deletion</h3>
+
+ <ul>
+ [% IF ( NOTEXPIRED ) %] <li>Ấn phẩm định kỳ chưa hết hạn</li> [% END %] 
+ [% IF ( LINKEDISSUES ) %] <li>Ấp phẩm định kỳ đã liên kết với các kỳ đã phát hành</li> [% END %]
+ [% IF ( LINKEDITEMS ) %] <li>Ấn phẩm định kỳ đã liên kết với các tài liệu<br /> Những tài liệu này sẽ không bị xóa</li> [% END %]
+ </ul>
+ <form method="post" action="/cgi-bin/koha/serials/subscription-detail.pl">
+ <input type="hidden" name="subscriptionid" value="[% subscriptionid %]" />
+ <input type="hidden" name="issueconfirmed" value="1" />
+ <input type="hidden" name="op" value="del" />
+ <button type="submit" class="approve" accesskey="y"><i class="fa fa-fw fa-check"></i> Đồng ý xóa</button>
+ </form>
+ <form method="get" action="/cgi-bin/koha/serials/subscription-detail.pl">
+ <input type="hidden" name="subscriptionid" value="[% subscriptionid %]" />
+ <button type="submit" class="deny" accesskey="n"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+
+ </div>
+ [% END %] <!-- NEEDSCONFIRMATION -->
+
+<div id="subscription_description" class="toptabs">
+<ul class="ui-tabs-nav">
+ <li><a href="#subscription_info">Thông tin tài liệu</a></li>
+ <li><a href="#subscription_planning">Lịch phát hành</a></li>
+ <li><a href="#subscription_issues">Kỳ phát hành</a></li>
+ <li><a href="#subscription_summary">Tóm tắt</a></li>
+</ul>
+
+<div id="subscription_info">
+ <div class="yui-g">
+ <div class="yui-u first">
+ <div class="rows">
+ <ol>
+ <li><span class="label">Số biểu ghi ÂPĐK: </span>[% subscriptionid %]</li>
+ <li><span class="label">Thủ thư tạo ÂPĐK:</span> [% librarian %]</li>
+ <li><span class="label">Nhà cung cấp:</span> <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% aqbooksellerid %]">[% aqbooksellername |html %]</a></li>
+ <li><span class="label">Biểu ghi:</span> <a href="/cgi-bin/koha/catalogue/[% default_bib_view %].pl?biblionumber=[% bibnum %]">[% bibliotitle %]</a> <i>([% bibnum %])</i></li>
+ [% IF ( OPACBaseURL ) %]
+ <li>
+ <span class="label">Xem hiển thị OPAC:</span>
+ <a id="view-subscription-in-opac" target="_blank" href="[% Koha.Preference('OPACBaseURL') %]/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]">Open in new window.</a>
+ </li>
+ [% END %]
+[% IF ( branchcode ) %]<li><span class="label">Thư viện:</span> [% Branches.GetName( branchcode ) %]</li>[% END %]
+ [% IF ( serialsadditems ) %]
+ <li><span class="label">Tài liệu:</span> Tạo tài liệu đính kèm biểu ghi thư mục khi nhận ÂPĐK.</li>
+ [% ELSE %]
+ <li><span class="label">Tài liệu:</span> Không tạo tài liệu đính kèm biểu ghi thư mục khi nhận ÂPĐK.</li>
+ [% END %]
+ <li>
+ <span class="label">Số ÂPĐK:</span>
+ [% IF skip_serialseq %] Số ấn phẩm định kỳ bị bỏ qua khi phát hiện lỗi. [% ELSE %] Số ấn phẩm định kỳ giữ lại khi phát hiện lỗi. [% END %] </li>
+ <li><span class="label">Thời gian chuyển trạng thái:</span> [% graceperiod %]</li>
+ </ol>
+ </div>
+ </div>
+ <div class="yui-u">
+ <div class="rows">
+ <ol>
+ [% IF ( location ) %]<li><span class="label">Kho tài liệu:</span> [% location %]</li>[% END %]
+ [% IF ( callnumber ) %]<li><span class="label">Ký hiệu phân loại:</span> [% callnumber |html %]</li>[% END %]
+ [% IF ( staffdisplaycount ) %]<li><span class="label">Số kỳ ấn phẩm hiển thị tới thủ thư:</span>[% staffdisplaycount %]</li>[% END %]
+ [% IF ( opacdisplaycount ) %]<li><span class="label">Số kỳ ấn phẩm hiện thị trên OPAC:</span>[% opacdisplaycount %]</li>[% END %]
+ [% IF ( letter ) %]
+ <li>
+ <span class="label">Thông báo bạn đọc:</span> [% letter %]
+ (<a href="/cgi-bin/koha/serials/viewalerts.pl?subscriptionid=[% subscriptionid %]">Cảnh báo ÂPĐK</a>)
+ </li>
+ [% END %]
+ [% IF ( hasRouting ) %]<li><span class="label">Danh sách nhận ÂPĐK:</span> Có</li>[% END %]
+ </ol>
+ </div>
+ </div>
+ </div>
+
+ [% IF additional_fields_for_subscription %]
+ <div class="yui-g">
+ <div class="yui-u first">
+ <div class="rows">
+ <legend>Additional fields:</legend>
+ <ol>
+ [% FOR field IN additional_fields_for_subscription %]
+ <li>
+ <span class="label">[% field.name %]:</span>
+ [% IF field.authorised_value_category %]
+ [% AuthorisedValues.GetByCode( field.authorised_value_category, additional_fields.${field.name} ) %]
+ [% ELSE %]
+ [% additional_fields.${field.name} %]
+ [% END %]
+ </li>
+ [% END %]
+ </ol>
+ </div>
+ </div>
+ </div>
+ [% END %]
+</div>
+
+ <div id="subscription_planning">
+ <div class="yui-g">
+ <div class="rows">
+ <ol>
+ <li><span class="label">Ngày bắt đầu phát hành:</span> [% startdate %]
+ </li>
+ <li><span class="label">Tuần suất phát hành:</span>
+ [% frequency.description %]
+ </li>
+ <li>
+ <span class="label">ÂPĐK cũ: </span>
+ [% IF ( manualhistory ) %] Kích hoạt <a href="/cgi-bin/koha/serials/subscription-history.pl?subscriptionid=[% subscriptionid %]">Sửa lịch sửa</a>
+ [% ELSE %]
+ Disabled
+ [% END %]
+ </li>
+ <li><span class="label">Mẫu số kỳ:</span>
+ [% numberpattern.label %]
+ </li>
+ <li><table>
+ <tr>
+ <td>Bắt đầu với:</td>
+ [% IF (has_X) %]
+ <td align="center">[% lastvalue1 %]</td>
+ [% END %]
+ [% IF (has_Y) %]
+ <td align="center">[% lastvalue2 %]</td>
+ [% END %]
+ [% IF (has_Z) %]
+ <td align="center">[% lastvalue3 %]</td>
+ [% END %]
+ </tr>
+ <tr>
+ <td>Quay lại:</td>
+ [% IF (has_X) %]
+ <td align="center">[% numberpattern.whenmorethan1 %]</td>
+ [% END %]
+ [% IF (has_Y) %]
+ <td align="center">[% numberpattern.whenmorethan2 %]</td>
+ [% END %]
+ [% IF (has_Z) %]
+ <td align="center">[% numberpattern.whenmorethan3 %]</td>
+ [% END %]
+ </tr>
+ </table></li>
+ [% IF ( irregular_issues ) %]
+ <li><span class="label">Kỳ bổ sung:</span> [% irregular_issues %] phát hành </li>
+ [% END %]
+ <li><span class="label">Kỳ đầu tiên nhận về:</span> [% firstacquidate %]
+ </li>
+ [% IF ( numberlength ) %]<li><span class="label">Số lượng kỳ ấn phẩm đặt:</span> [% numberlength %]</li>[% END %]
+ [% IF ( weeklength ) %]<li><span class="label">Số tuần đặt ấn phẩm:</span> [% weeklength %]</li>[% END %]
+ [% IF ( monthlength ) %]<li><span class="label">Số tháng đặt ấn phẩm:</span> [% monthlength %]</li>[% END %]
+ </ol>
+ </div>
+ </div>
+ </div>
+ <div id="subscription_numbering" style="display:none;">
+ <h3>Tính toán</h3>
+ <p><label>Ký hiệu kỳ ấn phẩm:</label> [% numberingmethod %]</p>
+ <table>
+ <tr>
+ <th>&nbsp;</th>
+ <th>X</th>
+ <th>Y</th>
+ <th>Z</th>
+ </tr>
+ <tr>
+ <td>Tạo</td>
+ <td>
+ [% add1 %]
+ </td>
+ <td>
+ [% add2 %]
+ </td>
+ <td>
+ [% add3 %]
+ </td>
+ </tr>
+ <tr>
+ <td>Một lần</td>
+ <td>[% every1 %]</td>
+ <td>[% every2 %]</td>
+ <td>[% every3 %]</td>
+ </tr>
+ <tr>
+ <td>Khi nhiều hơn một</td>
+ <td>[% whenmorethan1 %] [% IF ( innerloop1 ) %]<br />
+ <i>(là [% innerloop1 %])</i>[% END %]</td>
+ <td>[% whenmorethan2 %] [% IF ( innerloop2 ) %]<br />
+ <i>(là [% innerloop2 %])</i>[% END %]</td>
+ <td>[% whenmorethan3 %] [% IF ( innerloop3 ) %]<br />
+ <i>(là [% innerloop3 %])</i>[% END %]</td>
+ </tr>
+ <tr>
+ <td>Thiết lập lại</td>
+ <td>[% setto1 %]</td>
+ <td>[% setto2 %]</td>
+ <td>[% setto3 %]</td>
+ </tr>
+ <tr>
+ <td>
+ Truy cập bên trong </td>
+ <td>[% innerloop1 %]</td>
+ <td>[% innerloop2 %]</td>
+ <td>[% innerloop3 %]</td>
+ </tr>
+ <tr>
+ <td>
+ Giá trị cuối </td>
+ <td>[% lastvalue1 %]</td>
+ <td>[% lastvalue2 %]</td>
+ <td>[% lastvalue3 %]</td>
+ </tr>
+ </table>
+ </div>
+ <div id="subscription_issues">
+ <table>
+ <tr>
+ <th>Số kỳ phát hành</th>
+ <th>Ngày dự kiến</th>
+ <th>Ngày phát hành</th>
+ <th>Published date (text)</th>
+ <th>Trạng thái</th>
+ </tr>
+ [% FOREACH serialslis IN serialslist %]
+ <tr>
+ <td>
+ [% serialslis.serialseq %]
+ </td>
+ <td>
+ [% IF serialslis.planneddate %]
+ [% serialslis.planneddate %]
+ [% ELSE %]
+ Unknown
+ [% END %]
+ </td>
+ <td>
+ [% IF serialslis.publisheddate %]
+ [% serialslis.publisheddate %]
+ [% ELSE %]
+ Unknown
+ [% END %]
+ </td>
+ <td>
+ [% serialslis.publisheddatetext %]
+ </td>
+ <td>
+ [% IF ( serialslis.status1 ) %]Dự kiến[% END %] [% IF ( serialslis.status2 ) %]Đã về[% END %] [% IF ( serialslis.status3 ) %]Chậm[% END %] [% IF ( serialslis.status4 ) %]Thiếu[% END %] [% IF ( serialslis.status41 ) %]Thiếu (Không bao giờ nhận được)[% END %] [% IF ( serialslis.status42 ) %]Thiếu (Đã bán)[% END %] [% IF ( serialslis.status43 ) %]Thiếu (Hư hỏng)[% END %] [% IF ( serialslis.status44 ) %]Thiếu (Mất)[% END %] [% IF ( serialslis.status5 ) %]Không phát hành[% END %] [% IF ( serialslis.status6 ) %]Xóa[% END %] [% IF ( serialslis.status7 ) %] Đã khiếu nại [% IF ( serialslis.claimdate ) %] [% serialslis.claimdate %] [% END %] [% END %] [% IF ( serialslis.status8 ) %]Ngừng phát hành[% END %] </td>
+ </tr>
+ [% END %]
+ </table>
+ </div>
+ <div id="subscription_summary">
+ <div class="yui-g">
+ <div class="rows">
+ <ol>
+ <li><span class="label">Ngày bắt đầu:</span> [% startdate %] </li>
+ <li><span class="label">Ngày kết thúc:</span> [% enddate %]</li>
+ <li><span class="label">Ngày bắt đầu từng đặt:</span> [% histstartdate %] </li>
+ <li><span class="label">Ngày kết thúc từng đặt:</span> [% histenddate %]</li>
+ <li><span class="label">Kỳ đã nhận:</span>[% recievedlist %]</li>
+ <li><span class="label">Kỳ ấn phẩm thiếu:</span>[% missinglist %]</li>
+ <li><span class="label">Ghi chú nội bộ:</span>[% internalnotes FILTER html_line_break |html %]</li>
+ <li><span class="label">Ghi chú:</span>[% notes FILTER html_line_break |html %]</li>
+ <li><span class="label">Lịch sử ghi chú thủ thư</span>[% librariannote FILTER html_line_break %]</li>
+ <li><span class="label">Lịch sử ghi chú OPAC</span>[% opacnote FILTER html_line_break %]</li>
+ </ol>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ [% IF ( show_acquisition_details ) %]
+ <div id="acquisition_details">
+ <h2>Thông tin bổ sung</h2>
+ <table>
+ <thead>
+ <tr><th></th><th>Giá trước thuế</th><th>Giá sau thuế</th><th>Quỹ</th><th></th></tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Số lượng đặt mua</td>
+ <td>[% value_tax_excluded_ordered %]</td>
+ <td>[% value_tax_included_ordered %]</td>
+ <td>[% budget_name_ordered %]</td>
+ <td>
+ [% IF ( ordered_exists ) %]
+ <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno %]">Xem thông tin đơn hàng</a>
+ [% END %]
+ </td>
+ </tr>
+ <tr>
+ <td>Số tiền chi trả</td>
+ <td>[% value_tax_excluded_spent %]</td>
+ <td>[% value_tax_included_spent %]</td>
+ <td>[% budget_name_spent %]</td>
+ <td>
+ [% IF ( spent_exists ) %]
+ <a href="/cgi-bin/koha/acqui/invoice.pl?invoiceid=[% invoiceid %]">Xem thông tin hóa đơn</a>
+ [% END %]
+ </td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+
+
+
+</div>
+</div>
+
+<div class="yui-b">
+[% INCLUDE 'serials-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ <script type="text/javascript">
+        var subscriptionid = "[% subscriptionid %]";
+        var MSG_CLOSE_SUBSCRIPTION = _("Bạn có chắc chắn muốn đóng ấn phẩm định kỳ này?");
+        var MSG_REOPEN_SUBSCRIPTION = _("Bạn chắc chắn muốn mở lại ấn phẩm định kỳ này?");
+        var CONFIRM_DELETE_SUBSCRIPTION = _("Bạn chắc chắn muốn xóa ấn phẩm định kỳ này?");
+    </script>
+ [% Asset.js("js/serials-toolbar.js") %]
+ <script type="text/javascript">
+        // the english words used in display purposes
+        var text = new Array(_("Số"),_("Tập"),_("Kỳ"),_("Tháng"),_("Tuần"),_("Bắt đầu với:"),_("Quay lại:"),_("Chọn bán cầu:"),_("Bắc"),_("Southern",
+        "Autumn"),_("Đông"),_("Xuân"),_("Hè"),_("Mùa"),_("Mùa"),_("Năm"));
+        $(document).ready(function() {
+            $("#subscription_description").tabs();
+            $("#renewsub").click(function(){
+                popup([% subscriptionid %]);
+                return false;
+            })
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

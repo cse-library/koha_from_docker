@@ -1,0 +1,61 @@
+[% USE Koha %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; Subject cloud</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-tags-subject' %]
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Trang chủ</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Mây chủ đề</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav || OpacNavBottom ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ </div>
+ [% END %]
+
+ [% IF ( OpacNav ||  OpacNavBottom ) %]
+ <div class="span7">
+ [% ELSE %]
+ <div class="span9">
+ [% END %]
+ <div id="subjectcloud">
+ <h1>Mây chủ đề</h1>
+ [% IF Koha.Preference( 'OpacCloud' ) == 1 %]
+ [% IF ( LOOP ) %]
+ <p>&quot;Mây chủ đề&quot; hiển thị các chủ đề được sử dụng nhiều nhất trong phần biên mục của chúng tôi. Nhấp vào bất kỳ chủ đề nào dưới đây để xem các tài liệu trong bộ sưu tập của chúng tôi.</p>
+ <fieldset>
+ <legend>Hiển thị</legend>
+ <form class="form-inline" action="/cgi-bin/koha/opac-tags_subject.pl" method="post">
+ <p>lên đến <input type="text" name="number" value="[% number %]" size="4" maxlength="4" /> chủ đề <input type="submit" class="btn" value="OK" /></p>
+ </form>
+ </fieldset>
+
+ [% FOREACH LOO IN LOOP %]
+ <a href="/cgi-bin/koha/opac-search.pl?idx=su&amp;q=&quot;[% LOO.entry |html %]&quot;" style="font-size:[% LOO.weight %]px;">[% LOO.entry %]</a>
+ [% END %]
+ [% ELSE %]
+ <p>Ghi chú: Chức năng này chỉ dành cho công tác biên mục của Pháp, các chủ đề ISBD tại đây được sử dụng phổ biến và được xây dựng cách đánh chỉ mục riêng.</p>
+ [% END # / IF LOOP %]
+ [% ELSE %]
+ <div class="alert alert-info">
+ <p>Tính năng mây ISBD không được kích hoạt.</p>
+ </div>
+ [% END # / IF OpacCloud %]
+ </div> <!-- / #subjectcloud -->
+ </div> <!-- / .span7/9 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

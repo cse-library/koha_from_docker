@@ -1,0 +1,161 @@
+[% USE Asset %]
+[% USE Koha %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; [% IF ( booksellername ) %]Đơn hàng (với giá tham khảo) của nhà cung cấp [% booksellername %][% ELSE %]Đơn hàng (giá tham khảo)[% END %]</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_uncertainprice" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; [% IF ( booksellername ) %]<a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; Đơn hàng (với giá tham khảo) của nhà cung cấp [% booksellername %][% ELSE %]Đơn hàng (giá tham khảo)[% END %]</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% INCLUDE 'acquisitions-toolbar.inc' %]
+ [% IF ( validate ) %]
+ [% SET metacontent = '0; url=' _  scriptname  _ '?booksellerid=' _  booksellerid %]
+ <META HTTP-EQUIV=Refresh CONTENT="[% metacontent %]">
+ [% ELSE %]
+ [% IF ( booksellername ) %]
+ <h1>Đơn hàng (với giá tham khảo) của nhà cung cấp <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a></h1>
+ <h2>Thông tin liên hệ</h2>
+ <p><strong>Địa chỉ: </strong>
+ [% booksellerpostal %]
+ [% bookselleraddress1 %]
+ [% bookselleraddress2 %]
+ [% bookselleraddress3 %]
+ [% bookselleraddress4 %]
+ <a href="[% booksellerurl %]">[% booksellerurl %]</a>
+ </p>
+ <p><strong>Điện thoại: </strong>
+ [% booksellerphone %] / Số Fax: [% booksellerfax %]</p>
+ <dl>
+ [% FOREACH contact IN contacts %]
+ <dt><strong>Liên hệ: </strong></dt>
+ <dd>[% contact.name %]
+ [% contact.position %]
+ [% contact.phone %]
+ [% contact.altphone %]
+ [% contact.email %]
+ [% contact.notes %]
+ </dd>
+ [% END %]
+ </dl>
+ [% IF ( booksellernotes ) %]
+ <p><strong>Ghi chú: </strong>
+ [% booksellernotes %]</p>
+ [% END %]
+ [% END %]
+
+ <h2>Đơn hàng (với giá tham khảo)</h2>
+ <form action="[% scriptname %]" method="post">
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <label for="owner">Orders from:</label>
+ <select id="owner" name="owner">
+ [% IF ( owner ) %]
+ <option value="0">Tất cả</option>
+ <option value="1" selected="selected">Tôi</option>
+ [% ELSE %]
+ <option value="0" selected="selected">Tất cả</option>
+ <option value="1">Tôi</option>
+ [% END %]
+ </select>
+ <input type="submit" value="Bộ lọc dữ liệu" />
+ </form>
+ <form action="[% scriptname %]" method="post" id="uncertainprices">
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <input type="hidden" name="op" value="validate" />
+ <table id="uncertainpricet">
+ <thead>
+ <tr>
+ <th>Giỏ đặt hàng</th>
+ <th>Đơn hàng</th>
+ <th>Người liên quan</th>
+ <th>Giá tham khảo</th>
+ <th>Giá tiền</th>
+ <th>Số lượng</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH uncertainpriceorder IN uncertainpriceorders %]
+ <tr>
+ <td>
+ [% uncertainpriceorder.basketname %]
+ </td>
+ <td>
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% uncertainpriceorder.biblionumber %]">[% uncertainpriceorder.title |html %]</a>
+ [% IF ( uncertainpriceorder.author ) %] <em>Người liên quan</em> [% uncertainpriceorder.author %][% END %]
+ [% IF ( uncertainpriceorder.publishercode ) %]
+ <br /><em>Nhà xuất bản:</em> [% uncertainpriceorder.publishercode %]
+ [%- IF    ( uncertainpriceorder.publicationyear ) -%], [% uncertainpriceorder.publicationyear %]
+ [%- ELSIF ( uncertainpriceorder.copyrightdate ) -%] [% uncertainpriceorder.copyrightdate %]
+ [% END %]
+ [% END %]
+ [% IF ( uncertainpriceorder.isbn ) %]<br />[% uncertainpriceorder.isbn %][% END %]
+ <br />
+ <a href="neworderempty.pl?ordernumber=[% uncertainpriceorder.ordernumber %]&amp;booksellerid=[% booksellerid %]&amp;basketno=[% uncertainpriceorder.basketno %]">
+ Chỉnh sửa </a>
+ </td>
+ <td>
+ [% uncertainpriceorder.firstname %] [% uncertainpriceorder.surname %]
+ </td>
+ <td>
+ <input type="checkbox" name="uncertainprice[% uncertainpriceorder.ordernumber %]" value="1" checked="checked" />
+ </td>
+ <td>
+ <input class="check_uncertain" data-ordernumber="[% uncertainpriceorder.ordernumber %]" type="text" size="10" name="price[% uncertainpriceorder.ordernumber %]" value="[% uncertainpriceorder.listprice %]" />
+ </td>
+ <td>
+ [% IF basket.effective_create_items == 'ordering' %]
+ [% uncertainpriceorder.quantity %]
+ <input type="hidden" name="qty[% uncertainpriceorder.ordernumber %]" value="[% uncertainpriceorder.quantity %]" />
+ [% ELSE %]
+ <input class="check_uncertain" data-ordernumber="[% uncertainpriceorder.ordernumber %]" type="text" size="10" name="qty[% uncertainpriceorder.ordernumber %]" value="[% uncertainpriceorder.quantity %]" />
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ <fieldset class="action"><input value="Lưu" type="submit" /></fieldset>
+ </form>
+ [% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'vendor-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+            var uncertainpricet = $("#uncertainpricet").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1, -2, -3 ], "bSortable": false, "bSearchable": false },
+                ],
+                "sPaginationType": "four_button"
+            }));
+            $(".check_uncertain").on("change",function(){
+                var form = document.getElementById("uncertainprices");
+                var ordernumber = $(this).data("ordernumber");
+                uncheckbox( form, ordernumber );
+            });
+        });
+        var MSG_INVALIDPRICE = _("ERROR: Price is not a valid number, please check the price and try again!");
+    </script>
+ [% Asset.js("js/acq.js") %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,1 @@
+[%- SWITCH index -%] [%- CASE 'su-na' -%] Tìm kiếm chủ đề hẹp hơn [%- CASE 'su-br' -%] Tìm kiếm chủ đề rộng hơn [%- CASE 'su-rl' -%] Tìm kiếm chủ đề liên quan [%- END -%] 

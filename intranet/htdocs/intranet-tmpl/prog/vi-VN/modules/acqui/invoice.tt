@@ -1,0 +1,263 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Price %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Hóa đơn</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_invoice" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; <a href="/cgi-bin/koha/acqui/invoices.pl">Hóa đơn</a> &rsaquo; <a href="/cgi-bin/koha/acqui/invoice.pl?invoiceid=[% invoiceid %]">[% invoicenumber %]</a></div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% IF ( modified ) %]
+ <div class="dialog message">
+ <p>Hóa đơn đã được chỉnh sửa</p>
+ </div>
+ [% END %]
+ <h1>Hóa đơn: [% invoicenumber %]</h1>
+
+ <p>Nhà cung cấp: <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% suppliername %]</a></p>
+ <form action="/cgi-bin/koha/acqui/invoice.pl" method="post" class="validated">
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <label for="shipmentdate" class="required">Số hóa đơn:</label>
+ <input type="text" id="invoicenumber" name="invoicenumber" value="[% invoicenumber %]" class="required" required="required"/>
+ <span class="required">Bắt buộc</span>
+ </li>
+
+ <li><label for="shipmentdate">Ngày giao hàng:</label>
+ <input type="text" size="10" id="shipmentdate" name="shipmentdate" value="[% shipmentdate | $KohaDates %]" class="datepicker" /></li>
+
+ <li><label for="billingdate">Ngày thanh toán:</label>
+ <input type="text" size="10" id="billingdate" name="billingdate" value="[% billingdate | $KohaDates %]" class="datepicker" /></li>
+
+ <li><label for="shipmentcost">Phí vận chuyển:</label>
+ <input type="text" size="10" id="shipmentcost" name="shipmentcost" value="[% shipmentcost %]" /></li>
+ <li><label for="shipment_budget_id">Shipping fund:</label>
+ <select id="shipment_budget_id" name="shipment_budget_id">
+ <option value="">Không có nguồn quỹ</option>
+ [% FOREACH budget IN budgets_loop %]
+ [% IF ( budget.selected ) %]
+ <option selected="selected" value="[% budget.budget_id %]">
+ [% ELSE %]
+ <option value="[% budget.budget_id %]">
+ [% END %]
+ [% budget.budget_name %]
+ </option>
+ [% END %]
+ </select></li>
+
+ [% IF ( invoiceclosedate ) %]
+ <li><span class="label">Trạng thái:</span>
+ Closed on [% invoiceclosedate | $KohaDates %].</li>
+
+ <li><label for="reopen">Mở lại: </label> <input type="checkbox" name="reopen" id="reopen" /></li>
+ [% ELSE %]
+ <li><span class="label">Trạng thái:</span>
+ Mở.</li>
+
+ <li><label for="close">Close: </label> <input type="checkbox" name="close" id="close" />
+ </li>
+ [% END %]
+ </ol>
+ <input type="hidden" name="op" value="mod" />
+ <input type="hidden" name="invoiceid" value="[% invoiceid %]" />
+ </fieldset>
+ <fieldset class="action">
+ <input value="Lưu" type="submit" />
+ [% UNLESS orders_loop.size %]
+ <a href="invoice.pl?op=delete&invoiceid=[% invoiceid %]" id="delete">Xóa</a>
+ [% END %]
+ </fieldset>
+ </form>
+ <p>
+ <a href="/cgi-bin/koha/acqui/parcel.pl?invoiceid=[% invoiceid %]">Nhận tài liệu của đơn hàng</a>
+ [% IF Koha.Preference('AcqEnableFiles') %]| <a href="/cgi-bin/koha/acqui/invoice-files.pl?invoiceid=[% invoiceid %]">Manage invoice files</a>[% END %]
+ </p>
+ <h2>Thông tin chi tiết hóa đơn</h2>
+ [% IF orders_loop.size %]
+ <label for="show_all_details">
+ <input type="checkbox" style="vertical-align: middle;" id="show_all_details" />
+ Hiển thị chi tiết </label>
+ <table id="orderst">
+ <thead>
+ <tr>
+ <th class="anti-the">Tóm tắt</th>
+ <th>Thư viện</th>
+ <th class="tax_excluded">Giá thực tế trước thuế</th>
+ <th class="tax_included">Giá thực tế sau thuế</th>
+ <th>Số lượng</th>
+ <th class="tax_excluded">Tổng giá trước thuế ([% currency.symbol %])</th>
+ <th class="tax_included">Tổng giá sau thuế ([% currency.symbol %])</th>
+ <th>Thuế suất %</th>
+ <th>Thuế</th>
+ <th>Quỹ</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH order IN orders_loop %]
+ <tr>
+ <td>
+ [% IF order.biblionumber %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% order.biblionumber %]">[% order.title |html %]</a>
+ [% IF ( order.author ) %]
+ <br /><em>Người liên quan</em> [% order.author %]
+ [% END %]
+ [% ELSE %]
+ <em>Biểu ghi thư mục đã bị xóa, không tìm thấy nhan đề</em>
+ [% END %]
+ [% IF ( order.isbn ) %] &ndash; [% order.isbn %][% END %]
+ [% IF ( order.publishercode ) %]
+ <br/>[% order.publishercode %]
+ [% IF order.publicationyear %], [% order.publicationyear %]
+ [% ELSIF ( order.copyrightdate ) %][% order.copyrightdate %][% END %]
+ [% END %]
+ </td>
+ <td><p>[% order.branchcode %]</p></td>
+ <td class="number tax_excluded">[% order.unitprice_tax_excluded | $Price %]</td>
+ <td class="number tax_included">[% order.unitprice_tax_included | $Price %]</td>
+ <td class="number">[% order.quantity %]</td>
+ <td class="number tax_excluded">[% order.total_tax_excluded | $Price %]</td>
+ <td class="number tax_included">[% order.total_tax_included | $Price %]</td>
+ <td class="number">[% order.tax_rate * 100 %]</td>
+ <td class="number">[% order.tax_value | $Price %]</td>
+ <td>[% order.budget_name %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ <tfoot>
+ [% FOR tf IN foot_loop %]
+ <tr>
+ <th colspan="2">Tổng (Thuế [% tf.tax_rate * 100 %] %)</th>
+ <th class="tax_excluded"/><th class="tax_included"/>
+ <th>[% tf.quantity %]</th>
+ <th class="tax_excluded">[% tf.total_tax_excluded | $Price %]</th>
+ <th class="tax_included">[% tf.total_tax_included | $Price %]</th>
+ <th>&nbsp;</th>
+ <th>[% tf.tax_value | $Price %]</th>
+ <th>&nbsp;</th>
+ </tr>
+ [% END %]
+ <tr>
+ <th colspan='2'>Tổng số ([% currency.symbol %])</th>
+ <th class="tax_excluded"/><th class="tax_included"/>
+ <th>[% total_quantity %]</th>
+ <th class="tax_excluded">[% total_tax_excluded | $Price %]</th>
+ <th class="tax_included">[% total_tax_included | $Price %]</th>
+ <th>&nbsp;</th>
+ <th>[% total_tax_value | $Price %]</th>
+ <th>&nbsp;</th>
+ </tr>
+ <tr>
+ <th colspan="2">Tổng số + phí vận chuyển ([% currency.symbol %])</th>
+ <th class="tax_excluded"></th>
+ <th class="tax_included"></th>
+ <th>[% total_quantity %]</th>
+ <th class="tax_excluded">[% total_tax_excluded_shipment | $Price %]</th>
+ <th class="tax_included">[% total_tax_included_shipment | $Price %]</th>
+ <th>&nbsp;</th>
+ <th>[% total_tax_value | $Price %]</th>
+ <th>&nbsp;</th>
+ </tr>
+ </tfoot>
+ </table>
+ [% ELSE %]
+ <div class="dialog message"><p>Bạn chưa có đơn hàng liên quan đến hóa đơn này.</p></div>
+ [% END %]
+ [% IF ( (Koha.Preference('AcqEnableFiles')) && files ) %]
+ <br />
+ <h2>Files attached to invoice</h2>
+ <table id="invoice_files_table">
+ <thead>
+ <tr>
+ <th>Tên</th>
+ <th>Type</th>
+ <th>Thông tin mô tả</th>
+ <th>Thời gian tải lên</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH f IN files %]
+ <tr>
+ <td><a href="/cgi-bin/koha/acqui/invoice-files.pl?invoiceid=[% invoiceid %]&amp;op=download&amp;view=1&amp;file_id=[% f.file_id %]">[% f.file_name | html %]</a></td>
+ <td>[% f.file_type | html %]</td>
+ <td>[% f.file_description | html %]</td>
+ <td class="title-string">
+ <span title="[% f.date_uploaded %]">[% f.date_uploaded | $KohaDates %]</span>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+ </div>
+ </div>
+ <div class="yui-b">
+ [% INCLUDE 'acquisitions-menu.inc' %]
+ </div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+        function updateColumnsVisibility(visible) {
+            if ( visible ) {
+                $("table .tax_excluded, .tax_included").show();
+            } else {
+                [% IF ( invoiceincgst ) %]
+                    $("table .tax_excluded").hide();
+                [% ELSE %]
+                    $("table .tax_included").hide();
+                [% END %]
+            }
+        }
+
+        $(document).ready(function() {
+            $("#delete").click(function(){
+                return confirmDelete(_("Are you sure you want to delete this invoice?"));
+            });
+            $("#orderst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                bInfo: false,
+                bPaginate: false,
+                bFilter: false,
+                sDom: "t",
+                "aoColumnDefs": [
+                    { "sType": "anti-the", "aTargets": [ "anti-the" ] }
+                ]
+            }));
+            [% IF ( (Koha.Preference('AcqEnableFiles')) && files ) %]
+                $("#invoice_files_table").dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "aoColumnDefs": [
+                        { "aTargets": [ "title-string" ], "sType": "title-string" }
+                    ],
+                    bInfo: false,
+                    bPaginate: false,
+                    bFilter: false,
+                    sDom: "t"
+                }));
+            [% END %]
+            $("#show_all_details").click(function(){
+                updateColumnsVisibility( $(this).is(":checked") );
+            });
+
+            $("#show_all_details").prop('checked', false);
+            updateColumnsVisibility(false);
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

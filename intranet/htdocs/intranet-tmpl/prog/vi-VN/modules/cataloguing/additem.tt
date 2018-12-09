@@ -1,0 +1,382 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE ColumnsSettings %]
+
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ biên mục &rsaquo; [% title |html %] [% IF ( author ) %] Tác giả: [% author | html %][% END %] (Biểu ghi số [% biblionumber %]) &rsaquo; Tài liệu</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+[% INCLUDE 'datatables.inc' %]
+[% Asset.js("js/cataloging.js") %]
+[% INCLUDE 'columns_settings.inc' %]
+[% INCLUDE 'browser-strings.inc' %]
+[% Asset.js("js/browser.js") %]
+<script type="text/javascript">
+//<![CDATA[
+    var browser = KOHA.browser('[% searchid %]', parseInt('[% biblionumber %]', 10));
+    browser.show();
+
+$(document).ready(function(){
+
+    // Remove the onclick event defined in browser.js,
+    // otherwise the deletion confirmation will not work correctly
+    $('a[href*="biblionumber="]').off('click');
+
+    [% IF (popup) %]
+        [% IF (opisadd) %]
+            window.close();
+        [% END %]
+    [% END %]
+            $("fieldset.rows input, fieldset.rows select").addClass("noEnterSubmit");
+            /* Inline edit/delete links */
+            var biblionumber = $("input[name='biblionumber']").attr("value");
+            $("tr.editable").each(function(){
+                $(this).find("td:not(:first)").on('click', function(){
+                    var rowid = $(this).parent().attr("id");
+                    num_rowid = rowid.replace("row","");
+                    $(".linktools").remove();
+                    var edit_link = $('<a href="/cgi-bin/koha/cataloguing/additem.pl?op=edititem&frameworkcode=[% frameworkcode %]&biblionumber=[% biblionumber %]&itemnumber='+num_rowid+'&searchid=[% searchid %]#edititem"></a>');
+                    $(edit_link).text(_("Edit item"));
+                    var delete_link = $('<a href="/cgi-bin/koha/cataloguing/additem.pl?op=delitem&frameworkcode=[% frameworkcode %]&biblionumber=[% biblionumber %]&itemnumber='+num_rowid+'&searchid=[% searchid %]"></a>');
+                    $(delete_link).text(_("Delete item"));
+                    $(delete_link).on('click', function(e) {
+                        return confirm_deletion();
+                    });
+                    var tools_node = $('<span class="linktools"></span>');
+                    $(tools_node).append(edit_link);
+                    $(tools_node).append(delete_link);
+                    $(this).append(tools_node);
+                });
+            });
+
+    $("#addnewitem").click(function(){
+        if ( confirm(_("Are you sure you want to add a new item? Any changes made on this page will be lost.")) ){
+            window.location.href = "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]";
+        }
+    });
+
+    var columns_settings = [% ColumnsSettings.GetColumns( 'cataloguing', 'additem', 'itemst', 'json' ) %]
+    // Skip the first column
+    columns_settings.unshift( { cannot_be_toggled: "1" } );
+
+    var itemst = KohaTable("itemst", {
+        "aoColumnDefs": [
+          { "aTargets": [ 0 ], "bSortable": false, "bSearchable": false },
+        ],
+        'bPaginate': false,
+        'bInfo': false,
+        "bAutoWidth": false,
+        "bKohaColumnsUseNames": true
+    }, columns_settings);
+
+    var multiCopyControl = $("#add_multiple_copies_span");
+    var addMultipleBlock = $("#addmultiple");
+    var addSingleBlock = $("#addsingle");
+    multiCopyControl.hide();
+    $("#add_multiple_copies").on("click",function(e){
+        e.preventDefault;
+        addMultipleBlock.toggle();
+        addSingleBlock.toggle();
+        multiCopyControl.toggle();
+        $('body,html').animate({ scrollTop: $('body').height() }, 100);
+    });
+    $("#cancel_add_multiple").on("click",function(e){
+        e.preventDefault();
+        addMultipleBlock.toggle();
+        addSingleBlock.toggle();
+        multiCopyControl.toggle();
+    });
+});
+
+function Check(f) {
+    var total_errors = CheckMandatorySubfields(f);
+    if (total_errors==0) {
+        // Explanation about this line:
+        // In case of limited edition permission, we have to prevent user from modifying some fields.
+        // But there is no such thing as readonly attribute for select elements.
+        // So we use disabled instead. But disabled prevent values from being passed through the form at submit.
+        // So we "un-disable" the elements just before submitting.
+        // That's a bit clumsy, and if someone comes up with a better solution, feel free to improve that.
+        $("select[name=field_value]").prop('disabled', false);
+        return true;
+    } else {
+        var alertString2 = _("Phát hiện các lỗi sau đây, bạn vui lòng kiểm tra và chỉnh sửa lại:");
+        alertString2 += "\n------------------------------------------------------------------------------------\n";
+        alertString2 += "\n- " + _("%s Các trường bắt buộc chưa khai báo thông tin (được đánh dấu)").format(total_errors);
+        alert(alertString2);
+        return false;
+    }
+    return true;
+}
+function CheckMultipleAdd(f) {
+
+    if (!f || isNaN(f) || !parseInt(f) == f || f <= 0) {
+        alert(_("Vui lòng nhập số bản tài liệu được tạo mới."));
+        return false;
+    }
+    <!-- Add a soft-limit of 99 with a reminder about potential data entry error -->
+    if (f>99) {
+        return confirm(_("You are about to add %s items. Continue?").format(f));
+    }
+}
+function Dopop(link,i) {
+    defaultvalue=document.forms[0].field_value[i].value;
+    newin=window.open(link+"&result="+defaultvalue,"valuebuilder",'width=500,height=400,toolbar=false,scrollbars=yes');
+}
+
+function confirm_deletion() {
+    return confirm(_("Bạn chắc chắn muốn xóa bản tài liệu này?"));
+}
+
+//]]>
+</script>
+[% Asset.css("css/addbiblio.css") %]
+
+[% INCLUDE 'select2.inc' %]
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.subfield_line select').select2();
+  });
+</script>
+
+[% IF ( bidi ) %]
+ [% Asset.css("css/right-to-left.css") %]
+[% END %]
+</head>
+<body id="cat_additem" class="cat">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cataloging-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+ &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Phân hệ biên mục</a>
+ &rsaquo; Chỉnh sửa <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]">[% title |html %] [% IF ( author ) %], Tác giả: [% author | html %][% END %] (Biểu ghi số [% biblionumber %])</a>
+ &rsaquo; <a href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]">Tài liệu</a>
+</div>
+
+<div id="doc3" class="yui-t7">
+
+ <div id="bd">
+ <div id="yui-main">
+
+<h1>Tài liệu đính kèm của biểu ghi [% title |html %] [% IF ( author ) %], Tác giả: [% author | html %][% END %] (Biểu ghi số [% biblionumber %])</h1>
+
+[% IF ( barcode_not_unique ) %]<div class="dialog alert"><strong>Lỗi lưu bản tài liệu</strong>: Đăng ký cá biệt trên đã tồn tại, bạn vui lòng nhập đăng ký cá biệt khác.</div>[% END %]
+[% IF ( no_next_barcode ) %]<div class="dialog alert"><strong>Lỗi lưu nhiều bản tài liệu</strong>: Không thể xác định giá trị của đăng ký cá biệt. Không có bản tài liệu nào được thêm vào.</div>[% END %]
+[% IF ( book_on_loan ) %]<div class="dialog alert"><strong>Không thể xóa</strong>: Bản tài liệu đã được ghi mượn.</div>[% END %]
+[% IF ( book_reserved ) %]<div class="dialogalert"><strong>Không thể xóa</strong>: Bản tài liệu đang chờ bạn đọc đặt mượn đến lấy.</div>[% END %]
+[% IF ( not_same_branch ) %]<div class="dialog alert"><strong>Không thể xóa</strong>: Bản tài liệu này thuộc về thư viện khác.</div>[% END %]
+[% IF ( linked_analytics ) %]<div class="dialog alert"><strong>Không thể xóa</strong>: Bản tài liệu đã được liên kết tới <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber %]&amp;analyze=1">tài liệu chủ.</a>.</div>[% END %]
+
+<div id="cataloguing_additem_itemlist">
+ [% IF ( item_loop ) %]
+ <div>
+ <table id="itemst">
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ [% FOREACH item_header IN item_header_loop %]
+ [% IF item_header.column_name %]
+ <th data-colname="[% item_header.column_name %]">
+ [% ELSE %]
+ <th>
+ [% END %]
+ [% item_header.header_value %]
+ </th>
+ [% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH item_loo IN item_loop %]
+ [% IF ( item_loo.itemnumber == itemnumber) %]
+ [% IF item_loo.nomod %]
+ <tr id="row[% item_loo.itemnumber %]" class="active">
+ [% ELSE %]
+ <tr id="row[% item_loo.itemnumber %]" class="active editable">
+ [% END %]
+ [% ELSE %]
+ [% IF item_loo.nomod %]
+ <tr id="row[% item_loo.itemnumber %]">
+ [% ELSE %]
+ <tr id="row[% item_loo.itemnumber %]" class="editable">
+ [% END %]
+ [% END %]
+ [% IF ( item_loo.nomod ) %]
+ <td>&nbsp;</td>
+ [% ELSE %]
+ <td>
+ <div class="dropdown">
+ <a class="btn btn-default btn-xs dropdown-toggle" id="itemactions[% item_loo.itemnumber %]" role="button" data-toggle="dropdown" href="#">
+ Thao tác <b class="caret"></b>
+ </a>
+ <ul class="dropdown-menu" role="menu" aria-labelledby="itemactions[% item_loo.itemnumber %]">
+
+ [% IF ( item_loo.hostitemflag ) %]
+ <li><a href="additem.pl?op=edititem&amp;biblionumber=[% item_loo.hostbiblionumber %]&amp;itemnumber=[% item_loo.itemnumber %]#edititem">Sửa trong tài liệu chủ</a> &nbsp; <a class="delete" href="/cgi-bin/koha/cataloguing/additem.pl?op=delinkitem&amp;biblionumber=[% biblionumber %]&amp;hostitemnumber=[% item_loo.itemnumber %]&amp;searchid=[% searchid %]">Delink</a></li>
+ [% ELSE %]
+ <li><a href="additem.pl?op=edititem&amp;biblionumber=[% biblionumber %]&amp;itemnumber=[% item_loo.itemnumber %]&amp;searchid=[% searchid %]#edititem">Chỉnh sửa</a></li>
+ <li><a href="additem.pl?op=dupeitem&amp;biblionumber=[% biblionumber %]&amp;itemnumber=[% item_loo.itemnumber %]&amp;searchid=[% searchid %]#additema">Sao chép</a></li>
+ <li class="print_label"><a href="/cgi-bin/koha/labels/label-edit-batch.pl?op=add&amp;number_type=itemnumber&amp;number_list=[% item_loo.itemnumber %]" target="_blank" >Print Label</a></li>
+ [% IF ( item_loo.countanalytics ) %]
+ <li><a href="/cgi-bin/koha/catalogue/search.pl?idx=hi&amp;q=% item_loo.itemnumber %]">Xem tài liệu chủ</a></li>
+ [% ELSE %]
+ <li><a class="delete" href="/cgi-bin/koha/cataloguing/additem.pl?op=delitem&amp;biblionumber=[% biblionumber %]&amp;itemnumber=[% item_loo.itemnumber %]&amp;searchid=[% searchid %]" onclick="return confirm_deletion();">Xóa</a></li>
+ [% END %]
+ [% END %]
+ [% IF ( OPACBaseURL ) %]
+ <li class="view-in-opac"><a target="_blank" href="[% Koha.Preference('OPACBaseURL') %]/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]">OPAC view</a></li>
+ [% END %]
+ </ul>
+ </div>
+ </td>
+ [% END %]
+ [% FOREACH item_valu IN item_loo.item_value %]
+ <td>[% item_valu.field |html %]</td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+</div>
+<div class="yui-gf">
+<div class="yui-u first">
+[% INCLUDE 'biblio-view-menu.inc' %]
+</div>
+<div class="yui-u">
+<div id="cataloguing_additem_newitem">
+ <form id="f" method="post" action="/cgi-bin/koha/cataloguing/additem.pl" name="f">
+ <input type="hidden" name="op" value="[% op %]" />
+ [% IF (popup) %]
+ <input type="hidden" name="popup" value="1" />
+ [% END %]
+ <input type="hidden" name="biblionumber" value="[% biblionumber %]" />
+ [% IF ( opisadd ) %]
+ <h2 id="additema">Tạo bản tài liệu [% IF (circborrowernumber) %]<em>(biên mục nhanh)</em>[% END %]</h2>
+ [% ELSE %]
+ <h2 id="edititem">Chỉnh sửa bản tài liệu số[% itemnumber %][% IF ( barcode ) %] / Đăng ký cá biệt: [% barcode %][% END %]</h2>
+ [% END %]
+ <fieldset class="rows">
+ <ol>
+ [% FOREACH ite IN item %]
+ <li><div class="subfield_line" style="[% ite.visibility %]" id="subfield[% ite.tag %][% ite.subfield %][% ite.random %]">
+ [% IF ( ite.mandatory ) %]
+ <label class="required">[% ite.subfield %] - [% ite.marc_lib %]</label>
+ [% ELSE %]
+ <label>[% ite.subfield %] - [% ite.marc_lib %]</label>
+ [% END %]
+
+ [% SET mv = ite.marc_value %]
+ [% IF ( mv.type == 'hidden' ) %]
+ <input type="hidden" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]">
+ [% ELSIF ( mv.type == 'select' ) %]
+ [% IF ( mv.readonly ) %]
+ <select name="field_value" id="[%- mv.id -%]" size="1" class="input_marceditor" readonly="readonly" disabled="disabled">
+ [% ELSE %]
+ <select name="field_value" id="[%- mv.id -%]" size="1" class="input_marceditor">
+ [% END %]
+ [% FOREACH aval IN mv.values %]
+ [% IF aval == mv.default %]
+ <option value="[%- aval -%]" selected="selected">[%- mv.labels.$aval -%]</option>
+ [% ELSE %]
+ <option value="[%- aval -%]">[%- mv.labels.$aval -%]</option>
+ [% END %]
+ [% END %]
+ </select>
+ [% ELSIF ( mv.type == 'text_auth' ) %]
+ [% IF mv.readonly %]
+ <input type="text" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]" readonly="readonly" />
+ [% ELSE %]
+ <input type="text" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]" />
+ [% SET dopop = "Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=\"${mv.authtypecode}\"&index=${mv.id}','${mv.id}')" %]
+ <a href="#" class="buttonDot"  onclick="[%- dopop -%]; return false;" title="Tag editor">...</a>
+ [% END %]
+ [% ELSIF ( mv.type == 'text_plugin' ) %]
+ [% IF mv.readonly %]
+ <input type="text" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]" readonly="readonly" />
+ [% ELSE %]
+ <input type="text" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]" />
+ [% IF ( mv.nopopup ) %]
+ <a href="#" id="buttonDot_[%- mv.id -%]" class="[%- mv.class -%]" title="No popup">...</a>
+ [% ELSE  %]
+ <a href="#" id="buttonDot_[%- mv.id -%]" class="[%- mv.class -%]" title="Tag editor">...</a>
+ [% END %]
+ [%- mv.javascript -%]
+ [% END %]
+ [% ELSIF ( mv.type == 'text' ) %]
+ [% IF mv.readonly %]
+ <input type="text" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]" readonly="readonly" />
+ [% ELSE %]
+ <input type="text" id="[%- mv.id -%]" name="field_value" class="input_marceditor" size="50" maxlength="[%- mv.maxlength -%]" value="[%- mv.value -%]" />
+ [% END %]
+ [% ELSIF ( mv.type == 'textarea' ) %]
+ [% IF mv.readonly %]
+ <textarea id="[%- mv.id -%]" name="field_value" class="input_marceditor" rows="5" cols="64" readonly="readonly" >[% mv.value %]</textarea>
+ [% ELSE %]
+ <textarea id="[%- mv.id -%]" name="field_value" class="input_marceditor" rows="5" cols="64" >[% mv.value %]</textarea>
+ [% END %]
+ [% END %]
+
+ <input type="hidden" name="tag"       value="[% ite.tag %]" />
+ <input type="hidden" name="subfield"  value="[% ite.subfield %]" />
+ <input type="hidden" name="mandatory" value="[% ite.mandatory %]" />
+ [% IF ( ite.repeatable ) %]
+ <a href="#" class="buttonPlus" onclick="CloneItemSubfield(this.parentNode); return false;">
+ <img alt="Sao chép dữ liệu" src="[% interface %]/[% theme %]/img/clone-subfield.png" title="Sao chép trường con này" />
+ </a>
+ [% END %]
+ [% IF ( ite.mandatory ) %] <span class="required">Bắt buộc</span>[% END %]
+ </div></li>
+ [% END %]
+ </ol>
+ </fieldset>
+ <input type="hidden" name="indicator" value=" " />
+ <input type="hidden" name="indicator" value=" " />
+ <input type="hidden" name="itemnumber" value="[% itemnumber %]" />
+
+<fieldset class="action"> [% IF ( opisadd ) %]
+ <input type="submit" name="phony_submit" value="phony_submit" id="phony_submit" style="display:none;" onclick="return false;" />
+ <!-- Note : We use here a false submit button because we have several submit buttons and we don't want the user to believe they validated the adding of multiple items
+ when pressing the enter key, while in fact it is the first submit button that is validated, in our case the "add (single) item" button.
+ It is a bit tricky, but necessary in the sake of UI correctness.
+ -->
+ <span id="addsingle">
+ <input type="submit" name="add_submit" onclick="return Check(this.form)" value="Tạo bản tài liệu" />
+ <input name="add_duplicate_submit" type="submit" onclick="return Check(this.form)" value="Tạo & Sao chép" />
+ </span>
+ <span id="addmultiple">
+ <input type="button" name="add_multiple_copies" id="add_multiple_copies" value="Add multiple copies of this item" />
+ </span>
+ <fieldset id="add_multiple_copies_span">
+ <label for="number_of_copies">Number of copies of this item to add: </label>
+ <input type="text" id="number_of_copies" name="number_of_copies" value="" size="2" />
+ <input onclick="javascript:return Check(this.form) && CheckMultipleAdd(this.form.number_of_copies.value);" value="Tạo" id="add_multiple_copies_submit" name="add_multiple_copies_submit" type="submit" /> <a href="#" id="cancel_add_multiple" class="cancel">Hủy bỏ</a>
+ <div class="hint"><p>The barcode you enter will be incremented for each additional item.</p></div>
+ </fieldset>
+
+ [% ELSE %]
+ <input type="hidden" name="tag" value="[% itemtagfield %]" />
+ <input type="hidden" name="subfield" value="[% itemtagsubfield %]" />
+ <input type="hidden" name="field_value" value="[% itemnumber %]" />
+ <input onclick="return Check(this.form)" value="Lưu" type="submit">
+ <input type="button" id="addnewitem" value="Add a new item">
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber %]">Hủy bỏ</a>
+ [% END %]</fieldset>
+ 
+ [%# Fields for fast cataloging %]
+ <input type="hidden" name="circborrowernumber" value="[% circborrowernumber %]" />
+ <input type="hidden" name="stickyduedate" value="[% stickyduedate %]" />
+ <input type="hidden" name="barcode" value="[% barcode %]" />
+ <input type="hidden" name="duedatespec" value="[% duedatespec %]" />
+ [%# End fields for fast cataloging %]
+
+
+ </form>
+</div>
+</div><!-- /yui-u -->
+</div><!-- /yui-gf -->
+
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

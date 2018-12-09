@@ -1,0 +1,28 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Công cụ bổ trợ &rsaquo; Tính năng bổ trợ &rsaquo; Cập nhật tính năng bổ trợ </title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% INCLUDE 'calendar.inc' %]
+</head>
+
+<body id="plugins_plugins_disabled" class="plugins">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Tính năng bổ trợ</a>
+&rsaquo; Bổ trợ đã bị vô hiệu hóa </div>
+
+<div id="doc3" class="yui-t2">
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ <div class="yui-g">
+ <div class="yui-u first">
+ <h1>Tính năng bổ trợ không được kích hoạt!</h1>
+
+ <p>Để cho phép sử dụng Bổ trợ trong Koha, tính năng UseKohaPlugins cần được mở kèm theo dòng lệnh enable_plugins trong file cấu hình của Koha</p>
+ </div>
+ </div>
+ </div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

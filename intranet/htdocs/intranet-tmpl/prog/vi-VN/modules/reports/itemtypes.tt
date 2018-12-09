@@ -1,0 +1,94 @@
+[% USE Asset %]
+[% USE Branches %]
+[% USE ItemTypes %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Báo cáo &rsaquo; Thống kê tài liệu theo kiểu tài liệu</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% IF ( do_it ) %]
+[% Asset.css("css/datatables.css") %]
+[% END %]
+</head>
+
+<body id="rep_itemtypes" class="rep">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Báo cáo</a>[% IF ( do_it ) %] &rsaquo; <a href="/cgi-bin/koha/reports/manager.pl?report_name=itemtypes">Số bản tài liệu</a> &rsaquo; Kết quả thống kê tài liệu theo kiểu tài liệu [% ELSE %] &rsaquo; Thống kê tài liệu theo kiểu tài liệu [% END %]</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% IF ( do_it ) %]
+[% FOREACH mainloo IN mainloop %]
+ <h1>Thống kê theo kiểu tài liệu [% IF branch %] tại thư viện [% Branches.GetName( branch ) %][% END %]</h1>
+ <table id="itemtypest">
+ <thead>
+ <tr>
+ <th>Kiểu tài liệu</th>
+ <th>Số lượng</th>
+ </tr>
+ </thead>
+ <tfoot>
+ <tr>
+ <th>Tổng số</th>
+ <th>[% mainloo.total %]</th>
+ </tr>
+ </tfoot>
+ <tbody>
+ [% FOREACH loopitemtyp IN mainloo.loopitemtype %]
+ <tr>
+ <td>[% ItemTypes.GetDescription( loopitemtyp.itemtype ) %]</td>
+ <td>[% loopitemtyp.count %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+[% END %]
+[% ELSE %]
+ <h3>Xem số tài liệu tại thư viện của bạn theo kiểu tài liệu</h3>
+ <form method="post" action="/cgi-bin/koha/reports/manager.pl?report_name=itemtypes">
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <label for="value">Lựa chọn thư viện:</label>
+ <select name="value" size="1" id="value">
+ <option value=""></option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ <span class="tip">Nếu bạn không chọn thư viện hệ thống sẽ thống kê tất cả thư viện</span>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action"><input type="submit" value="Tìm kiếm" />
+ <input type="hidden" name="report_name" value="[% report_name %]" />
+ <input type="hidden" name="do_it" value="1" />
+ </fieldset>
+ </form>
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'reports-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% IF ( do_it ) %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+            $(document).ready(function(){
+                $("#itemtypest").dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "sDom": 't',
+                    "bPaginate": false
+                }));
+            });
+        </script>
+ [% END %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

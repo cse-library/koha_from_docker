@@ -1,0 +1,201 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Hợp đồng &rsaquo; [% IF ( add_form ) %] [% IF ( contractnumber ) %]Chỉnh sửa hợp đồng'[% contractname %]' [% ELSE %]Tạo hợp đồng[% END %] [% END %] [% IF ( else ) %]Hợp đồng của [% booksellername %][% END %] [% IF ( add_validate ) %]Dữ liệu đã được lưu lại[% END %] [% IF ( delete_confirm ) %]Xác nhận xóa hợp đồng '[% contractnumber %]'[% END %] [% IF ( delete_confirmed ) %]Hợp đồng đã bị xóa[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_aqcontract" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'contracts-admin-search.inc' %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+ &rsaquo;
+ <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a>
+ &rsaquo;
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a>
+ &rsaquo;
+ [% IF ( add_form ) %]
+ <a href="/cgi-bin/koha/admin/aqcontract.pl?booksellerid=[% booksellerid %]">Hợp đồng</a>
+ &rsaquo; [% IF ( contractnumber ) %]Chỉnh sửa hợp đồng '[% contractname %]' [% ELSE %]Tạo hợp đồng [% END %] [% END %] [% IF ( add_validate ) %] <a href="/cgi-bin/koha/admin/aqcontract.pl?booksellerid=[% booksellerid %]">Hợp đồng</a>
+ &rsaquo; Dữ liệu đã được lưu lại. [% END %] [% IF ( delete_confirm ) %] <a href="/cgi-bin/koha/admin/aqcontract.pl?booksellerid=[% booksellerid %]">Hợp đồng</a>
+ &rsaquo; Xác nhận xóa hợp đồng [% contractnumber %] [% END %] [% IF ( delete_confirmed ) %] <a href="/cgi-bin/koha/admin/aqcontract.pl?booksellerid=[% booksellerid %]">Hợp đồng</a> &rsaquo; Contract deleted
+ [% END %]
+ [% IF ( else ) %]Contracts[% END %]
+</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% INCLUDE 'acquisitions-toolbar.inc' %]
+
+[% IF error == 'not_deleted' %]
+ <div class="dialog alert">Contract has not been deleted. Maybe a basket linked to this contract exists.</div>
+[% END %]
+
+ [% IF ( add_form ) %]
+ <form name="Aform" action="[% script_name %]" method="post">
+ <input type="hidden" name="op" value="add_validate" />
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <input type="hidden" name="checked" value="0" />
+ [% IF ( contractnumber ) %]
+ <h1>Chỉnh sửa hợp đồng [% contractname %] của [% booksellername %]</h1>
+ [% ELSE %]
+ <h1>Tạo hợp đồng của [% booksellername %]</h1>
+ [% END %]
+ <fieldset class="rows">
+ <ol>
+ [% IF ( contractnumber ) %]
+ <li><span class="label">Số hợp đồng </span>[% contractnumber %]
+ <input type="hidden" name="contractnumber" value="[% contractnumber %]" />
+ <input type="hidden" name="is_a_modif" value="1" />
+ </li>
+ [% END %]
+ <li><label for="contractname" class="required">Name: *</label> &nbsp;
+ <input type="text" name="contractname" id="contractname" size="40" maxlength="80" value="[% contractname %]" />
+ </li>
+ <li><label for="contractdescription">Thông tin mô tả: </label> &nbsp;
+ <input type="text" name="contractdescription" id="contractdescription" size="40" maxlength="80" value="[% contractdescription %]" />
+ </li>
+ <li><label for="from" class="required">Start date: *</label> &nbsp;
+ <input type="text" name="contractstartdate" id="from" value="[% contractstartdate | $KohaDates %]" maxlength="10" size="10" class="datepickerfrom" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ <li><label for="to" class="required">End date: *</label> &nbsp;
+ <input type="text" name="contractenddate" id="to" value="[% contractenddate | $KohaDates %]" maxlength="10"  size="10" class="datepickerto" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="button" onclick="Check(this.form);" value="Lưu" /> <a class="cancel" href="/cgi-bin/koha/admin/aqcontract.pl?booksellerid=[% booksellerid %]&amp;contractnumber=[% contractnumber %]">Hủy bỏ</a>
+ </fieldset>
+ </form>
+ [% END %]
+ [% IF ( add_validate ) %]
+ <h3>Dữ liệu đã được lưu lại.</h3>
+ <form action="[% script_name %]" method="post">
+ <input type="submit" value="OK" />
+ </form>
+ [% END %]
+ [% IF ( delete_confirm ) %]
+ <div class="dialog alert">
+ <h3>Confirm deletion of contract <i>[% contractname %]</i></h3>
+ <table>
+ <tr><th scope="row">Số hợp đồng:</th><td>[% contractnumber %]</td></tr>
+ <tr><th scope="row">Tên hợp đồng:</th><td>[% contractname %]</td></tr>
+ <tr><th scope="row">Mô tả:</th><td>[% contractdescription %]</td></tr>
+ <tr><th scope="row">Ngày bắt đầu:</th><td>[% contractstartdate | $KohaDates %]</td></tr>
+ <tr><th scope="row">Ngày kết thúc:</th><td>[% contractenddate | $KohaDates %]</td></tr>
+ <tr><th scope="row">Nhà cung cấp:</th><td>[% booksellername %]</td></tr>
+ </table>
+ <form action="[% script_name %]" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <input type="hidden" name="contractnumber" value="[% contractnumber %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Yes, delete contract</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/aqcontract.pl" method="get">
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <input type="hidden" name="contractnumber" value="[% contractnumber %]" />
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+ [% END %]
+ [% IF ( delete_confirmed ) %]
+ <h3>Hợp đồng đã bị xóa</h3>
+ <form action="[% script_name %]" method="post">
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+ <input type="submit" value="OK" />
+ </form>
+ [% END %]
+ [% IF ( else ) %]
+ <h2>Hợp đồng của [% booksellername %]</h2>
+ [% IF ( loop ) %]
+ <table>
+ <tr>
+ <th scope="col">Tên</th>
+ <th scope="col">Thông tin mô tả</th>
+ <th scope="col">Ngày bắt đầu</th>
+ <th scope="col">Ngày kết thúc</th>
+ <th scope="col">Thao tác</th>
+ </tr>
+ [% FOREACH loo IN loop %]
+ <tr>
+ <td>
+ <a href="[% loo.script_name %]?op=add_form&amp;booksellerid=[% loo.booksellerid %]&amp;contractnumber=[% loo.contractnumber %]">[% loo.contractname %]</a>
+ </td>
+ <td>[% loo.contractdescription %]</td>
+ <td>[% loo.contractstartdate %]</td>
+ <td>[% loo.contractenddate %]</td>
+ <td class="actions">
+ <a href="[% loo.script_name %]?op=add_form&amp;contractnumber=[% loo.contractnumber %]&amp;booksellerid=[% loo.booksellerid %]" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <a href="[% loo.script_name %]?op=delete_confirm&amp;contractnumber=[% loo.contractnumber %]&amp;booksellerid=[% loo.booksellerid %]" class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END %]
+ </table>
+ [% ELSE %]
+ <div class="dialog message">
+ There are no contracts with this vendor.
+ [% IF active %]
+ <a href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;booksellerid=[% booksellerid %]">Tạo hợp đồng</a>.
+ [% END %]
+ </div>
+ [% END %]
+ [% END %]
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'vendor-menu.inc' %]
+</div>
+</div>
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% Asset.js("js/acq.js") %]
+ <script type="text/javascript">
+    //<![CDATA[
+    // to check if the data are correctly entered.
+    function Check(ff) {
+        var ok=0;
+        var _alertString=_("Phát hiện các lỗi sau đây, bạn vui lòng kiểm tra và chỉnh sửa lại:");
+        _alertString +="\n-------------------------------------------------------------------\n\n";
+        if (!(isNotNull(ff.contractname,0))){
+            ok=1;
+            _alertString += _("- Thiếu tên hợp đồng") + "\n";
+        }
+        var startDate = Date_from_syspref($("#from").val());
+        var endDate   = Date_from_syspref($("#to").val());
+        if (!parseInt(startDate.getTime())) {
+            ok=1;
+            _alertString += _("- Ngày bắt đầu thiếu hoặc không hợp lệ.") + "\n";
+        }
+        if (!parseInt(endDate.getTime())) {
+            ok=1;
+            _alertString += _("- Ngày kết thúc thiếu hoặc không hợp lệ.") + "\n";
+        }
+
+        if (startDate > endDate) {
+            ok=1;
+            _alertString += _("Ngày không hợp lệ! Ngày bắt đầu không được sau ngày kết thúc.") + "\n";
+        }
+        if (endDate < (new Date)) {
+            ok=1;
+            _alertString += _("Ngày kết thúc không hợp lệ! Ngày kết thúc không được trước ngày hiện tại") + "\n";
+        }
+        if (ok) { // if there is a problem
+            alert(_alertString);
+        return false;
+    }
+    // if all is good
+        ff.submit();
+    }
+    //]]>
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

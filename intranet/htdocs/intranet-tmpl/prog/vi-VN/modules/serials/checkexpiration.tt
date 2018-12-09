@@ -1,0 +1,180 @@
+[% USE Branches %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Ấn phẩm định kỳ &rsaquo; Kiểm tra ÂPĐK quá hạn</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="ser_checkexpiration" class="ser">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'serials-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Ấn phẩm định kỳ</a> &rsaquo; Kiểm tra ÂPĐK quá hạn </div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+<h1>Kiểm tra ÂPĐK quá hạn</h1>
+
+ <form name="f" action="/cgi-bin/koha/serials/checkexpiration.pl" method="get" class="validated">
+<fieldset class="rows">
+ <legend>Bộ lọc dữ liệu</legend>
+ 
+ <ol>
+ <li><label for="title">Nhan đề:</label>
+ <input id="title" type="text" name="title" size="15" value="[% title | html %]" /></li>
+
+ <li><label for="issn">Số ISSN:</label>
+ <input id="issn" type="text" name="issn" size="15" value="[% issn | html %]" /></li>
+ [% IF can_change_library %]
+ <li><label for="branch">Thư viện:</label>
+ <select id="branch" name="branch">
+ <option value="">Tất cả</option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+ </select>
+ </li>
+ [% END %]
+
+ <li><label for="date" class="required">Ngày hết hạn:</label>
+ <input id="date" type="text" name="date" size="10" value="[% date | $KohaDates %]" class="required focus datepicker" required="required" />
+ <span class="required">Bắt buộc</span>
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div></li>
+ </ol>
+ 
+</fieldset>
+<fieldset class="action"><input value="Tìm kiếm" type="submit" /></fieldset>
+</form>
+
+[% IF ( subscriptions_loop ) %]
+<p>
+ <b>[% numsubscription %]</b> Tìm thấy [% IF ( title ) %] ấn phẩm định kỳ liên quan tới nhan đề <span class="title">[% title | html %]</class>
+ [% IF ( issn ) %]và [% END %] [% END %] [% IF ( issn ) %] có mã ISSN là <b>[% issn | html %]</b>
+ [% END %] sẽ hết hạn vào ngày <b>[% date | $KohaDates %]</b>
+</p>
+
+<div class="checkexpiration-table_table_controls">
+ <a href="#" class="SelectAll"><i class="fa fa-check"></i> Chọn tất cả</a> |
+ <a href="#" class="ClearAll"><i class="fa fa-remove"></i> Bỏ tất cả</a>
+ <span class="itemselection_actions">
+ | Actions:
+ <a class="itemselection_action_renew" title="Renew selected subscriptions"><i class="fa fa-refresh"></i> Renew selected subscriptions</a>
+ </span>
+</div>
+
+
+<table>
+ <tr>
+ <th></th>
+ <th>Số ISSN</th>
+ <th>Nhan đề</th>
+ [% IF can_change_library %]<th>Thư viện</th>[% END %]
+ <th>Ghi chú OPAC:</th>
+ <th>Ghi chú nội bộ</th>
+ <th>Ngày hết hạn</th>
+ <th>Thao tác</th>
+ </tr>
+ [% FOREACH subscriptions_loo IN subscriptions_loop %]
+ <tr>
+ <td style="text-align:center;vertical-align:middle">
+ <input type="checkbox" value="[% subscriptions_loo.subscriptionid %]" name="subscriptionid" />
+ </td>
+ <td>
+ [% subscriptions_loo.issn %]
+ </td>
+ <td><a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=[% subscriptions_loo.subscriptionid |url %]">[% IF ( subscriptions_loo.title ) %]
+ [% subscriptions_loo.title |html %]
+ [% ELSE %]
+ |
+ [% END %]
+ </a>
+ </td>
+ [% IF can_change_library %]<td>
+ [% Branches.GetName( subscriptions_loo.branchcode ) %]
+ </td>[% END %]
+ <td>
+ [% subscriptions_loo.notes %]
+ </td>
+ <td>
+ [% subscriptions_loo.internalnotes %]
+ </td>
+ <td>
+ [% subscriptions_loo.expirationdate | $KohaDates %]
+ </td>
+ <td class="actions">
+ <a href="/cgi-bin/koha/serials/subscription-add.pl?op=modify&amp;subscriptionid=[% subscriptions_loo.subscriptionid %]" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <a href="/cgi-bin/koha/serials/subscription-renew.pl?subscriptionid=[% subscriptions_loo.subscriptionid %]" data-subscriptionid="[% subscriptions_loo.subscriptionid %]" class="btn btn-default btn-xs renew_subscription"><i class="fa fa-refresh"></i> Gia hạn</a>
+ </td>
+ </tr>
+ [% END %]
+ </table>
+[% ELSIF searched %]
+ <p>Không tìm thấy ấn phẩm định kỳ liên quan.</p>
+[% END %]
+
+</div>
+</div>
+
+<div class="yui-b">
+[% INCLUDE 'serials-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ <script type="text/javascript" language="JavaScript">
+        $(document).ready(function(){
+            $(".renew_subscription").on("click",function(e){
+                e.preventDefault();
+                var subscriptionid = $(this).data("subscriptionid");
+                newin=window.open("/cgi-bin/koha/serials/subscription-renew.pl?mode=popup&subscriptionid="+subscriptionid,'popup','width=590,height=440,toolbar=false,scrollbars=yes,resize=yes');
+            });
+            $('a.itemselection_action_renew').on("click", function(e){
+                e.preventDefault();
+                newin=window.open($(this).attr('href'),'popup','width=590,height=440,toolbar=false,scrollbars=yes,resize=yes');
+            });
+            function itemSelectionBuildRenewLink() {
+                var subscription_ids= new Array();
+                $("input[name='subscriptionid'][type='checkbox']:checked").each(function() {
+                    subscription_ids.push($(this).val());
+                });
+                if (subscription_ids.length > 0) {
+                    var url = '/cgi-bin/koha/serials/subscription-renew.pl?op=multi_renew';
+                    url += '&subscriptionid=' + subscription_ids.join('&subscriptionid=');
+                    $('a.itemselection_action_renew').attr('href', url);
+                } else {
+                    return false;
+                }
+                return true;
+            }
+
+            function itemSelectionBuildActionLinks() {
+                var export_link_ok = itemSelectionBuildRenewLink();
+                if (export_link_ok) {
+                    $('.itemselection_actions').show();
+                } else {
+                    $('.itemselection_actions').hide();
+                }
+            }
+
+            itemSelectionBuildActionLinks();
+
+            $("input[name='subscriptionid'][type='checkbox']").change(function() {
+                itemSelectionBuildActionLinks();
+            });
+
+            $(".SelectAll, .ClearAll").on("click",function(e){
+                e.preventDefault();
+                var checkboxes = $(this).parent().siblings('table').first().find('input[type="checkbox"]');
+                checkboxes.prop('checked', $(this).hasClass('SelectAll'));
+                itemSelectionBuildActionLinks();
+            });
+
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

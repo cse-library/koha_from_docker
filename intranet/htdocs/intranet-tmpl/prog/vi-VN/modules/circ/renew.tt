@@ -1,0 +1,183 @@
+[% USE Koha %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+
+<title>Koha &rsaquo; Phân hệ lưu thông &rsaquo; Gia hạn [% title |html %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="circ_renew" class="circ">
+
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Phân hệ lưu thông</a> &rsaquo; Gia hạn</div>
+
+[% IF Koha.Preference('CircSidebar') %]<div id="doc3" class="yui-t2">[% ELSE %]<div id="doc" class="yui-t7">[% END %]
+ <div id="bd">
+ <div id="yui-main">
+ [% IF Koha.Preference('CircSidebar') %]<div class="yui-b">[% END %]
+ [% IF error %]
+ <div class="dialog alert">
+ <h3>Không thể gia hạn:</h3>
+
+ [% IF error == "no_item" %]
+
+ <p>Không có tài liệu với đăng ký cá biệt này</p>
+
+ [% ELSIF error == "no_checkout" %]
+
+ <p><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% item.biblio.biblionumber %]">[% item.biblio.title %] [% item.biblioitem.subtitle %]</a> ( <a href="/cgi-bin/koha/catalogue/moredetail.pl?itemnumber=[% item.itemnumber %]&amp;biblionumber=[% item.biblio.biblionumber %]&amp;bi=[% item.biblioitemnumber.biblioitemnumber %]#item[% item.itemnumber %]">[% item.barcode %]</a> ) không được ghi mượn tới bạn đọc.</p>
+
+ [% ELSIF error == "too_many" %]
+
+ <p>[% item.biblio.title %] [% item.biblioitem.subtitle %] ( [% item.barcode %] ) đã được bạn đọc [% borrower.firstname %] [% borrower.surname %] gia hạn hết số lần quy định( <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrower.borrowernumber %]"> [% borrower.cardnumber %] </a> )</p>
+
+ [% IF Koha.Preference('AllowRenewalLimitOverride') %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <button type="submit" class="approve"><i class="fa fa-check"></i> Ghi đè chính sách và gia hạn</button>
+ </form>
+ [% END %]
+
+ [% ELSIF error == "too_soon" %]
+
+ <p>[% item.biblio.title %] [% item.biblioitem.subtitle %] ( [% item.barcode %] ) cannot be renewed before [% soonestrenewdate | $KohaDates %]. </p>
+
+ [% IF Koha.Preference('AllowRenewalLimitOverride') %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <button type="submit" class="approve"><i class="fa fa-check"></i> Ghi đè và gia hạn</button>
+ </form>
+ [% END %]
+
+ [% ELSIF error == "auto_too_soon" %]
+
+ <p>[% item.biblio.title %] [% item.biblioitem.subtitle %] ( [% item.barcode %] ) has been scheduled for automatic renewal and cannot be renewed before [% soonestrenewdate | $KohaDates %]. </p>
+
+ [% IF Koha.Preference('AllowRenewalLimitOverride') %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <button type="submit" class="approve"><i class="fa fa-check"></i> Ghi đè và gia hạn</button>
+ </form>
+ [% END %]
+
+ [% ELSIF error == "auto_too_late" %]
+
+ <p>[% item.biblio.title %] [% item.biblioitem.subtitle %] ( [% item.barcode %] ) has been scheduled for automatic renewal and cannot be renewed anymore since [% latestautorenewdate | $KohaDates %]. </p>
+
+ [% IF Koha.Preference('AllowRenewalLimitOverride') %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <input value="Ghi đè và gia hạn" class="approve" type="submit" />
+ </form>
+ [% END %]
+
+ [% ELSIF error == "auto_account_expired" %]
+
+ <p>[% item.biblio.title %] [% item.biblioitem.subtitle %] ( [% item.barcode %] ) has been scheduled for automatic renewal and cannot be renewed because the patron's account is expired</p>
+
+ [% IF Koha.Preference('AllowRenewalLimitOverride') %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <input class="approve" type="submit" value="Ghi đè và gia hạn" />
+ </form>
+ [% END %]
+
+ [% ELSIF error == "auto_renew" or error == "auto_too_much_oweing" %]
+
+ <p>[% item.biblio.title %] [% item.biblioitem.subtitle %] ( [% item.barcode %] ) has been scheduled for automatic renewal. </p>
+
+ [% IF Koha.Preference('AllowRenewalLimitOverride') %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <button type="submit" class="approve"><i class="fa fa-check"></i> Ghi đè chính sách và gia hạn</button>
+ </form>
+ [% END %]
+
+ [% ELSIF error == "on_reserve" %]
+
+ <p>Tài liệu này đang được bạn đọc khác đặt mượn.</p>
+
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl">
+ <input type="hidden" name="barcode" value="[% item.barcode %]"/>
+ <input type="hidden" name="override_limit" value="1" />
+ <input type="hidden" name="override_holds" value="1" />
+ <button type="submit" class="approve"><i class="fa fa-check"></i> Ghi đè và gia hạn</button>
+ </form>
+
+ [% ELSIF error == "patron_restricted" %]
+
+ <p>[% borrower.firstname %] [% borrower.surname %] ( <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrower.borrowernumber %]"> [% borrower.cardnumber %] </a> ) hiện đang bị hạn chế.</p>
+
+ [% ELSE %]
+
+ [% error %]
+
+ [% END %]
+
+ <form method="get" action="/cgi-bin/koha/circ/renew.pl">
+ <button type="submit" class="deny"><i class="fa fa-times"></i> Continue without renewing</button>
+ </form>
+ </div>
+ [% END %]
+
+ [% IF date_due %]
+ <div class="dialog message">
+ <h3>Tài liệu được gia hạn:</h3>
+ <p>
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% item.biblio.biblionumber %]">[% item.biblio.title %] [% item.biblioitem.subtitle %]</a>
+ ( <a href="/cgi-bin/koha/catalogue/moredetail.pl?itemnumber=[% item.itemnumber %]&amp;biblionumber=[% item.biblio.biblionumber %]&amp;bi=[% item.biblioitemnumber.biblioitemnumber %]#item[% item.itemnumber %]">[% item.barcode %]</a> ) được gia hạn cho [% borrower.firstname %] [% borrower.surname %] ( <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrower.borrowernumber %]"> [% borrower.cardnumber %] </a> ) hết hạn vào ngày [% date_due | $KohaDates %] </p>
+ </div>
+ [% END %]
+
+ <div class="yui-g">
+
+ [% UNLESS error %]
+ <form method="post" action="/cgi-bin/koha/circ/renew.pl" autocomplete="off" >
+
+ <div class="yui-u first">
+ <fieldset>
+ <legend>Gia hạn</legend>
+
+ <label for="barcode">Nhập đăng ký cá biệt: </label>
+
+ <input name="barcode" id="barcode" size="14" class="focus"/>
+
+ <input value="Tìm kiếm" type="submit" class="submit" />
+ </fieldset>
+ </div>
+
+ </form>
+ [% END %]
+
+ </div>
+ </div>
+
+[% IF Koha.Preference('CircSidebar') %]
+</div>
+
+<div class="yui-b noprint">
+ [% INCLUDE 'circ-nav.inc' %]
+</div>
+[% END %]
+<div>
+
+[% MACRO jsinclude BLOCK %]
+ [% IF error %]
+ <script type="text/javascript">
+            $( document ).ready(function() {
+                removeFocus();
+            });
+        </script>
+ [% END %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

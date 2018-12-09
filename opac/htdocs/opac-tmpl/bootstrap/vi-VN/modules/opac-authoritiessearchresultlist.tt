@@ -1,0 +1,88 @@
+[% USE Koha %]
+[% PROCESS 'opac-authorities.inc' %]
+[% PROCESS 'authorities-search-results.inc' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; [% IF ( total ) %]Authority search result[% ELSE %]No results found[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-authoritiesresultlist' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <ul class="breadcrumb">
+ <li><a href="/cgi-bin/koha/opac-main.pl">Trang chủ</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="/cgi-bin/koha/opac-authorities-home.pl">Tìm kiếm dữ liệu kiểm soát</a> <span class="divider">&rsaquo;</span></li>
+ <li><a href="#">Kết quả</a></li>
+ </ul>
+
+ <div class="container-fluid">
+ <div class="row-fluid">
+ [% IF ( OpacNav || OpacNavBottom ) %]
+ <div class="span2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ </div>
+ <div class="span10">
+ [% ELSE %]
+ <div class="span12">
+ [% END %]
+ <div id="userauthsearchresults" class="maincontent">
+ <h1>Kết quả tìm kiếm biểu ghi nhất quán</h1>
+
+ [% IF total %]
+ <div class="pages">[% pagination_bar %]</div>
+ [% END %]
+ <div id="results">
+ [% IF ( total ) %]
+ [% IF ( countfuzzy ) %]
+ <p><b>Hiển thị [% resultcount %] trong tổng số [% total %] kết quả tìm kiếm</b></p>
+ [% ELSE %]
+ <p><b>Hiển thị kết quả từ  [% from %] tới [% to %] trong số [% total %]kết quả tìm kiếm</b></p>
+ [% END %]
+ [% ELSE %]
+ No results found.
+ [% END %]
+ </div>
+
+ [% IF ( total ) %]
+ <div class="searchresults">
+ <table class="table table-bordered table-striped">
+ <thead>
+ <tr>
+ <th colspan="2">Đề mục kiểm soát</th>
+ <th>Kiểu dữ liệu kiểm soát</th>
+ [% UNLESS ( isEDITORS ) %]
+ <th>Biểu ghi liên quan</th>
+ [% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH resul IN result %]
+ <tr>
+ <td>[% PROCESS authresult summary=resul.summary %]</td>
+ <td><a href="/cgi-bin/koha/opac-authoritiesdetail.pl?authid=[% resul.authid %]">Thông tin cá nhân</a>
+ <td>[% resul.authtype %]</td>
+ [% UNLESS ( resul.isEDITORS ) %]
+ <td>
+ [% IF resul.used > 0 %]<a href="/cgi-bin/koha/opac-search.pl?type=opac&amp;op=do_search&amp;q=an=[% resul.authid %]">[% resul.used %] biểu ghi</a>[% ELSE %]0 biblios[% END %]
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- / .searchresults -->
+
+ <div class="pages">[% pagination_bar %]</div>
+
+ [% END # / IF total %]
+ </div> <!-- / #userauthsearchresults -->
+ </div> <!-- / .span10/12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

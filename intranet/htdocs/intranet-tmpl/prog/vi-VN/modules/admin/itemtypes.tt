@@ -1,0 +1,391 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE AuthorisedValues %]
+[% USE Price %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Quản trị hệ thống &rsaquo; Kiểu tài liệu [% IF op == 'add_form' %]&rsaquo; [% IF ( itemtype ) %] Chỉnh sửa kiểu tài liệu '[% itemtype.itemtype %]' [% ELSE %] Tạo kiểu tài liệu [% END %] [% END %] [% IF op == 'delete_confirm' %]&rsaquo; [% IF ( total ) %] Bạn không thể xóa kiểu tài liệu '[% itemtype.itemtype %]' [% ELSE %] Xóa kiểu tài liệu '[% itemtype.itemtype %]'? [% END %] [% END %] [% IF op == 'delete_confirmed' %]&rsaquo; Dữ liệu đã bị xóa [% END %] </title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+<style type="text/css">
+	fieldset.rows div.toptabs li { clear:none;margin-right:.5em;padding-bottom:0;width:auto; }
+  fieldset.rows div.toptabs .ui-tabs-nav li.ui-tabs-active {background-color : #F4F8F9; }
+	fieldset.rows .ui-tabs-panel { margin-right : 10px; margin-left : 10px;margin-bottom:10px;}
+  fieldset.rows .ui-tabs-nav { margin-left : 10px; }
+</style>
+</head>
+
+<body id="admin_itemtypes" class="admin">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'prefs-admin-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Quản trị hệ thống</a> &rsaquo; [% IF op == 'add_form' %]
+ [% IF itemtype %]
+<a href="/cgi-bin/koha/admin/itemtypes.pl">Kiểu tài liệu</a> &rsaquo; Chỉnh sửa kiểu tài liệu '[% itemtype.itemtype %]' [% ELSE %] <a href="/cgi-bin/koha/admin/itemtypes.pl">Kiểu tài liệu</a> &rsaquo; Tạo kiểu tài liệu [% END %] [% END %] [% IF op == 'delete_confirm' %] [% IF total %] <a href="/cgi-bin/koha/admin/itemtypes.pl">Kiểu tài liệu</a> &rsaquo; Bạn không thể xóa kiểu tài liệu '[% itemtype.itemtype %]' [% ELSE %] <a href="/cgi-bin/koha/admin/itemtypes.pl">Kiểu tài liệu</a> &rsaquo; Xóa kiểu tài liệu '[% itemtype.itemtype %]'? [% END %] [% END %] [% IF op == 'delete_confirmed' %] <a href="/cgi-bin/koha/admin/itemtypes.pl">Kiểu tài liệu</a> &rsaquo;Dữ liệu đã bị xóa [% END %] [% IF op == 'list' %] Quản lý kiểu tài liệu [% END %]</div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ 
+
+[% IF op == 'list' %]<div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default btn-sm" id="newitemtype" href="/cgi-bin/koha/admin/itemtypes.pl?op=add_form"><i class="fa fa-plus"></i> Tạo kiểu tài liệu</a>
+</div>[% END %]
+
+[% FOREACH m IN messages %]
+ <div class="dialog [% m.type %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ An error occurred when updating this item type. Perhaps the value already exists.
+ [% CASE 'error_on_insert' %]
+ An error occurred when inserting this item type. Perhaps the value already exists.
+ [% CASE 'error_on_delete' %]
+ An error occurred when deleting this item type. Check the logs.
+ [% CASE 'success_on_update' %]
+ Item type updated successfully.
+ [% CASE 'success_on_insert' %]
+ Item type inserted successfully.
+ [% CASE 'success_on_delete' %]
+ Item type deleted successfully.
+ [% CASE 'already_exists' %]
+ This item type already exists.
+ [% CASE 'cannot_be_deleted' %]
+ Cannot delete this item type. <p><strong>This record is in use</strong>. Không thể xóa biểu ghi này.</p>
+ [% CASE %]
+ [% m.code %]
+ [% END %]
+ </div>
+[% END %]
+
+
+[% IF op == 'add_form' %]
+ [% IF itemtype %]
+ <h3>Chỉnh sửa kiểu tài liệu</h3>
+ [% ELSE %]
+ <h3>Tạo kiểu tài liệu</h3>
+ [% END %]
+ <form action="/cgi-bin/koha/admin/itemtypes.pl" name="Aform" method="post" id="itemtypeentry">
+ <input type="hidden" name="op" value="add_validate" />
+ <fieldset class="rows">
+ <ol>
+ [% IF itemtype %]
+ <li>
+ <input type="hidden" name="is_a_modif" value="1" />
+ <span class="label">Kiểu tài liệu: </span> <input type="hidden" name="itemtype" value="[% itemtype.itemtype %]" />
+ [% itemtype.itemtype %]
+ </li>
+ [% ELSE %]
+ <li>
+ <label for="itemtype" class="required">Kiểu tài liệu: </label>
+ <input type="text" id="itemtype" name="itemtype" size="10" maxlength="10" required="required" /> <span class="required">Bắt buộc</span>
+ </li>
+ [% END %]
+ <li>
+ <label for="description" class="required">Thông tin mô tả: </label>
+ <input type="text" id="description" name="description" size="48" value="[% itemtype.description |html %]" required="required" /> <span class="required">Bắt buộc</span>
+ [% IF can_be_translated %]
+ <a href="/cgi-bin/koha/admin/localization.pl?entity=itemtypes&code=[% itemtype.itemtype %]" title="Translate item type [% itemtype.itemtype %]" rel="gb_page_center[600,500]"><i class="fa fa-pencil"></i> Translate into other languages</a>
+ [% END %]
+ </li>
+ <li>
+ <span class="label">Search category</span>
+ <select id="searchcategory" name="searchcategory">
+ <option value="">Bất kỳ</option>
+ [% FOREACH cat IN searchcategory %]
+ [% IF cat.authorised_value == itemtype.searchcategory %]
+ <option value="[% cat.authorised_value %]" selected="selected">
+ [% cat.lib %]
+ </option>
+ [% ELSE %]
+ <option value="[% cat.authorised_value %]" >
+ [% cat.lib %]
+ </option>
+ [% END %]
+ [% END %]
+ </select>
+ (Options are defined as the authorized values for the ITEMTYPECAT category)
+ </li>
+ [% IF Koha.Preference('noItemTypeImages') %]
+ <li>
+ <span class="label">HÌnh ảnh: </span>Ảnh đại diện của kiểu tài liệu không được kích hoạt. Để kích hoạt chúng, bạn hãy kích hoạt thông số <a href="/cgi-bin/koha/admin/preferences.pl?op=search&amp;searchfield=noItemTypeImages">noItemTypeImages</a>
+ </li>
+ [% END %]
+ </ol>
+ [% UNLESS Koha.Preference('noItemTypeImages') %]
+ <div id="icons" class="toptabs" style="clear:both">
+ <h5 style="margin-left:10px;">Chọn biểu tượng:</h5>
+ <ul>
+ <li><a href="#none">Bất kỳ</a></li>
+ [% FOREACH imageset IN imagesets %]
+ [% IF ( imageset.imagesetactive ) %]
+ <li class="ui-tabs-active">
+ [% ELSE %]
+ <li>
+ [% END %]
+ <a href="#[% imageset.imagesetname %]">[% imageset.imagesetname %]</a>
+ </li>
+ [% END %]
+ [% IF itemtype.image_location('intranet').match('^http') %]<li class="ui-tabs-active">[% ELSE %]<li>[% END %]<a href="#remote">Hình ảnh khác</a></li>
+ </ul>
+ <div id="none">
+ <ul>
+ <li><label for="noimage">Không có hình ảnh: </label><input type="radio" name="image" id="noimage" value="removeImage" /></li>
+ </ul>
+ <br class="clear" />
+ </div>
+
+ [% FOREACH imageset IN imagesets %]
+ <div id="[% imageset.imagesetname %]">
+ <ul>
+ [% FOREACH image IN imageset.images %]
+ <li style="float: none; display: inline-block; clear : none; width: auto;">
+ <label>
+ [% IF image.StaffImageUrl %]
+ <img src="[% image.StaffImageUrl %]" alt="[% image.StaffImageUrl %]" title="[% image.StaffImageUrl %]" />
+ [% END %]
+ [% IF image.checked %]
+ <input type="radio" name="image" value="[% image.KohaImage %]" checked="checked" />
+ [% ELSIF image.KohaImage %] <!-- to delete the radio button if there is no image after -->
+ <input type="radio" name="image" value="[% image.KohaImage %]" />
+ [% END %]
+ </label>
+ </li>
+ [% END %]
+ </ul>
+ <br class="clear" />
+ </div>
+ [% END %]
+
+ <div id="remote">
+ <ul>
+ <li>
+ <label for="remote_image_check"> Hình ảnh khác:</label>
+ [% IF itemtype.imageurl %]
+ <input type="radio" id="remote_image_check" name="image" value="remoteImage" checked="checked" />
+ [% ELSE %]
+ <input type="radio" id="remote_image_check" name="image" value="remoteImage" />
+ [% END %]
+ <input type="text" name="remoteImage" size="48" maxlength="200" value="[% itemtype.imageurl %]" onmousedown="document.getElementById('remote_image_check').checked = true;" />
+ [% IF itemtype.imageurl %]
+ <img src="[% itemtype.imageurl %]" alt="" />
+ [% END %]
+ </li>
+ </ul>
+ <br class="clear" />
+ </div>
+ </div>
+ [% END %]
+ <ol class="oladditemtype">
+ <li>
+ <label for="hideinopac">Hide in OPAC: </label>
+ [% IF ( itemtype.hideinopac ) %]
+ <input type="checkbox" id="hideinopac" name="hideinopac" checked="checked" value="1" />
+ [% ELSE %]
+ <input type="checkbox" id="hideinopac" name="hideinopac" value="1" />
+ [% END %]
+ (if checked, items of this type will be hidden as filters in OPAC's advanced search)
+ </li>
+ <li>
+ <label for="notforloan">Không cho mượn: </label>
+ [% IF itemtype.notforloan %]
+ <input type="checkbox" id="notforloan" name="notforloan" checked="checked" value="1" />
+ [% ELSE %]
+ <input type="checkbox" id="notforloan" name="notforloan" value="1" />
+ [% END %] (Nếu bạn thiết lập kiểu tài liệu là 'Không cho mượn', các tài liệu thuộc kiểu tài liệu này sẽ không cho bạn đọc mượn)</li>
+ <li>
+ <label for="rentalcharge">Phí mượn tài liệu: </label>
+ <input type="text" id="rentalcharge" name="rentalcharge" size="10" value="[% itemtype.rentalcharge %]" />
+ </li>
+ <li>
+ <label for="defaultreplacecost">Default replacement cost: </label>
+ <input type="text" id="defaultreplacecost" name="defaultreplacecost" size="10" value="[% itemtype.defaultreplacecost %]" />
+ </li>
+ <li>
+ <label for="processfee">Processing fee (when lost): </label>
+ <input type="text" id="processfee" name="processfee" size="10" value="[% itemtype.processfee %]" />
+ </li>
+ <li>
+ <label for="checkinmsg">Tin nhắn ghi trả: </label>
+ <textarea id="checkinmsg" name="checkinmsg" cols="55" rows="5">[% itemtype.checkinmsg %]</textarea>
+ </li>
+ <li>
+ <label for="checkinmsgtype">Kiểu tin nhắn: </label>
+ <select type="text" id="checkinmsgtype" name="checkinmsgtype">
+ [% IF itemtype.checkinmsgtype == 'message' %]
+ <option value="message" selected="selected">Tin nhắn</option>
+ [% ELSE %]
+ <option value="message">Tin nhắn</option>
+ [% END %]
+ [% IF itemtype.checkinmsgtype == 'alert' %]
+ <option value="alert" selected="selected">Cảnh báo</option>
+ [% ELSE %]
+ <option value="alert">Cảnh báo</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="sip_media_type">Kiểu đa phương tiền SIP: </label>
+ <select id="sip_media_type" name="sip_media_type">
+ <option value=""></option>
+ [% FOREACH a IN AuthorisedValues.Get('SIP_MEDIA_TYPE') %]
+ [% IF a.authorised_value == itemtype.sip_media_type %]
+ <option value="[% a.authorised_value %]" selected="selected">[% a.lib %]</option>
+ [% ELSE %]
+ <option value="[% a.authorised_value %]">[% a.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="summary">Tóm tắt: </label>
+ <textarea id="summary" name="summary" cols="55" rows="5">[% itemtype.summary %]</textarea>
+ <p>Nhập thông tin tóm tắt cho kiểu tài liệu. Thông tin này sẽ được hiển thị thay thế cho giá trị mặc định trong kết quả tìm kiếm. Ví dụ nếu bạn nhập :</p>
+ <p><b>&lt;a href="[856u]"&gt;trang web&lt;/a&gt;</b> thì trang web sẽ hiển thị dưới nhan đề tài liệu.</p>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input value="Lưu" type="submit" />
+ <a href="/cgi-bin/koha/admin/itemtypes.pl" class="cancel">Hủy bỏ</a>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'delete_confirm' %]
+ <div class="dialog alert">
+ <h3>Xóa kiểu tài liệu '[% itemtype.itemtype %]'?</h3>
+ <table>
+ <tr>
+ <th scope="row">Kiểu tài liệu</th>
+ <td>[% itemtype.itemtype %]</td>
+ </tr>
+ <tr><th scope="row">Thông tin mô tả</th><td>[% itemtype.translated_description %]</td></tr>
+ [% UNLESS Koha.Preference('noItemTypeImages') %]
+ <tr>
+ <th scope="row">Hình ảnh</th>
+ <td>
+ [% SET image_location = itemtype.image_location('intranet') %]
+ [% IF image_location %]<img src="[% image_location %]" alt="" />[% END %]
+ </td>
+ </tr>
+ [% END %]
+ <tr><th scope="row">Phí mượn tài liệu</th><td>[% itemtype.rentalcharge | $Price %]</td></tr>
+ </table>
+ <form action="/cgi-bin/koha/admin/itemtypes.pl" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" /><input type="hidden" name="itemtype" value="[% itemtype.itemtype %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Yes, delete this item type</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/itemtypes.pl" method="post">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Không xóa</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF op == 'list' %]
+ <h2>Quản lý kiểu tài liệu</h2>
+ [% IF itemtypes %]
+ <table id="table_item_type">
+ <thead>
+ [% UNLESS Koha.Preference('noItemTypeImages') %]<th>Hình ảnh</th>[% END %]
+ <th>Mã</th>
+ <th>Thông tin mô tả</th>
+ <th>Search category</th>
+ <th>Không cho mượn</th>
+ <th>Hide in OPAC</th>
+ <th>Phí</th>
+ <th>Default replacement cost</th>
+ <th>Processing fee (when lost)</th>
+ <th>Tin nhắn ghi trả</th>
+ <th>Thao tác</th>
+ </thead>
+ [% FOREACH itemtype IN itemtypes %]
+ <tr>
+ [% UNLESS Koha.Preference('noItemTypeImages') %]
+ <td>
+ [% SET image_location = itemtype.image_location('intranet') %]
+ [% IF image_location %]<img src="[% image_location %]" alt="" />[% ELSE %]&nbsp;[% END %]
+ </td>
+ [% END %]
+ <td>
+ <a href="/cgi-bin/koha/admin/itemtypes.pl?op=add_form&amp;itemtype=[% itemtype.itemtype |html %]">
+ [% itemtype.itemtype %]
+ </a>
+ </td>
+ <td>
+ [% IF itemtype.translated_descriptions.size %]
+ [% itemtype.description %] (default)<br/>
+ [% FOR description IN itemtype.translated_descriptions %]
+ [% IF description.translation == itemtype.translated_description %]
+ <b>[% description.translation %]</b>
+ [% ELSE %]
+ [% description.translation %] ([% description.lang %])
+ [% END %]
+ <br/>
+ [% END %]
+ [% ELSE %]
+ [% itemtype.description |html %]
+ [% END %]
+ </td>
+ <td>[% itemtype.searchcategory %]</td>
+ <td>[% IF ( itemtype.notforloan ) %]Có[% ELSE %]&nbsp;[% END %]</td>
+ <td>[% IF ( itemtype.hideinopac ) %]Có[% ELSE %]&nbsp;[% END %]</td>
+ <td>
+ [% UNLESS ( itemtype.notforloan ) %]
+ [% itemtype.rentalcharge | $Price %]
+ [% END %]
+ </td>
+ <td>[% itemtype.defaultreplacecost | $Price %]</td>
+ <td>[% itemtype.processfee | $Price %]</td>
+ <td>[% itemtype.checkinmsg | html | html_line_break %]</td>
+ <td class="actions">
+ <a href="/cgi-bin/koha/admin/itemtypes.pl?op=add_form&amp;itemtype=[% itemtype.itemtype |html %]" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ <a href="/cgi-bin/koha/admin/itemtypes.pl?op=delete_confirm&amp;itemtype=[% itemtype.itemtype |html %]" class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END %]
+ </table>
+ [% ELSE %]
+ <div class="dialog message">Không có kiểu tài liệu được định nghĩa.</div>
+ [% END %]
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'admin-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") %]
+ [% INCLUDE 'greybox.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+         $(document).ready(function() {
+            $('#icons').tabs();
+            $("#table_item_type").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                ],
+                "aaSorting": [[ 2, "asc" ]],
+                "iDisplayLength": 10,
+                "sPaginationType": "four_button"
+            }));
+            $( "#itemtypeentry" ).validate({
+                rules: {
+                    itemtype: { required: true },
+                    description: { required: true },
+                    rentalcharge: { number: true }
+                }
+            });
+            $("#itemtype").on("blur",function(){
+                toUC(this);
+            });
+         });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

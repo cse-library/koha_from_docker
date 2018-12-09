@@ -1,0 +1,88 @@
+--- 
+dịch vụ Web: 
+  " B\xC3\xA1o c\xC3\xA1o": 
+    - 
+      - " Ch\xE1\xBB\x89 tr\xE1\xBA\xA3 l\xE1\xBA\xA1i"
+      - 
+        class: integer
+        pref: SvcMaxReportRows
+      - " h\xC3\xA0ng c\xE1\xBB\xA7a m\xE1\xBB\x99t b\xC3\xA1o c\xC3\xA1o \xC4\x91\xC6\xB0\xE1\xBB\xA3c y\xC3\xAAu c\xE1\xBA\xA7u th\xC3\xB4ng qua c\xC3\xA1c b\xC3\xA1o c\xC3\xA1o c\xE1\xBB\xA7a d\xE1\xBB\x8Bch v\xE1\xBB\xA5 Web."
+  " ILS-DI": 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: ILS-DI
+      - "ILS-DI services for OPAC users (available at: /cgi-bin/koha/ilsdi.pl)"
+    - 
+      - " Cho ph\xC3\xA9p \xC4\x91\xE1\xBB\x8Ba ch\xE1\xBB\x89 IP"
+      - 
+        class: Text
+        pref: ILS-DI:AuthorizedIPs
+      - " s\xE1\xBB\xAD d\xE1\xBB\xA5ng d\xE1\xBB\x8Bch v\xE1\xBB\xA5 ILS-DI (khi \xC4\x91\xC6\xB0\xE1\xBB\xA3c k\xC3\xADch ho\xE1\xBA\xA1t). C\xC3\xA1c \xC4\x91\xE1\xBB\x8Ba ch\xE1\xBB\x89 IP \xC4\x91\xC6\xB0\xE1\xBB\xA3c ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng d\xE1\xBA\xA5u ph\xE1\xBA\xA9y. H\xC3\xA3y b\xE1\xBB\x8F tr\xE1\xBB\x91ng n\xE1\xBA\xBFu b\xE1\xBA\xA1n kh\xC3\xB4ng h\xE1\xBA\xA1n ch\xE1\xBA\xBF s\xE1\xBB\xAD d\xE1\xBB\xA5ng ILS-DI theo IP."
+  " OAI-PMH": 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: OAI-PMH
+      - " m\xC3\xA1y ch\xE1\xBB\xA7"
+      - " <a href=\"http://www.openarchives.org/pmh/\">OAI-PMH</a> c\xE1\xBB\xA7a Koha."
+    - 
+      - " Nh\xE1\xBA\xADn di\xE1\xBB\x87n c\xC3\xA1c bi\xE1\xBB\x83u ghi t\xE1\xBA\xA1i trang web n\xC3\xA0y v\xE1\xBB\x9Bi ti\xE1\xBB\x81n t\xE1\xBB\x91"
+      - 
+        pref: OAI-PMH:archiveID
+      - " : ."
+    - 
+      - " Ch\xE1\xBB\x89 tr\xE1\xBA\xA3 l\xE1\xBA\xA1i"
+      - 
+        class: integer
+        pref: OAI-PMH:MaxCount
+      - " bi\xE1\xBB\x83u ghi t\xE1\xBA\xA1i th\xE1\xBB\x9Di \xC4\x91i\xE1\xBB\x83m \xC4\x91\xC3\xA1p \xE1\xBB\xA9ng truy v\xE1\xBA\xA5n ListRecords ho\xE1\xBA\xB7c ListIdentifiers."
+    - 
+      - " T\xE1\xBB\x87p tin c\xE1\xBA\xA5u h\xC3\xACnh m\xC3\xA1y ch\xE1\xBB\xA7 YAML OAI c\xE1\xBB\xA7a Koha:"
+      - 
+        class: file
+        pref: OAI-PMH:ConfFile
+      - . Nếu để trống, máy chủ Koha OAI hoạt động ở chế độ bình thường nếu không nó hoạt động ở chế độ mở rộng. Trong chế độ mở rộng Koha có thể hỗ trợ nhiều định dạnh của siêu dữ liệu khác marcxml hoặc Dublin Core. Tệp tin cấu hình YAML sẽ xác định các định dang siêu dữ liệu và tệp tin XSL.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: OAI-PMH:AutoUpdateSets
+      - " vi\xE1\xBB\x87c t\xE1\xBB\xB1 \xC4\x91\xE1\xBB\x99ng c\xE1\xBA\xADp nh\xE1\xBA\xADt c\xC3\xA1c b\xE1\xBB\x99 OAI-PMH khi bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c \xC4\x91\xC6\xB0\xE1\xBB\xA3c t\xE1\xBA\xA1o m\xE1\xBB\x9Bi ho\xE1\xBA\xB7c \xC4\x91\xC6\xB0\xE1\xBB\xA3c c\xE1\xBA\xADp nh\xE1\xBA\xADt"
+    - 
+      - Koha's deletedbiblio table
+      - 
+        choices: 
+          "": will never have any data in it (no)
+          persistent: will never be emptied or truncated (persistent)
+          transient: might be emptied or truncated at some point (transient)
+        pref: OAI-PMH:DeletedRecord
+      - .
+  REST API: 
+    - 
+      - Set the default number of results returned by the REST API endpoints to
+      - 
+        class: integer
+        pref: RESTdefaultPageSize
+      - per page.
+    - 
+      - 
+        choices: 
+          "": Disable
+          1: Enable
+        pref: RESTOAuth2ClientCredentials
+      - the OAuth2 client credentials grant for the REST API. Requires Net::OAuth2::AuthorizationServer installed. [EXPERIMENTAL]
+  dịch vụ Web: 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: IdRef
+      - the IdRef webservice from the opac detail page. IdRef allows to request authorities from the Sudoc database.
+      - Please note that this feature is available only for UNIMARC.

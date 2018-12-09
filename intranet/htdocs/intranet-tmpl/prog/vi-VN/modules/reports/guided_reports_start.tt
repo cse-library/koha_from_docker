@@ -1,0 +1,1230 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE Koha %]
+[% USE ColumnsSettings %]
+[% SET footerjs = 1 %]
+[%- BLOCK area_name -%]
+ [%- SWITCH area -%]
+ [%- CASE 'CIRC' -%]Circulation
+ [%- CASE 'CAT'  -%]Catalog
+ [%- CASE 'PAT'  -%]Patrons
+ [%- CASE 'ACQ'  -%]Acquisitions
+ [%- CASE 'ACC'  -%]Accounts
+ [%- CASE 'SER'  -%]Serials
+ [%- END -%]
+[%- END -%]
+
+[% INCLUDE 'doc-head-open.inc' %]
+
+<title>Koha &rsaquo; Reports &rsaquo; Guided reports wizard [%- IF ( saved1 ) -%]&rsaquo; Saved reports
+[%- ELSIF ( create ) -%]&rsaquo; Create from SQL
+[%- ELSIF ( showsql ) -%]&rsaquo; Saved reports &rsaquo; SQL view
+[%- ELSIF ( execute ) -%]&rsaquo; Saved reports &rsaquo; [% name %] Report
+[%- ELSIF ( editsql ) -%]&rsaquo; Saved reports &rsaquo; Edit SQL report
+[%- END -%]
+[%- IF ( build1 ) -%]&rsaquo; Build a report, step 1 of 6: Choose a module
+[%- ELSIF ( build2 ) -%]&rsaquo; Build a report, step 2 of 6: Pick a report type
+[%- ELSIF ( build3 ) -%]&rsaquo; Build a report, step 3 of 6: Select columns for display
+[%- ELSIF ( build4 ) -%]&rsaquo; Build a report, step 4 of 6: Select criteria to limit on
+[%- ELSIF ( build5 ) -%]&rsaquo; Build a report, step 5 of 6: Pick which columns to total
+[%- ELSIF ( build6 ) -%]&rsaquo; Build a report, step 6 of 6: Select how you want the report ordered
+[%- END -%]</title>
+
+[% INCLUDE 'doc-head-close.inc' %]
+<style type="text/css">
+    #sql { width: 90%; height: 9em;}
+    #update_sql .modal-dialog { width: 80%; }
+    ins { background-color: #e6ffe6; }
+    del { background-color: #ffe6e6; }
+    #col1, #col2 { width:45%; float:left; }
+    #col1 ins, #col2 del { display: none; }
+    .show_sql { font-family: monospace; }
+    .send_to_item_mod {
+        background-color: #EBF3FF;
+        border: 1px solid #88b0e8;
+        border-radius: 5px;
+        display: inline-block;
+        font-size: 75%;
+        margin: 3px 5px;
+        padding: 3px 5px;
+        white-space: nowrap;
+    }
+</style>
+[% IF ( saved1 ) %]
+ [% Asset.css("css/datatables.css") %]
+[% END %]
+</head>
+
+<body id="rep_guided_reports_start" class="rep">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a>
+&rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Báo cáo</a>
+&rsaquo; <a href="/cgi-bin/koha/reports/guided_reports.pl">Hướng dẫn tạo báo cáo</a>
+
+[% IF ( saved1 ) %]&rsaquo; Saved reports
+[% ELSIF ( create ) %]&rsaquo; Create from SQL
+[% ELSIF ( showsql ) %]&rsaquo; <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved">Báo cáo được lưu lại</a> &rsaquo; SQL view
+[% ELSIF ( editsql ) %]&rsaquo; <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved">Báo cáo được lưu lại</a> &rsaquo; Edit SQL report
+[% ELSIF ( execute ) %]&rsaquo; <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved">Báo cáo được lưu lại</a> &rsaquo; <em>[% name %]</em> Report
+[% ELSIF ( build1 || build2 || build3 || build4 || build5 || build6 ) %]&rsaquo; <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Build%20new">Tạo báo cáo mới</a>
+ [% IF ( build1 ) %]&rsaquo; Step 1 of 6: Choose a module
+ [% ELSIF ( build2 ) %]&rsaquo; Step 2 of 6: Pick a report type
+ [% ELSIF ( build3 ) %]&rsaquo; Step 3 of 6: Select columns for display
+ [% ELSIF ( build4 ) %]&rsaquo; Step 4 of 6: Select criteria to limit on
+ [% ELSIF ( build5 ) %]&rsaquo; Step 5 of 6: Pick which columns to total
+ [% ELSIF ( build6 ) %]&rsaquo; Step 6 of 6: Select how you want the report ordered
+ [% END %]
+[% END %]
+</div>
+
+<div id="update_sql" class="modal" tabindex="-1" role="dialog" aria-labelledby="update_sql_label" aria-hidden="true">
+ <div class="modal-dialog">
+ <div class="modal-content">
+ <div class="modal-header">
+ <button type="button" class="closebtn" data-dismiss="modal" aria-hidden="true">×</button>
+ <h3 id="update_sql_label">Cập nhật SQL</h3>
+ </div>
+ <div class="modal-body">
+ <div id="loading"> <img src="[% interface %]/[% theme %]/img/spinner-small.gif" alt="" /> Loading </div>
+ </div>
+ <div class="modal-footer">
+ <a href="#" class="btn btn-default" id="update_sql_button" role="button" data-toggle="modal">Cập nhật</a>
+ <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Thoát</button>
+ </div>
+ </div>
+ </div>
+</div>
+
+<div id="doc3" class="yui-t1">
+<div id="bd">
+<div id="yui-main">
+ <div class="yui-b">
+ [% INCLUDE "reports-toolbar.inc" %]
+
+[% IF ( start ) %]
+ <h2>Hướng dẫn tạo báo cáo</h2>
+ <p>Sử dụng tính năng này để tạo các báo báo khác với các báo cáo sẵn có trong hệ thống. Tính năng ngày cho phép thử thư hoặc người sử dụng thành thạo các câu lệnh MYSQL thì có thể viết trực tiếp lệnh MYSQL để tạo các báo cáo theo yêu cầu.</p>
+
+ <h3>Lập và chạy báo cáo</h3>
+ [% IF ( CAN_user_reports_create_reports ) %]
+ <form action="/cgi-bin/koha/reports/guided_reports.pl">
+ <input type="hidden" name="phase" value="Build new" />
+ <input type="submit" name="submit" value="Tạo báo cáo mới" />
+ </form>
+ [% END %]
+ [% IF ( CAN_user_reports_execute_reports ) %]
+ <form action="/cgi-bin/koha/reports/guided_reports.pl">
+ <input type="hidden" name="phase" value="Use saved"/>
+ <input value="Báo cáo được lưu" name="submit" type="submit" />
+ </form>
+ [% END %]
+ [% IF ( CAN_user_reports_create_reports ) %]
+ <form action="/cgi-bin/koha/reports/guided_reports.pl">
+ <input type="hidden" name="phase" value="Create report from SQL"/>
+ <input value="Tạo báo cáo từ SQL" type="submit" name="submit" />
+ </form>
+ [% END %]
+<h3>Từ điển báo cáo</h3>
+<p>Sử dụng từ điển báo cáo để thiết lập tiêu chí tùy chỉnh được sử dụng cho báo cáo của bạn</p>
+<form action="/cgi-bin/koha/reports/dictionary.pl">
+<input type="hidden" name="phase" value="View Dictionary"/>
+<input value="Xem từ điển" name="submit" type="submit" />
+</form>
+[% END %]
+
+[% IF report_converted %]
+ <div class="dialog message">
+ The report "[% report_converted %]" has been converted.
+ </div>
+[% END %]
+
+[% IF ( saved1 ) %]
+[% IF ( savedreports ) %]<h1>Báo cáo được lưu lại</h1>
+
+<div id="tabs" class="toptabs">
+ <ul>
+ <li><a href="#reports">Tất cả</a></li>
+ [% FOREACH group IN groups_with_subgroups %]
+ <li><a id="[% group.id %]" href="#reports">[% group.name %]</a></li>
+ [% END %]
+ </ul>
+ <div id="reports">
+ <div id="subgroup_filter_block">
+ <label for="subgroup_filter">Nhóm phụ:</label>
+ <select id="subgroup_filter">
+ <option value="">Tất cả</option>
+ </select>
+ </div>
+<form action="/cgi-bin/koha/reports/guided_reports.pl" id="reports_form" method="post">
+<input type="hidden" name="phase" value="Delete Multiple" />
+ <table id="table_reports">
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th>Mã</th>
+ <th>Tên báo cáo</th>
+ <th>Type</th>
+ <th>Nhóm</th>
+ <th>Nhóm phụ</th>
+ <th>Ghi chú</th>
+ <th>Tác giả</th>
+ <th class="title-string">Ngày tạo</th>
+ <th class="title-string">Last edit</th>
+ <th class="title-string">Last run</th>
+ <th class="report_public">Cộng đồng</th>
+ <th class="report_json_url">JSON URL</th>
+ [% IF (usecache) %]
+ <th>Bộ nhớ đệm hết hạn (giây)</th>
+ [% ELSE %]
+ <th class="hidden">&nbsp;</th>
+ [% END %]
+ <th>Kết quả được lưu</th>
+ [% IF has_obsolete_reports %]
+ <th>Cập nhật</th>
+ [% ELSE %]
+ <th class="hidden">&nbsp;</th>
+ [% END %]
+ <th>Thao tác</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH savedreport IN savedreports %]
+ [% UNLESS ( loop.odd ) %]<tr class="odd">[% ELSE %]<tr>[% END %]
+ <td>
+ [% IF ( CAN_user_reports_delete_reports ) %] <!-- not break CSS -->
+ <input type="checkbox" name="ids" value="[% savedreport.id %]" />
+ [% END %]
+ </td>
+ <td><label for="ids">[% savedreport.id %]</label></td>
+ <td>
+ [% IF ( savedreport.report_name ) %]
+ [% savedreport.report_name %]
+ [% ELSE %]
+ [ no name ]
+ [% END %]
+ </td>
+ <td>[% savedreport.type %]</td>
+ <td>[% savedreport.groupname %]</td>
+ <td>[% savedreport.subgroupname %]</td>
+ <td>[% savedreport.notes %]</td>
+ <td>[% savedreport.borrowersurname %][% IF ( savedreport.borrowerfirstname ) %], [% savedreport.borrowerfirstname %][% END %] ([% savedreport.borrowernumber %])</td>
+ <td><span title="[% savedreport.date_created %]">[% savedreport.date_created | $KohaDates %]</span></td>
+ <td><span title="[% savedreport.last_modified %]">[% savedreport.last_modified | $KohaDates with_hours => 1 %]</span></td>
+ <td><span title="[% savedreport.last_run %]">[% savedreport.last_run | $KohaDates with_hours => 1 %]</span></td>
+ <td class="report_public">
+ [% IF (savedreport.public) %]
+ Yes
+ [% ELSE %]
+ No
+ [% END %]
+ </td>
+ <td class="report_json_url">
+ [% IF (savedreport.public) %]
+ <a href="[% OPACBaseURL %]/cgi-bin/koha/svc/report?id=[% savedreport.id | uri %]">[% OPACBaseURL %]/cgi-bin/koha/svc/report?id=[% savedreport.id | html %]</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/svc/report?id=[% savedreport.id | uri %]">[% Koha.Preference('staffClientBaseURL') %]/cgi-bin/koha/svc/report?id=[% savedreport.id | html %]</a>
+ [% END %]
+ </td>
+ <td>[% savedreport.cache_expiry %]</td>
+ <td>
+ [% FOR result IN savedreport.results %]
+ <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=retrieve%20results&amp;id=[% result.id %]">[% result.date_run %]</a>
+ <br/>
+ [% END %]
+ </td>
+ <td>
+ [% IF savedreport.seems_obsolete %]
+ This report seems obsolete, it uses biblioitems.marcxml field.
+ <a class="update_sql btn btn-default btn-xs" href="/cgi-bin/koha/svc/convert_report?report_id=[% savedreport.id %]" title="Cập nhật SQL" data-report_id="[% savedreport.id %]"><i class="fa fa-eye"></i> Cập nhật SQL</a>
+ [% END %]
+ </td>
+ <td>
+ <div class="dropup">
+ <div class="btn-group">
+ [%# There should be no space between these two buttons, it would render badly %]
+ <a class="btn btn-default btn-xs" role="button"
+                                       href="/cgi-bin/koha/reports/guided_reports.pl?reports=[% savedreport.id %]&amp;phase=Run%20this%20report"><i
+                                       class="fa fa-play"></i> Chạy báo cáo</a><a
+                                       class="btn btn-default btn-xs dropdown-toggle" id="reportactions[% savedreport.id %]" role="button" data-toggle="dropdown"
+                                       href="#"><b class="caret"></b></a>
+ <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="reportactions[% savedreport.id %]">
+ <li><a href="/cgi-bin/koha/reports/guided_reports.pl?reports=[% savedreport.id %]&amp;phase=Show%20SQL"><i class="fa fa-search"></i> Hiển thị</a></li>
+ [% IF ( CAN_user_reports_create_reports ) %]
+ <li><a href="/cgi-bin/koha/reports/guided_reports.pl?reports=[% savedreport.id %]&amp;phase=Edit%20SQL"><i class="fa fa-pencil"></i> Chỉnh sửa</a></li>
+ <li><a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Create report from SQL&sql=[% savedreport.savedsql |uri %]&reportname=[% savedreport.report_name |uri %]&notes=[% savedreport.notes |uri %]" title="Sao chép báo cáo này"><i class="fa fa-copy"></i> Sao chép</a></li>
+ [% END %]
+ <li><a href="/cgi-bin/koha/tools/scheduler.pl?id=[% savedreport.id %]"><i class="fa fa-clock-o"></i> Lập lịch báo cáo</a></li>
+ [% IF ( CAN_user_reports_delete_reports ) %]
+ <li><a class="confirmdelete" href="/cgi-bin/koha/reports/guided_reports.pl?reports=[% savedreport.id %]&phase=Delete%20Saved" title="Xóa báo cáo này"><i class="fa fa-trash"></i> Xóa</a></li>
+ [% END %]
+ </ul>
+ </div>
+ </div>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% IF ( CAN_user_reports_delete_reports ) %]
+ <fieldset class="action">
+ <input value="Xóa đề xuất mua" type="submit" />
+ </fieldset>
+ [% END %]
+ </form>
+ </div>
+</div>
+[% ELSE %]<div class="dialog message">
+ [% IF (filter_set || filters.date || filters.author || filters.keyword) %]
+ <h4>Không có báo cáo nào được lưu phù hợp với tiêu chí của bạn. </h4>
+ [% IF ( CAN_user_reports_create_reports ) %]
+ <form action="/cgi-bin/koha/reports/guided_reports.pl" method="get">
+ <input type="hidden" name="phase" value="Build new" />
+ <button type="submit" class="new"><i class="fa fa-plus"></i> Theo hướng dẫn</button>
+ </form>
+
+ <form action="/cgi-bin/koha/reports/guided_reports.pl" method="get">
+ <input type="hidden" name="phase" value="Create report from SQL" />
+ <button type="submit" class="new"><i class="fa fa-plus"></i> Tạo báo cáo SQL</button>
+ </form>
+
+ <form action="/cgi-bin/koha/reports/guided_reports.pl" method="get">
+ <input type="hidden" name="phase" value="Use saved" />
+ <input type="hidden" name="filter_set" value="1" />
+ <input type="hidden" name="filter_keyword" value="" />
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Hủy bộ lọc</button>
+ </form>
+
+ [% END %]
+ [% ELSE %]
+ <h4>Không có các báo cáo được lưu lại. </h4>
+ [% IF ( CAN_user_reports_create_reports ) %]
+ <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Build%20new">Tạo báo cáo mới?</a>
+ [% END %]
+ [% END %]
+ </div>
+[% END %]
+[% END %]
+
+
+[% IF ( build1 ) %]
+[% IF ( cache_error) %]
+<div class="dialog alert">
+<b> Vui lòng chọn bộ nhớ đệm hết hạn không quá 30 ngày </b>
+</div>
+[% END %]
+<h1>Tạo báo cáo mới</h1>
+<form action="/cgi-bin/koha/reports/guided_reports.pl">
+<fieldset class="rows">
+<legend>Step 1 of 6: Choose a module to report on,[% IF (usecache) %] Set cache expiry, [% END %] and choose report visibility </legend>
+<ol>
+ <li>
+ <label for="area">Chọn: </label>
+ <select name="area" id="area">
+ [%- FOREACH area IN areas -%]
+ <option value="[% area %]">[%- PROCESS area_name area=area -%]</option>
+ [%- END -%]
+ </select>
+ </li>
+[% IF (public) %]
+ <li><label for="public">Báo cáo công khai:</label><select id="public" name="public"> <option value="0">Không (mặc định)</option> <option value="1" selected="selected">Có</option> </select></li>
+[% ELSE %]
+ <li><label for="public">Báo cáo công khai:</label><select id="public" name="public"> <option value="0" selected="selected">Không (mặc định)</option> <option value="1">Có</option> </select></li>
+[% END %]
+[% IF (usecache) %] <li>
+<label for="cache_expiry">Bộ nhớ đệm hết hạn:</label><input type="text" id="cache_expiry" name="cache_expiry" value="[% cache_expiry %]"></input>
+<select id="cache_expiry_units" name="cache_expiry_units">
+<option value="seconds">Giây (mặc định)</option>
+<option value="minutes">Phút</option>
+<option value="hours">Giờ</option>
+<option value="days">Ngày</option>
+</select>
+</li>[% END %]
+</ol>
+</fieldset>
+<fieldset class="action">
+<input type="hidden" name="phase" value="Report on this Area" />
+<input type="submit" name="submit" value="Tiếp tục >>" />
+
+</fieldset>
+</form>
+[% END %]
+
+
+[% IF ( build2 ) %]
+<h1>Tạo báo cáo mới</h1>
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<input type="hidden" name="area" value="[% area %]" />
+<input type="hidden" name="public" value="[% public %]" />
+<input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+<fieldset class="rows"><legend>Bước 2/6: Chọn kiểu hiển thị</legend>
+<ol><li><label for="types">Chọn: </label>
+ <select id="types" name="types">
+ <option value="1">Kiểu bảng</option>
+ <option value="2" disabled="disabled">Tóm tắt</option>
+ <option value="3" disabled="disabled">Ma trận</option>
+ </select>
+</li></ol></fieldset>
+
+<fieldset class="action">
+ <input type="hidden" name="phase" value="Choose this type" />
+ <input type="button" name="back" class="goback" value="<< Quay lại" />
+ <input value="Tiếp tục >>" name="submit" type="submit" />
+</fieldset>
+</form>
+</div>
+<div class="yui-gb"><div class="yui-u first"></div>
+
+<!--- Summary and Matrix reports have not yet been implemented-->
+<!--<div class="yui-u">Summary:
+<img src="[% interface %]/[% theme %]/img/reports-summary-graphic.gif" /></div>
+<div class="yui-u">Matrix:
+<img src="[% interface %]/[% theme %]/img/reports-matrix-graphic.gif" /></div>-->
+
+[% END %]
+
+[% IF ( build3 ) %]
+<h1>Tạo báo cáo mới</h1>
+<h3>Bước 3/6: Chọn dữ liệu hiển thị</h3>
+<p>Ghi chú: Thận trọng khi chọn cột. Nếu bạn chọn quá nhiều dữ liệu hiển thị ra sẽ dẫn tới kết quả lớn, báo cáo sẽ chạy chậm, thậm chí không hoàn thành.</p>
+
+<form id="column_submit" action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+ <input type="hidden" name="area" value="[% area %]" />
+ <input type="hidden" name="type" value="[% type %]" />
+ <input type="hidden" name="public" value="[% public %]" />
+ <input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+ <fieldset>
+<div class="yui-g">
+<div class="yui-u first"> <div style="float: left;"><select id="availableColumns" name="oldcolumns2" multiple="multiple" size="25" style="min-width: 200px;height:300px;">
+[% FOREACH column IN columns %]
+[% IF ( column.table ) %]
+
+[% IF ( loop.first ) %]
+[% ELSE %]
+</optgroup>
+[% END %]
+
+<optgroup label="[% column.table %]">
+[% ELSE %]
+<option value="[% column.name %]">
+[% IF ( column.description ) %][% column.description %] &nbsp; / &nbsp; [% column.name %]
+[% ELSE %]
+[% column.name %]
+[% END %]
+</option>
+[% END %]
+[% END %]
+</optgroup>
+</select></div>
+<div style="width: 6.3em; float: right; margin-top: 100px"><input class="button" id="addColumn" type="button" name="Add" value="Tạo" style="width:6em;" /><br />
+<input class="button" name="delete" type="button" id="delColumn" value="<< Xóa" style="width: 6em; margin: 1em 0;" /></div>
+</div>
+
+<div class="yui-u">
+<select id="selectedColumns" name="columns" multiple="multiple" size="25" style="width:200px; height:300px;"></select>
+</div>
+</div>
+</fieldset>
+<div class="yui-g">
+<fieldset class="action">
+ <input type="hidden" name="phase" value="Choose these columns" />
+ <input value="<< Quay lại" name="back" type="button" class="goback" />
+ <input type="submit" name="submit" value="Tiếp tục >>" />
+</fieldset>
+</div>
+</form>
+
+[% END %]
+
+[% IF ( build4 ) %]
+<h1>Tạo báo cáo mới</h1>
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post" >
+ <input type="hidden" name="area" value="[% area %]" />
+ <input type="hidden" name="type" value="[% type %]" />
+ <input type="hidden" name="column" value="[% column %]" />
+ <input type="hidden" name="public" value="[% public %]" />
+ <input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+ <fieldset><legend>Bước 4/6: Chọn tiêu chí để giới hạn dữ liệu</legend>
+ <table>
+ [% FOREACH criteri IN criteria %]
+ <tr>
+ <td>
+ <input type="checkbox" name="criteria_column" id="[% criteri.name %]" value="[% criteri.name %]" /> 
+ <label for="[% criteri.name %]">[% criteri.description %] </label>
+ </td>
+ [% IF ( criteri.date ) %]
+ <td>
+ <input type="text" size="10" id="[% criteri.name %]_value" name="[% criteri.name %]_value" value="" class="datepicker" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </td>
+ </tr>
+ [% ELSE %]
+ [% IF ( criteri.textrange ) %]
+ <td>Từ <input type="text" size="10" id="[% criteri.from %]_value" name="[% criteri.from %]_value" value="" /> đến <input type="text" size="10" id="[% criteri.to %]_value" name="[% criteri.to %]_value" value="" />
+ </td>
+ </tr>
+ [% ELSE %]
+ [% IF ( criteri.daterange ) %]
+ <td>Từ <input type="text" size="10" id="from_[% criteri.name %]_value" name="from_[% criteri.name %]_value" value="" class="datepickerfrom" />
+ đến <input type="text" size="10" id="to_[% criteri.name %]_value" name="to_[% criteri.name %]_value" value="" class="datepickerto" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </td>
+ </tr>
+ [% ELSE %]
+ <td>
+ <select name="[% criteri.name %]_value">
+ [% FOREACH value IN criteri.values %]
+ <option value="[% value.availablevalues %]">[% IF ( value.default ) %]Mặc định[% ELSE %][% value.display_value |html %][% END %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ [% END %]
+ [% END %]
+ [% END %]
+ [% END %]
+ </table>
+ </fieldset>
+
+[% IF ( definitions ) %]
+<fieldset><legend>Định nghĩa từ điển</legend>
+<table>
+[% FOREACH definition IN definitions %]
+ <tr><td><input type="checkbox" name="definition" value="[% definition.id %]" /> [% definition.name %]</td></tr>
+[% END %]
+</table>
+</fieldset>
+[% END %]
+
+<fieldset class="action"><input type="hidden" name="phase" value="Choose these criteria" />
+ <input value="<< Quay lại" class="goback" type="button" name="back" />
+ <input type="submit" name="submit" value="Tiếp tục >>" /> </fieldset>
+</form>
+[% END %]
+
+
+[% IF ( build5 ) %]
+<h1>Tạo báo cáo mới</h1>
+<h3>Bước 5/6: Chọn cột tổng</h3>
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<input type="hidden" name="area" value="[% area %]" />
+<input type="hidden" name="type" value="[% type %]" />
+<input type="hidden" name="column" value="[% column %]" />
+<input type="hidden" name="definition" value="[% definition %]" />
+<input type="hidden" name="criteria" value="[% criteriastring %]" />
+<input type="hidden" name="public" value="[% public %]" />
+<input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+<fieldset><table>
+[% FOREACH total_b IN total_by %]
+<tr><td><input type="checkbox" name="total_by" id="[% total_b.name %]" value="[% total_b.name %]" /> <label for="[% total_b.name %]">[% total_b.name %]</label></td>
+<td><select name="[% total_b.name %]_tvalue">
+
+[% FOREACH selec IN total_b.select %]
+<option value="[% selec.value %]">[% selec.value %]</option>
+[% END %]
+</select>
+
+</td></tr>
+[% END %]
+</table></fieldset>
+
+<fieldset class="action"><input type="hidden" name="phase" value="Choose these operations" />
+ <input type="button" name="back" class="goback" value="<< Quay lại" />
+ <input value="Tiếp tục >>" name="submit" type="submit" /></fieldset>
+</form>
+[% END %]
+
+
+[% IF ( build6 ) %]
+<h1>Tạo báo cáo mới</h1>
+<h3>Bước 6/6: Chọn kiểu trình bày tăng giảm</h3>
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<input type="hidden" name="area" value="[% area %]" />
+<input type="hidden" name="type" value="[% type %]" />
+<input type="hidden" name="column" value="[% column %]" />
+<input type="hidden" name="criteria" value="[% criteriastring %]" />
+<input type="hidden" name="definition" value="[% definition %]" />
+<input type="hidden" name="totals" value="[% totals %]" />
+<input type="hidden" name="public" value="[% public %]" />
+<input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+<fieldset><table>[% FOREACH order_b IN order_by %]
+<tr><td><input type="checkbox" id="[% order_b.name %]" name="order_by" value="[% order_b.name %]" /> <label for="[% order_b.name %]">[% order_b.name %]</label></td><td>
+<select name="[% order_b.name %]_ovalue">
+
+[% FOREACH selec IN order_b.select %]
+<option value="[% selec.value %]">[% selec.value %]</option>
+[% END %]
+</select>
+</td></tr>
+
+[% END %]
+</table></fieldset>
+
+<fieldset class="action">
+<input type="hidden" name="phase" value="Build report" />
+<input name="submit" type="submit" value="Hoàn thành" /></fieldset>
+</form>
+[% END %]
+
+
+[% IF ( showreport ) %]
+<h1>Xác nhận tùy chỉnh báo cáo</h1>
+<p>Báo cáo của bạn sẽ được tạo ra với các câu lệnh SQL sau đây.</p>
+<p> 
+[% sql |html %]
+</p>
+
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<input type="hidden" name="sql" value="[% sql %]" />
+<input type="hidden" name="type" value="[% type %]" />
+<input type="hidden" name="public" value="[% public %]" />
+<input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+<p>Bạn cần lưu lại trước khi bạn muốn chạy báo cáo này</p>
+<fieldset class="action"><input type="hidden" name="phase" value="Save" /> 
+<input value="Lưu" name="submit" type="submit" /> </fieldset>
+</form>
+[% END %]
+
+[% IF ( save ) %]
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post" class="validated">
+<input type="hidden" name="sql" value="[% sql |html %]" />
+<input type="hidden" name="type" value="[% type %]" />
+<input type="hidden" name="area" value="[% area %]" />
+<input type="hidden" name="public" value="[% public %]" />
+<input type="hidden" name="cache_expiry" value="[% cache_expiry %]" />
+<fieldset class="rows">
+<legend>Lưu tùy chỉnh báo cáo của bạn</legend>
+<ol>
+ <li><label for="reportname" class="required">Tên báo cáo: </label><input type="text" id="reportname" name="reportname" class="required" required="required" /> <span class="required">Bắt buộc</span></li>
+ [% PROCESS group_and_subgroup_selection %]
+ <li><label for="notes">Ghi chú:</label> <textarea name="notes" id="notes"></textarea></li>
+</ol></fieldset>
+<fieldset class="action"><input type="hidden" name="phase" value="Save Report" />
+<input type="submit" name="submit" value="Save report" /></fieldset>
+</form>
+[% END %]
+
+[% IF ( warn_authval_problem ) %]
+ <div class="dialog alert">
+ <h3>Phát hiện lỗi khi xử lý các thông số của báo cáo: [% name %]</h3>
+ [% FOREACH problematic_authval IN problematic_authvals %]
+ <p>
+ <strong>[% problematic_authval.name %]:</strong> Kiểu giá trị định trước (<strong>[% problematic_authval.authval %]</strong>) bạn chọn không tồn tại. </p>
+ [% END %]
+ <!-- Save Anyway Form -->
+ <form action='/cgi-bin/koha/reports/guided_reports.pl'>
+ <!--Every parameter the user issued is provided as a hidden field for recovery-->
+ <input type='hidden' name='id' value='[% id %]' />
+ <input type='hidden' name='sql' value='[% sql %]' />
+ <input type='hidden' name='reportname' value='[% reportname %]' />
+ <input type='hidden' name='group' value='[% group %]' />
+ <input type='hidden' name='subgroup' value='[% subgroup %]' />
+ <input type='hidden' name='notes' value='[% notes %]' />
+ <input type='hidden' name='cache_expiry' value='[% cache_expiry %]' />
+ <input type='hidden' name='cache_expiry_units' value='[% cache_expiry_units %]' />
+ <input type='hidden' name='public' value='[% public %]' />
+ [% IF ( phase_update) %]
+ <input type='hidden' name='phase' value='Update SQL' />
+ <button type="submit" name="save_anyway" value="Save anyway" class="approve"><i class="fa fa-fw fa-check"></i> Đồng ý lưu</button>
+ [% ELSIF ( phase_save) %]
+ <input type='hidden' name='area' value='[% area %]' />
+ <input type='hidden' name='phase' value='Save Report' />
+ <button type="submit" name="save_anyway" value="Save anyway" class="approve"><i class="fa fa-fw fa-check"></i> Đồng ý lưu</button>
+ [% END %]
+ </form>
+ <!-- Go back to editing -->
+ <form action='/cgi-bin/koha/reports/guided_reports.pl'>
+ <button type="button" class="new goback"><i class="fa fa-fw fa-pencil"></i> Sửa SQL</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF ( enter_params ) %]
+ <form action='/cgi-bin/koha/reports/guided_reports.pl'>
+ <input type='hidden' name='reports' value="[% reports %]" />
+ [% IF ( auth_val_error ) %]
+ <input type='hidden' name='phase' value='Edit SQL' />
+ <div class="dialog alert">
+ <h3>Phát hiện lỗi khi xử lý các thông số của báo cáo: [% name %]</h3>
+ [% FOREACH auth_val_error IN auth_val_errors %]
+ <p>
+ <strong>[% auth_val_error.entry %]:</strong> Kiểu giá trị định trước (<strong>[% auth_val_error.auth_val %]</strong>) bạn chọn không tồn tại. </p>
+ [% END %]
+ </div>
+ <fieldset class="action"><input type="submit" value="Sửa SQL" /></fieldset>
+ [% ELSE %]
+ <input type='hidden' name='phase' value='Run this report' />
+ <h1>Nhập thông số cho báo cáo [% name %]:</h1>
+ [% IF ( notes ) %]<p>[% notes %]</p>[% END %]
+ <fieldset class="rows">
+ <ol>
+ [% FOREACH sql_param IN sql_params %]
+ <input name="param_name" value="[% sql_param.name %]" type="hidden" />
+ [% IF sql_param.input == 'date' %]
+ <li>
+ <label for="date_[% sql_param_entry %][% loop.count %]">[% sql_param.entry %]:</label> <input id="date_[% sql_param_entry %][% loop.count %]" type="text" value="" size="10" name="sql_params" class="datepicker" />
+ </li>
+ [% ELSIF ( sql_param.input == 'text' ) %]
+ <li><label for="sql_params[% loop.count %]">[% sql_param.entry %]: </label><input id="sql_params[% loop.count %]" type="text" name="sql_params" /></li>
+ [% ELSE %]
+ <li><label for="sql_params_[% sql_param.labelid %]">[% sql_param.entry %]:</label>
+ <select name="[%- sql_param.input.name -%]" tabindex="1"  size="1" id="[%- sql_param.input.id -%]">
+ [% FOREACH value IN sql_param.input.values %]
+ <option value="[%- value -%]">[%- sql_param.input.labels.$value -%]</option>
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ [% END %]
+ </ol>
+ </fieldset>
+ <fieldset class="action"><input value="Chạy báo cáo" type="submit" /></fieldset>
+ [% END %]
+ </form>
+[% END %]
+
+[% IF ( execute ) %]
+<h1>[% name %]</h1>
+[% IF ( notes ) %]<p><span class="label">Ghi chú:</span> [% notes %]</p>[% END %]
+[% IF ( unlimited_total ) %]<p><span class="label">Total number of results:</span> [% unlimited_total %][% IF unlimited_total > limit %] ([% limit %] shown)[% END %].</p>[% END %]
+<div id="sql_output" style="display:none;"><span class="label">Report SQL:</span><pre>[% sql |html %]</pre></div>
+</br>
+
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="get" id="limitselect">
+ <input type="hidden" name="phase" value="Run this report"/>
+ <input type="hidden" name="reports" value="[% report_id %]"/>
+
+ [% FOREACH p IN sql_params %]
+ <input type="hidden" name="sql_params" value="[% p %]"/>
+ [% END %]
+
+ <label for="limit">Số hàng mỗi trang: </label>
+ <select name="limit" id="limit">
+ [% limits = [ 10, 20, 50, 100, 200, 300, 400, 500, 1000 ] %]
+ [% FOREACH l IN limits %]
+ [% IF l == limit %]
+ <option value="[% l %]" selected="selected">[% l %]</option>
+ [% ELSE %]
+ <option value="[% l %]">[% l %]</option>
+ [% END %]
+ [% END %]
+ </select>
+</form>
+
+<div class="pages">[% pagination_bar %]</div>
+[% UNLESS ( errors ) %]
+ <form method="POST" action="/cgi-bin/koha/tools/batchMod.pl" id="report_results">
+ <input type="hidden" name="op" value="show" />
+ <table>
+ <tr>
+ [% FOREACH header_ro IN header_row %]
+ [% IF header_ro.cell == 'itemnumber' %]
+ <th>
+ [% header_ro.cell %] <button type="submit" data-toggle="tooltip" title="Send visible items to batch modification" class="btn btn-xs btn-default send_to_item_mod"><i class="fa fa-pencil"></i> Batch modify</button>
+ </th>
+ [% ELSE %]
+ <th>[% header_ro.cell %]</th>
+ [% END %]
+ [% END %]
+ </tr>
+ [% FOREACH result IN results %]
+ <tr>
+ [% FOREACH cells IN result.cells %]
+ [% place = loop.index %]
+ [% IF header_row.$place.cell == 'itemnumber' %]
+ <input type="hidden" name="[% header_row.$place.cell | html %]" value="[% cells.cell | html %]" />
+ [% END %]
+ <td>[% cells.cell %]</td>
+ [% END %]
+ </tr>
+ [% END %]
+ </table>
+ </form>
+[% END %]
+[% END %]
+
+[% IF ( create ) %]
+<script type="text/javascript">
+$(document).ready(function() {
+    load_group_subgroups();
+});
+</script>
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post" class="validated">
+<fieldset class="rows">
+<legend>Tạo báo cáo từ SQL</legend>
+<ol>
+ <li><label for="reportname" class="required">Tên báo cáo:</label>
+ [% IF ( reportname ) %]<input type="text" class="required" required="required" id="reportname" name="reportname" value="[% reportname | html %]" size="50"/>
+ [% ELSE %]<input type="text" class="required" required="required" id="reportname" name="reportname" size="50" />[% END %] <span class="required">Bắt buộc</span>
+ </li>
+ [% PROCESS group_and_subgroup_selection %]
+
+[% IF (public) %]
+ <li><label for="public">Báo cáo công khai:</label><select id="public" name="public"> <option value="0">Không (mặc định)</option> <option value="1" selected="selected">Có</option> </select></li>
+[% ELSE %]
+ <li><label for="public">Báo cáo công khai:</label><select id="public" name="public"> <option value="0" selected="selected">Không (mặc định)</option> <option value="1">Có</option> </select></li>
+[% END %]
+[% IF (usecache) %] <li>
+<label for="cache_expiry">Bộ nhớ đệm hết hạn:</label><input type="text" id="cache_expiry" name="cache_expiry" value="[% cache_expiry %]"></input>
+<select id="cache_expiry_units" name="cache_expiry_units">
+<option value="seconds" selected="selected">Giây (mặc định)</option>
+<option value="minutes">Phút</option>
+<option value="hours">Giờ</option>
+<option value="days">Ngày</option>
+</select>
+</li>[% END %]
+ <li><label for="notes">Ghi chú:</label> <textarea id="notes" name="notes" cols="50" rows="2">[% notes %]</textarea></li>
+</ol>
+</fieldset>
+<fieldset class="rows">
+<legend>SQL:</legend>
+<div style="margin:1em;">
+<textarea id="sql" name="sql" class="required" required="required" cols="50" rows="10">[% sql %]</textarea> <span class="required">Bắt buộc</span>
+</div>
+</fieldset>
+
+<fieldset class="action"><input type="hidden" name="phase" value="Save Report" />
+<input type="submit" name="submit" value="Save report" /> <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved" class="cancel">Hủy bỏ</a>
+</fieldset>
+</form>
+[% END %]
+
+[% IF saved_results %]
+<h1>Danh sách các báo cáo được lưu lại</h1>
+<h2>[% name %]</h2>
+<p>[% notes %]</p>
+<table>
+[% FOREACH rows IN saved_results %]
+<tr>
+[% FOREACH col IN rows %]
+<td>[% col %]</td>
+[% END %]
+<tr>
+[% END %]
+</table>
+[% END %]
+
+[% IF ( showsql ) %]
+<fieldset class="rows">
+ <legend>[% reportname %]</legend>
+ <ol>
+ [% IF ( notes ) %]<li><span class="label">Ghi chú:</span> [% notes %]</li>[% ELSE %][% END %]
+ <li><textarea id="sql">[% sql %]</textarea></li>
+ </ol>
+</fieldset>
+[% END %]
+
+[% IF ( save_successful ) %]
+[% UNLESS ( errors ) %]
+</br>
+<div id="report_updated">
+ <div class="dialog message">
+ <p>Your report "[% reportname %]" has been saved</p>
+ </div>
+</div>
+[% END %]
+[% END %]
+
+[% IF ( editsql ) %]
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post" class="validated">
+<input type="hidden" name="phase" value="Update SQL" />
+<input type="hidden" name="id" value="[% id %]"/>
+<fieldset class="rows">
+<legend>Chỉnh sửa báo cáo SQL</legend>
+<ol>
+<li><label for="reportname" class="required">Tên báo cáo: </label><input type="text" id="reportname" name="reportname" value="[% reportname | html %]" size="50" class="required" required="required" /> <span class="required">Bắt buộc</span></li>
+[% PROCESS group_and_subgroup_selection %]
+[% IF (public) %]
+ <li><label for="public">Báo cáo công khai:</label><select id="public" name="public"> <option value="0">Không (mặc định)</option> <option value="1" selected="selected">Có</option> </select></li>
+[% ELSE %]
+ <li><label for="public">Báo cáo công khai:</label><select id="public" name="public"> <option value="0" selected="selected">Không (mặc định)</option> <option value="1">Có</option> </select></li>
+[% END %]
+[% IF (usecache) %] <li>
+<label for="cache_expiry">Bộ nhớ đệm hết hạn:</label><input type="text" id="cache_expiry" name="cache_expiry" value="[% cache_expiry %]"></input>
+<select id="cache_expiry_units" name="cache_expiry_units">
+<option value="seconds">Giây (mặc định)</option>
+<option value="minutes">Phút</option>
+<option value="hours">Giờ</option>
+<option value="days">Ngày</option>
+</select>
+</li>[% END %]
+<li><label for="notes">Ghi chú:</label><textarea id="notes" name="notes" cols="50" rows="2">[% notes %]</textarea></li>
+</ol>
+</fieldset>
+
+<fieldset class="rows">
+ <legend>SQL:</legend>
+ <div style="margin:1em;">
+ <textarea id="sql" name="sql" class="required" required="required" cols="50" rows="10">[% sql %]</textarea> <span class="required">Bắt buộc</span>
+ </div>
+</fieldset>
+
+<fieldset class="action">
+<input type="submit" name="submit" value="Cập nhật SQL" /> <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved" class="cancel">Hủy bỏ</a>
+</fieldset>
+</form>
+
+
+[% END %]
+
+[% IF ( errors ) %]
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<div class="dialog alert">
+<b>Bạn gặp phải các lỗi sau đây:</b><br />
+[% FOREACH error IN errors %] [% IF ( error.sqlerr ) %]Báo cáo này chứa từ khóa SQL <b>[% error.sqlerr %]</b>.
+ <br />Sử dụng từ khóa không cho phép xuất hiện trong báo cáo của Koha, các từ khóa này có thể làm tăng độ rủi ro của tính bảo mật và bảo vệ dữ liệu<br />Vui lòng quay lại &quot;Báo cáo được lưu&quot; để xóa báo cáo này hoặc tạo báo cáo mới. [% ELSIF ( error.queryerr ) %]Cơ sở dữ liệu gặp các lỗi sau đây: <br />[% error.queryerr %]<br />Please check the log for further details.
+ [% ELSIF ( error.cache_expiry ) %]Please select a cache expiry less than 30 days.
+ [% ELSE %]
+ [% END %]
+ <div id="onerror_actions">
+ <a href="#" class="button goback">Return to previous page</a>
+ </div>
+[% END %]
+</div>
+<fieldset class="action"><input type="hidden" name="phase" value="Use saved" />
+<input value="Báo cáo được lưu lại" type="submit" name="submit" /></fieldset>
+</form>
+[% END %]
+
+</div>
+</div>
+<div class="yui-b">
+
+[% IF ( saved1 ) %]
+<div id="saved-reports-filter">
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="get">
+ <input type="hidden" name="phase" value="Use saved" />
+ <input type="hidden" name="filter_set" value="1" />
+ <fieldset class="brief">
+ <h3>Bộ lọc dữ liệu</h3>
+ <ol>
+ <li><label for="filter_date">Thời gian:</label> <input type="text" id="filter_date" name="filter_date" size="10" value="[% filters.date %]" class="datepicker" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+
+ </li>
+ <li><label for="filter_author">Tác giả:</label> <input type="text" id="filter_author" name="filter_author" value="[% filters.author %]" size="16" /></li>
+ <li><label for="filter_keyword">Từ khóa:</label> <input type="text" id="filter_keyword" name="filter_keyword" value="[% filters.keyword %]" size="16" /></li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="submit" value="Tìm kiếm" />
+ <a id="resetReportsFilter" href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved&clear_filters=1">Xóa</a>
+ </fieldset>
+</form>
+</div>
+[% END %]
+
+
+[% INCLUDE 'guided-reports-view.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% IF ( saved1 ) %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ [% END %]
+ <script>
+        var MSG_CONFIRM_DELETE = _("Are you sure you want to delete this report? This cannot be undone.");
+        var group_subgroups = {};
+        [% FOREACH group IN groups_with_subgroups %]
+            var gid = "[% group.id %]"
+            group_subgroups[gid] = new Array();
+            [% FOREACH subgroup IN group.subgroups %]
+                var sgid = "[% subgroup.id %]";
+                var sgname = "[% subgroup.name %]";
+                group_subgroups[gid].push([sgid, sgname]);
+            [% END %]
+        [% END %]
+
+        function load_group_subgroups () {
+            var group = $("#group_select").val();
+            var sg = $("#subgroup");
+            $(sg).find('option[value!=""]').each(function() {
+                $(this).remove();
+            });
+            $(sg).hide();
+            if (group) {
+                var select = $(sg).find('select')[0];
+                $.each( group_subgroups[group], function(index, value) {
+                    $('<option value="' + value[0] + '">' + value[1] + '</option>').appendTo(select);
+                } );
+                $("#subgroup, #subgroup *").show();
+            }
+        }
+
+        $(document).ready(function(){
+
+            $('[data-toggle="tooltip"]').tooltip();
+            var columns_settings = [% ColumnsSettings.GetColumns( 'reports', 'saved-sql', 'table_reports', 'json' ) %];
+
+            $('#limit').change(function() {
+                $('#limitselect').submit();
+            });
+
+            $(document).click(function() {
+                $('#report_updated').hide();
+            });
+
+            $(".goback").on("click",function(e){
+                e.preventDefault();
+                window.history.back();
+            });
+
+            $("#addColumn").on("click",function(){
+                addColumn();
+            });
+
+            $("#delColumn").on("click",function(){
+                delColumn();
+            });
+
+            [% IF (saved1) %]
+                var rtable = KohaTable("table_reports", {
+                    'iDisplayLength': [% Koha.Preference('NumSavedReports') %],
+                    'bAutoWidth': false,
+                    'sPaginationType': 'four_button',
+                    'aaSorting': [[ 1, "asc" ]],
+                    'aoColumnDefs': [
+                        { 'bSortable': false, 'bSearchable':false, 'aTargets': [0, -1] },
+                        { 'bSearchable': false, 'aTargets': [3] },
+                        { "aTargets": [ 1, 2 ], "sType": "natural"  },
+                        { "sType": "title-string", "aTargets" : [ "title-string" ] },
+                        { "visible": false, "aTargets" : [ "hidden" ] }
+                    ],
+                    'oLanguage': {
+                        'sZeroRecords': _("Không tìm thấy báo cáo phù hợp")
+                    },
+                }, columns_settings);
+
+                var rtabs = $("#tabs").tabs();
+                rtabs.on("tabsactivate", function(e, ui) {
+                    $("#subgroup_filter option").each(function() {
+                        if($(this).val().length > 0) {
+                            $(this).remove();
+                        }
+                    });
+                    rtable.fnFilter('', 4);
+                    rtable.fnFilter('', 5);
+                    rtable.fnSetColumnVis(4, true);
+                    rtable.fnSetColumnVis(5, true);
+
+                    var g_id = $(ui.newTab).children().attr('id');
+                    var g_name = $(ui.newTab).text();
+                    if ( g_name == _("Tất cả") ) {
+                        g_id = "";
+                        g_name = "";
+                    }
+
+                    if (g_id && g_id.length > 0) {
+                        rtable.fnFilter('^' + g_name + '$', 4, true, true, true, false);
+                        rtable.fnSetColumnVis(4, false);
+                        for(var i in group_subgroups[g_id]) {
+                            $("#subgroup_filter").append(
+                                '<option value="' + group_subgroups[g_id][i][0] + '">'
+                                + group_subgroups[g_id][i][1] + '</option>'
+                            );
+                        }
+                        $("#subgroup_filter_block").show();
+                    } else {
+                        $("#subgroup_filter_block").hide();
+                    }
+                });
+                $("#subgroup_filter_block").hide();
+
+                $("#subgroup_filter").change(function() {
+                    var selected = $(this).find('option:selected');
+                    var sg_id = $(selected).val();
+                    var sg_name = $(selected).text();
+                    if (sg_id.length > 0) {
+                        rtable.fnFilter('^' + sg_name + '$', 5, true, true, true, false);
+                        rtable.fnSetColumnVis(5, false);
+                    } else {
+                        rtable.fnFilter('', 5);
+                        rtable.fnSetColumnVis(5, true);
+                    }
+                });
+
+                $("#reports_form").submit(function(){
+                    var checkedItems = $("input[name=ids]:checked");
+                    if ($(checkedItems).size() == 0) {
+                        alert(_("Bạn phải lựa chọn các báo cáo để xóa bỏ"));
+                        return false;
+                    }
+                    $(checkedItems).parents('tr').addClass("warn");
+                    if( confirm(_("Bạn chắc chắn muốn xóa các báo cáo được lựa chọn?")) ) {
+                        return true;
+                    } else {
+                        $(checkedItems).parents('tr').removeClass("warn");
+                        return false;
+                    }
+                });
+
+                $("body").on("click", ".update_sql", function(e){
+                    e.preventDefault();
+                    var ltitle = $(this).text();
+                    var report_id = $(this).data("report_id");
+                    var page = $(this).attr("href");
+                    $("#update_sql .modal-body").load(page + " div", function(){
+                        var diff1 = $("#col1 .show_sql").text();
+                        var diff2 = $("#col2 .show_sql").text();
+                        var diffs = diffString( escape(diff1), escape(diff2) );
+                        $("#col1 .show_sql,#col2 .show_sql").html(diffs);
+                    });
+                    $('#update_sql').modal('show');
+                    $("#update_sql_button").attr("href", "/cgi-bin/koha/reports/guided_reports.pl?phase=Use saved&op=convert&report_id=" + report_id);
+                });
+
+                $("#update_sql").on("hidden.bs.modal", function(){
+                    $("#update_sql_label").html("");
+                    $("#update_sql .modal-body").html("<div id=\"loading\"><img src=\"[% interface %]/[% theme %]/img/spinner-small.gif\" alt=\"\" /> "+_("Đang tải")+"</div>");
+                });
+            [% END %]
+
+            [% IF ( showsql ) %]
+                $("#sql").focus(function() {
+                    $(this).select();
+                });
+            [% END %]
+
+                $(".toggle_sql").click(function(){
+                    $("#sql_output").toggle();
+                    $("#toggle_sql_hid").toggle();
+                    $("#toggle_sql_vis").toggle();
+                });
+
+                $("#table_reports").delegate(".confirmdelete", 'click', function(){
+                    $(this).parents('tr').attr("class","warn");
+                    if(confirm(_("Bạn chắc chắn muốn xóa báo cáo này?"))){
+                        return true;
+                    } else {
+                        $(this).parents('tr').attr("class","");
+                        return false;
+                    }
+                });
+
+            [% IF (create || editsql || save) %]
+                $("#select_group").change(function() {
+                    if($(this).prop('checked')) {
+                        $("#group_input").prop('disabled', true);
+                        $("#groupdesc_input").prop('disabled', true);
+                        $("#group_select").prop('disabled', false);
+                        if ($("#group_select").val().length > 0) {
+                            $("#select_subgroup").prop('checked', true);
+                            $("#select_subgroup").change();
+                            $("#subgroup, #subgroup *").show();
+                        } else {
+                            $("#subgroup").hide();
+                        }
+                    }
+                });
+                $("#create_group").change(function() {
+                    if($(this).prop('checked')) {
+                        $("#group_input").prop('disabled', false);
+                        $("#groupdesc_input").prop('disabled', false);
+                        $("#group_select").prop('disabled', true);
+                        $("#create_subgroup").prop('checked', true).change();
+                        $("#subgroup_select").hide();
+                        $("#subgroup input[type='radio']").hide();
+                        $("#subgroup label[for]").hide();
+                        $("#subgroup_input").show();
+                        $("#subgroupdesc_input").show();
+                        $("#subgroup").show();
+                    }
+                });
+                $("#select_subgroup").change(function() {
+                    if($(this).prop('checked')) {
+                        $("#subgroup_select").prop('disabled', false);
+                        $("#subgroup_input").prop('disabled', true);
+                        $("#subgroupdesc_input").prop('disabled', true);
+                    }
+                });
+                $("#create_subgroup").change(function() {
+                    if($(this).prop('checked')) {
+                        $("#subgroup_input").prop('disabled', false);
+                        $("#subgroupdesc_input").prop('disabled', false);
+                        $("#subgroup_select").prop('disabled', true);
+                    }
+                });
+                $("#select_group").change();
+                $("#select_subgroup").change();
+                $("#group_select").on("change",function(){
+                    load_group_subgroups();
+                });
+            [% END %]
+            $(".delete").on("click",function(){
+                return confirmDelete(MSG_CONFIRM_DELETE);
+            });
+        });
+        function addColumn() {
+            $("#availableColumns option:selected").clone().appendTo("#selectedColumns").attr("selected", "selected");
+        }
+        function delColumn() {
+            $("#selectedColumns option:selected").remove();
+        }
+        $("#column_submit").submit(function() {
+            if ($("#selectedColumns option").size() < 1) {
+                alert(_("Bạn chưa chọn cột dữ liệu trong báo cáo!"));
+                return false;
+            }
+            $("#selectedColumns option").attr("selected", "selected");  // Select everything still in #selectedColumns
+            return true;
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]
+
+[% BLOCK group_and_subgroup_selection %]
+ <li id="group">
+ <label>Nhóm báo cáo:</label>
+ <input type="radio" name="select_or_create_group"
+            id="select_group" checked="checked" />
+ <label for="select_group" style="float:none">Chọn</label>
+ <select name="group" id="group_select">
+ <option value="">(Không chọn)</option>
+ [% FOREACH group IN groups_with_subgroups %]
+ [% IF (group.selected) %]
+ <option value="[% group.id %]" selected="selected">
+ [% ELSE %]
+ <option value="[% group.id %]">
+ [% END %]
+ [% group.name %]
+ </option>
+ [% END %]
+ </select>
+ <input type="radio" name="select_or_create_group" id="create_group" />
+ <label for="create_group" style="float:none">or create:</label>
+ <input title="Mã nhóm" id="group_input" name="group" type="text" placeholder="Mã" />
+ <input title="Tên nhóm" placeholder="Tên" type="text" name="groupdesc" id="groupdesc_input" />
+ </li>
+ <li id="subgroup">
+ <label>Nhóm báo cáo phụ:</label>
+ <input type="radio" name="select_or_create_subgroup"
+            id="select_subgroup" checked="checked" />
+ <label for="select_subgroup" style="float:none">Chọn</label>
+ <select name="subgroup" id="subgroup_select">
+ <option value="">(Không chọn)</option>
+ [% FOREACH group IN groups_with_subgroups %]
+ [% IF (group.selected) %]
+ [% FOREACH subgroup IN group.subgroups %]
+ [% IF (subgroup.selected) %]
+ <option value="[% subgroup.id %]" selected="selected">
+ [% ELSE %]
+ <option value="[% subgroup.id %]">
+ [% END %]
+ [% subgroup.name %]
+ </option>
+ [% END %]
+ [% END %]
+ [% END %]
+ </select>
+ <input type="radio" name="select_or_create_subgroup"
+            id="create_subgroup" />
+ <label for="create_subgroup" style="float:none">Tạo mới</label>
+ <input name="subgroup" placeholder="Mã" type="text" id="subgroup_input" title="Mã nhóm phụ" />
+ <input id="subgroupdesc_input" name="subgroupdesc" type="text" placeholder="Tên" title="Tên nhóm phụ" />
+ </li>
+[% END %]

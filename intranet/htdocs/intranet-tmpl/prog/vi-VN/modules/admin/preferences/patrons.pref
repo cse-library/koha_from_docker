@@ -1,0 +1,270 @@
+--- 
+bạn đọc: 
+  General: 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng g\xE1\xBB\xADi"
+          1: " G\xE1\xBB\xADi"
+        pref: AutoEmailOpacUser
+      - " th\xC6\xB0 \xC4\x91i\xE1\xBB\x87n t\xE1\xBB\xAD t\xE1\xBB\x9Bi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc m\xE1\xBB\x9Bi v\xE1\xBB\x9Bi c\xC3\xA1c th\xC3\xB4ng tin li\xC3\xAAn quan \xC4\x91\xE1\xBA\xBFn t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc."
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng \xC4\x91\xE1\xBB\x8Ba ch\xE1\xBB\x89 th\xC6\xB0 \xC4\x91i\xE1\xBB\x87n t\xE1\xBB\xAD"
+      - 
+        choices: 
+          B_email: " lu\xC3\xA2n phi\xC3\xAAn"
+          "OFF": " \xC4\x91\xE1\xBA\xA7u ti\xC3\xAAn"
+          cardnumber: " s\xE1\xBB\x91 th\xE1\xBA\xBB l\xC3\xA0 \xC4\x91\xE1\xBB\x8Ba ch\xE1\xBB\x89 th\xC6\xB0 \xC4\x91i\xE1\xBB\x87n t\xE1\xBB\xAD"
+          email: " ch\xC3\xADnh"
+          emailpro: " c\xC3\xB4ng vi\xE1\xBB\x87c"
+        default: 'OFF'
+        pref: AutoEmailPrimaryAddress
+      - " c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xE1\xBB\x83 g\xE1\xBB\xADi th\xC6\xB0 \xC4\x91i\xE1\xBB\x87n t\xE1\xBB\xAD t\xE1\xBB\x9Bi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh"
+          1: " M\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh"
+        pref: autoMemberNum
+      - "  tr\xC6\xB0\xE1\xBB\x9Dng s\xE1\xBB\x91 th\xE1\xBA\xBB b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xC6\xB0\xE1\xBB\xA3c h\xE1\xBB\x87 th\xE1\xBB\x91ng t\xE1\xBB\xB1 \xC4\x91\xE1\xBB\x99ng sinh ra v\xC3\xA0 s\xE1\xBB\x91 th\xE1\xBA\xBB s\xE1\xBA\xBD t\xC4\x83ng d\xE1\xBA\xA7n (V\xC3\xAD d\xE1\xBB\xA5 nh\xC6\xB0 s\xE1\xBB\x91 th\xE1\xBA\xBB b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc cu\xE1\xBB\x91i c\xC3\xB9ng 26345000012941, th\xC3\xAC s\xE1\xBB\x91 th\xE1\xBA\xBB c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc ti\xE1\xBA\xBFp theo s\xE1\xBA\xBD l\xC3\xA0 26345000012942)."
+      - "NOTE: If autoMemberNum is enabled, the system preference BorrowerMandatoryField must not contain the field cardnumber."
+    - 
+      - "The following <a href='http://schema.koha-community.org/__VERSION__/tables/borrowers.html' target='blank'>database columns</a> must be filled in on the patron entry screen:"
+      - 
+        class: multi
+        pref: BorrowerMandatoryField
+      - " (c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng k\xC3\xBD t\xE1\xBB\xB1 |)"
+      - "NOTE: If autoMemberNum is enabled, the system preference BorrowerMandatoryField must not contain the field cardnumber."
+    - 
+      - "The following <a href='http://schema.koha-community.org/__VERSION__/tables/borrowers.html' target='blank'>database columns</a> will not appear on the patron entry screen:"
+      - 
+        class: multi
+        pref: BorrowerUnwantedField
+      - " (c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng k\xC3\xBD t\xE1\xBB\xB1 |)"
+    - 
+      - " C\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng sau \xC4\x91\xC3\xA2y \xC4\x91\xC6\xB0\xE1\xBB\xA3c s\xE1\xBB\xAD d\xE1\xBB\xA5ng \xC4\x91\xE1\xBB\x83 khai b\xC3\xA1o th\xC3\xB4ng tin cho c\xC3\xA1c b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc thu\xE1\xBB\x99c nh\xC3\xB3m \xC4\x91\xE1\xBB\x91i t\xC6\xB0\xE1\xBB\xA3ng c\xE1\xBA\xA7n b\xE1\xBA\xA3o l\xC3\xA3nh:"
+      - 
+        class: multi
+        pref: borrowerRelationship
+      - " (b\xE1\xBA\xA1n c\xC3\xB3 th\xE1\xBB\x83 nh\xE1\xBA\xADp nhi\xE1\xBB\x81u tr\xC6\xB0\xE1\xBB\x9Dng, c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng k\xC3\xBD t\xE1\xBB\xB1 |). B\xE1\xBB\x8F tr\xE1\xBB\x91ng \xC4\x91\xE1\xBB\x83 kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+    - 
+      - " C\xC3\xA1c ch\xE1\xBB\xA9c danh sau \xC4\x91\xC3\xA2y c\xC3\xB3 th\xE1\xBB\x83 \xC4\x91\xC6\xB0\xE1\xBB\xA3c \xC4\x91i k\xC3\xA8m v\xE1\xBB\x9Bi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc:"
+      - 
+        class: multi
+        pref: BorrowersTitles
+      - " (c\xC3\xA1c ch\xE1\xBB\xA9c danh ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng k\xC3\xBD t\xE1\xBB\xB1 |)"
+    - 
+      - 
+        choices: 
+          hardno: Do not
+          hardyes: Do
+          softno: Unless overridden, do not
+          softyes: Unless overridden, do
+        default: ''
+        pref: CheckPrevCheckout
+      - " check borrower checkout history to see if the current item has been checked out before."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: EnhancedMessagingPreferences
+      - "Staff to manage which notices patrons will receive and when they will receive them. Note: this only applies to courtesy notices. To manage if patrons have also access to these settings, use EnhancedMessagingPreferencesOPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: ExtendedPatronAttributes
+      - " vi\xE1\xBB\x87c t\xC3\xACm ki\xE1\xBA\xBFm, ch\xE1\xBB\x89nh s\xE1\xBB\xADa v\xC3\xA0 hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c thu\xE1\xBB\x99c t\xC3\xADnh t\xC3\xB9y ch\xE1\xBB\x89nh c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: intranetreadinghistory
+      - staff to access a patron's checkout and hold history (reading history is still stored, regardless of staff being allowed access or not).
+    - 
+      - " S\xE1\xBB\x91 ti\xE1\xBB\x81n ph\xE1\xBA\xA1t t\xE1\xBB\x91i \xC4\x91a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xC6\xB0\xE1\xBB\xA3c ph\xC3\xA9p n\xE1\xBB\xA3 th\xC6\xB0 vi\xE1\xBB\x87n"
+      - 
+        class: currency
+        pref: MaxFine
+      - " [% local_currency %]."
+      - " N\xE1\xBA\xBFu b\xE1\xBA\xA1n b\xE1\xBB\x8F tr\xE1\xBB\x91ng c\xC3\xB3 ngh\xC4\xA9a l\xC3\xA0 kh\xC3\xB4ng b\xE1\xBB\x8B gi\xE1\xBB\x9Bi h\xE1\xBA\xA1n. S\xE1\xBB\x91 ti\xE1\xBB\x81n n\xE1\xBB\xA3 t\xE1\xBB\x91i \xC4\x91a v\xE1\xBB\x9Bi m\xE1\xBB\x97i t\xC3\xA0i li\xE1\xBB\x87u \xC4\x91\xC6\xB0\xE1\xBB\xA3c quy \xC4\x91\xE1\xBB\x8Bnh trong ch\xC3\xADnh s\xC3\xA1ch l\xC6\xB0u th\xC3\xB4ng."
+    - 
+      - " M\xE1\xBA\xADt kh\xE1\xBA\xA9u \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp cho c\xC3\xA1n b\xE1\xBB\x99 th\xC6\xB0 vi\xE1\xBB\x87n v\xC3\xA0 b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc ph\xE1\xBA\xA3i c\xC3\xB3 chi\xE1\xBB\x81u d\xC3\xA0i t\xE1\xBB\x91i thi\xE1\xBB\x83u l\xC3\xA0"
+      - 
+        class: integer
+        pref: minPasswordLength
+      - " k\xC3\xBD t\xE1\xBB\xB1."
+    - 
+      - 
+        choices: 
+          "": Don't require
+          1: Require
+        pref: RequireStrongPassword
+      - a strong password for staff and patrons
+      - (Must contain at least one digit, one lowercase and one uppercase).
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B m\xE1\xBB\x99t th\xC3\xB4ng b\xC3\xA1o cho b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc n\xE1\xBA\xBFu t\xC3\xA0i kho\xE1\xBA\xA3n c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc s\xE1\xBA\xAFp h\xE1\xBA\xBFt h\xE1\xBA\xA1n ho\xE1\xBA\xB7c \xC4\x91\xC3\xA3 h\xE1\xBA\xBFt h\xE1\xBA\xA1n "
+      - 
+        class: integer
+        pref: NotifyBorrowerDeparture
+      - " ng\xC3\xA0y."
+    - 
+      - Send an account expiration notice when a patron's card will expire in
+      - 
+        class: integer
+        pref: MembershipExpiryDaysNotice
+      - days.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: patronimages
+      - " t\xE1\xBA\xA3i l\xC3\xAAn v\xC3\xA0 hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c h\xC3\xACnh \xE1\xBA\xA3nh c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc tr\xC3\xAAn giao di\xE1\xBB\x87n nh\xC3\xA2n vi\xC3\xAAn."
+    - 
+      - " Theo m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh, hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+      - 
+        class: integer
+        pref: PatronsPerPage
+      - " k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm tr\xC3\xAAn m\xE1\xBB\x97i trang c\xE1\xBB\xA7a giao di\xE1\xBB\x87n nh\xC3\xA2n vi\xC3\xAAn."
+    - 
+      - 
+        class: multi
+        pref: DefaultPatronSearchFields
+      - Comma separated list defining the default fields to be used during a patron search
+    - 
+      - 
+        class: multi
+        pref: PatronQuickAddFields
+      - (separate columns with |)
+      - add these fields to the patron quick add form when entering a new patron. Displays only mandatory fields and fields specified here. If applicable the guarantor form will be shown as well, individual fields in that form will be ignored.
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng tr\xC3\xACnh \xC4\x91i\xE1\xBB\x81u khi\xE1\xBB\x83n SMS::Send::"
+      - 
+        pref: SMSSendDriver
+      - " \xC4\x91\xE1\xBB\x83 g\xE1\xBB\xADi tin nh\xE1\xBA\xAFn SMS."
+      - Define a username/login
+      - 
+        pref: SMSSendUsername
+      - and a password
+      - 
+        pref: SMSSendPassword
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng th\xE1\xBB\xB1c hi\xE1\xBB\x87n"
+          1: " Th\xE1\xBB\xB1c hi\xE1\xBB\x87n"
+        pref: uppercasesurnames
+      - " l\xC6\xB0u v\xC3\xA0 hi\xE1\xBB\x83n th\xE1\xBB\x8B t\xC3\xAAn b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xE1\xBB\x9F d\xE1\xBA\xA1ng ch\xE1\xBB\xAF hoa."
+    - 
+      - " Khi gia h\xE1\xBA\xA1n t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc, ng\xC3\xA0y h\xE1\xBA\xBFt h\xE1\xBA\xA1n t\xC3\xA0i kho\xE1\xBA\xA3n m\xE1\xBB\x9Bi d\xE1\xBB\xB1a tr\xC3\xAAn"
+      - 
+        choices: 
+          combination: the latter of the current and expiry date.
+          dateexpiry: " ng\xC3\xA0y h\xE1\xBA\xBFt h\xE1\xBA\xA1n c\xC5\xA9."
+          now: " ng\xC3\xA0y hi\xE1\xBB\x87n t\xE1\xBA\xA1i."
+        pref: BorrowerRenewalPeriodBase
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: TalkingTechItivaPhoneNotification
+      - " vi\xE1\xBB\x87c g\xE1\xBB\xADi c\xC3\xA1c th\xC3\xB4ng b\xC3\xA1o v\xC3\xA0o \xC4\x91i\xE1\xBB\x87n tho\xE1\xBA\xA1i b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc b\xE1\xBA\xB1ng c\xC3\xA1ch s\xE1\xBB\xAD d\xE1\xBB\xA5ng Talking Tech itiva (hi\xE1\xBB\x87n t\xE1\xBA\xA1i h\xE1\xBB\x87 th\xE1\xBB\x91ng h\xE1\xBB\x97 tr\xE1\xBB\xA3 c\xC3\xA1c th\xC3\xB4ng b\xC3\xA1o qu\xC3\xA1 h\xE1\xBA\xA1n, gia h\xE1\xBA\xA1n, \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n)."
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c tr\xC6\xB0\xE1\xBB\x9Dng sau \xC4\x91\xC3\xA2y t\xE1\xBB\xAB c\xC6\xA1 s\xE1\xBB\x9F d\xE1\xBB\xAF li\xE1\xBB\x87u c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u th\xC3\xA0nh c\xC3\xA1c c\xE1\xBB\x99t trong b\xE1\xBA\xA3ng th\xC3\xB4ng k\xC3\xAA tr\xC3\xAAn bi\xE1\xBB\x83u ghi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc: "
+      - 
+        class: multi
+        pref: StatisticsFields
+      - "(separate fields with |, without trailing |). Default if empty: location|itype|ccode"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: EnableBorrowerFiles
+      - " t\xE1\xBA\xA3i c\xC3\xA1c t\xE1\xBB\x87p tin \xC4\x91\xC3\xADnh k\xC3\xA8m t\xE1\xBB\x9Bi bi\xE1\xBB\x83u ghi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc."
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowStaffToSetCheckoutsVisibilityForGuarantor
+      - staff to set the ability for a patron's checkouts to be viewed by linked patrons in the OPAC.
+    - 
+      - " S\xE1\xBB\x91 th\xE1\xBA\xBB b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc ph\xE1\xBA\xA3i ch\xE1\xBB\xA9a"
+      - 
+        pref: CardnumberLength
+      - " k\xC3\xBD t\xE1\xBB\xB1. B\xE1\xBA\xA1n c\xC3\xB3 th\xE1\xBB\x83 khai b\xC3\xA1o theo c\xC3\xA1c \xC4\x91\xE1\xBB\x8Bnh d\xE1\xBA\xA1ng ('Min,Max'), ho\xE1\xBA\xB7c (',Max') ho\xE1\xBA\xB7c ('Min,') ho\xE1\xBA\xB7c m\xE1\xBB\x99t s\xE1\xBB\x91 c\xE1\xBB\xA5 th\xE1\xBB\x83 t\xC3\xB9y theo y\xC3\xAAu c\xE1\xBA\xA7u c\xE1\xBB\xA7a b\xE1\xBA\xA1n."
+      - If 'cardnumber' is included in the BorrowerMandatoryField list, the minimum length, if not specified here, defaults to one. Maximum cannot be bigger than the database field size of 32.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: useDischarge
+      - librarians to discharge borrowers and borrowers to request a discharge.
+    - 
+      - 
+        choices: 
+          "": Don't
+          1: Do
+        pref: FeeOnChangePatronCategory
+      - charge a fee when a patron changes to a category with an enrollment fee.
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: EnhancedMessagingPreferencesOPAC
+      - "patron messaging setting on the OPAC (note: EnhancedMessagingPreferences must be enabled)."
+    - 
+      - 
+        choices: 
+          "": Don't
+          1: Do
+        pref: TrackLastPatronActivity
+      - track last patron activity.
+      - Everytime a patron will connect, the borrowers.lastseen will be updated with the current time.
+    - 
+      - Block a patron's account if it reaches
+      - 
+        class: integer
+        pref: FailedLoginAttempts
+      - failed login attempts.
+    - 
+      - 
+        choices: 
+          "": Allow all permitted users
+          1: Allow only superlibrarians
+        pref: ProtectSuperlibrarianPrivileges
+      - "to access/change superlibrarian privileges. Note: A permitted user needs to have the 'permissions' flag (if no superlibrarian)."
+  Norwegian patron database: 
+    - 
+      - 
+        choices: 
+          "": Disable
+          1: Enable
+        pref: NorwegianPatronDBEnable
+      - the ability to communicate with the Norwegian national patron database via the
+      - 
+        pref: NorwegianPatronDBEndpoint
+      - endpoint.
+    - 
+      - Communicate with the Norwegian national patron database using the username
+      - 
+        pref: NorwegianPatronDBUsername
+      - and the password
+      - 
+        pref: NorwegianPatronDBPassword
+      - . You can get these from "Base Bibliotek", which is maintained by the Norwegian National Library.
+    - 
+      - 
+        choices: 
+          "": Don't
+          1: Do
+        pref: NorwegianPatronDBSearchNLAfterLocalHit
+      - search the Norwegian national patron database after a local search result was found.

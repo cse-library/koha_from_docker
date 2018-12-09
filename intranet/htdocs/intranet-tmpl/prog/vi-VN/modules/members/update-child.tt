@@ -1,0 +1,100 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Choose adult category</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="pat_update-child" class="pat">
+ <div class="container-fluid">
+
+[% IF ( MULTI ) %]
+
+ <h3> Choose adult category </h3>
+
+ [% IF patron_categories %]
+ <form method="post" action="update-child.pl">
+ <fieldset>
+ <table id="catst">
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th>Mã</th>
+ <th>Thông tin mô tả</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH patron_category IN patron_categories %]
+ <tr>
+ <td>
+ <input type="radio" id="catcode[% patron_category.categorycode %]" name="catcode" value="[% patron_category.categorycode %]" />
+ </td>
+ <td>[% patron_category.categorycode  %]</td>
+ <td><label for="catcode[% patron_category.categorycode %]"><strong>[% patron_category.description %]</strong></label></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ <input type="hidden" name="op" value="update" />
+ <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
+ <input type="hidden" name="catcode" value="[% catcode %]" />
+ <input type="hidden" name="cattype" value="[% cattype %]" />
+ <input type="hidden" name="catcode_multi" value="[% CATCODE_MULTI %]" />
+ <fieldset class="action">
+ <input type="submit" class="submit" value="Tìm kiếm" />
+ <a href="#" class="cancel close">Hủy bỏ</a>
+ </fieldset>
+ </fieldset>
+ </form>
+ [% END %]
+[% END %]
+
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript">
+
+        /* Set some variables needed in members-menu.js */
+        var advsearch = "[% advsearch %]";
+        var dateformat = "[% dateformat %]";
+        var CAN_user_borrowers = "[% CAN_user_borrowers %]";
+        var CAN_user_borrowers_edit_borrowers = "[% CAN_user_borrowers_edit_borrowers %]";
+        var NorwegianPatronDBEnable = "[% NorwegianPatronDBEnable %]";
+        var CATCODE_MULTI = "[% CATCODE_MULTI %]";
+        var catcode = "[% catcode %]";
+        var destination = "[% destination %]";
+
+        $(document).ready(function() {
+            $("#catst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "sDom": 't',
+                "aaSorting": [[ 2, "asc" ]],
+                "aoColumnDefs": [
+                    { "aTargets": [ 0 ], "bSortable": false, "bSearchable": false }
+                ],
+                "bPaginate": false
+            }));
+        });
+    </script>
+ [% IF ( CONFIRM ) %]
+ <script type="text/javascript">
+            function confirm_updatechild() {
+                var is_confirmed = window.confirm('Are you sure you want to update this child to an Adult category?  This cannot be undone.');
+                if (is_confirmed) {
+                        window.location='/cgi-bin/koha/members/update-child.pl?op=update&borrowernumber=[% borrowernumber %]&catcode=[% catcode %]&catcode_multi=[% CATCODE_MULTI %]';
+                }
+            }
+
+            confirm_updatechild([% borrowernumber %]);
+        </script>
+ [% END %]
+ [% IF ( SUCCESS ) %]
+ <script type="text/javascript">
+            self.opener.location.href='/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]';
+            window.close();
+        </script>
+ [% END %]
+ [% Asset.js("js/members-menu.js") %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

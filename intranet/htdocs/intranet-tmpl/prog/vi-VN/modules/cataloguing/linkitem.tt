@@ -1,0 +1,56 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ biên mục &rsquo; Liên kết đến tài liệu chủ</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="catalog_linkitem" class="catalog">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Phân hệ biên mục</a> &rsaquo; Liên kết tài liệu chủ tới biểu ghi <i>[% bibliotitle |html %]</i></div>
+<div id="doc3" class="yui-t2">
+
+[% IF ( error ) %]
+ <div class="dialog alert">
+ [% IF ( errornomodbiblio ) %]ERROR: Unable to modify the bibliographic record.[% END %]
+ [% IF ( errornohostitemnumber ) %]ERROR: Unable to get the item number from this barcode.[% END %]
+ </div>
+ <form action="/cgi-bin/koha/catalogue/MARCdetail.pl" method="post">
+ <input type="submit" value="OK" />
+ <input type="hidden" name="biblionumber" value="[% biblionumber %]" />
+ </form>
+[% ELSE %]
+ [% IF ( success ) %]
+ <div class="dialog">Tài liệu được liên kết thành công tới biểu ghi: <i>[% bibliotitle |html %]</i>.</div> 
+ <form action="/cgi-bin/koha/catalogue/MARCdetail.pl" method="post">
+ <input type="submit" value="OK" />
+ <input type="hidden" name="biblionumber" value="[% biblionumber %]" />
+ </form>
+ [% ELSE %]
+ [% IF ( missingparameter ) %]
+ <form method="post" action="/cgi-bin/koha/cataloguing/linkitem.pl">
+ [% IF ( missingbiblionumber ) %]
+ <fieldset id="biblionumber_fieldset">
+ <label for="biblionumber_fieldset">Chọn số biểu ghi thư mục để tài liệu liên kết tới</label>
+ <div class="hint">Nhập số biểu ghi:</div>
+ <input type="text" name="biblionumber" id="biblionumber" class="focus" size="14" /> 
+ </fieldset>
+ [% ELSE %]
+ <input type="hidden" name="biblionumber" id="biblionumber" value="[% biblionumber %]" />
+ [% END %]
+
+ [% IF ( missingbarcode ) %]
+ <fieldset id="barcode_fieldset">
+ <label for="barcode_fieldset">Chọn tài liệu chủ để liên kết[% IF ( bibliotitle ) %]  tới biểu ghi <i>[% bibliotitle |html %]</i>[% END %]</label>
+ <div class="hint">Nhập đăng ký cá biệt:</div>
+ <input type="text" name="barcode" id="barcode" class="barcode focus" size="14" /> 
+ </fieldset>
+ [% ELSE %]
+ <input type="hidden" name="barcode" id="barcode" value="[% barcode %]" />
+ [% END %]
+
+ <input value="Chọn" type="submit" />
+
+ </form>
+ [% END %]
+ [% END %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,240 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE ColumnsSettings %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; [% IF ( order_loop ) %]Tìm kiếm đơn hàng &rsaquo; Kết quả tìm kiếm[% ELSE %]Tìm kiếm đơn hàng[% END %]</title>
+[% Asset.css("css/datatables.css") %]
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_histsearch" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; [% IF ( order_loop ) %]<a href="/cgi-bin/koha/acqui/histsearch.pl">Tìm kiếm đơn hàng</a> &rsaquo; Kết quả tìm kiếm[% ELSE %]Tìm kiếm đơn hàng[% END %]</div>
+
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ 
+[% UNLESS ( order_loop ) %]<form action="/cgi-bin/koha/acqui/histsearch.pl" method="post">
+<fieldset class="rows">
+ <legend>Tìm kiếm đơn hàng</legend>
+ <ol>
+ <li><label for="title">Nhan đề: </label> <input type="text" name="title" id="title" value="[% title %]" /></li>
+ <li><label for="author">Tác giả: </label> <input type="text" name="author" id="author" value="[% author %]" /></li>
+ <li><label for="isbn">Số ISBN: </label> <input type="text" name="isbn" id="isbn" value="[% isbn %]" /></li>
+ [% IF (UNIMARC) %]
+ <li><label for="ean">EAN: </label> <input type="text" name="ean" id="ean" value="[% ean %]" /></li>
+ [% END %]
+ <li><label for="name">Nhà cung cấp: </label> <input type="text" name="name" id="name" value="[% name %]" /></li>
+ <li><label for="basket">Giỏ đặt hàng: </label> <input type="text" name="basket" id="basket" value="[% basket %]" /></li>
+ <li><label for="basket_creators">Basket created by: </label>
+ <input autocomplete="off" id="find_patron" type="text" style="width:150px" class="noEnterSubmit" />
+ <div>
+ <div id="basket_creators" style="float:left;"></div>
+ </div>
+ </li>
+ <li><label for="booksellerinvoicenumber ">Số hóa đơn: </label> <input type="text" name="booksellerinvoicenumber" id="booksellerinvoicenumber" value="[% booksellerinvoicenumber %]" /></li>
+ <li>
+ <label for="basketgroupname">Nhóm giỏ đặt hàng:</label>
+ <input type="text" name="basketgroupname" id="basketgroupname" value="[% basketgroupname %]" />
+ </li>
+ <li>
+ <label for="ordernumber">Số đơn hàng:</label>
+ <input type="text" name="ordernumber" id="ordernumber" value="[% ordernumber %]" />
+ [% IF search_children_too %]
+ <input type="checkbox" name="search_children_too" id="search_children_too" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" name="search_children_too" id="search_children_too" value="1" />
+ [% END %]
+ <label class="yesno" for="search_children_too">Hiển thị cho nhóm bạn đọc trẻ em</label>
+ </li>
+
+ <li>
+ <label for="orderstatus">Trạng thái: </label>
+ <select name="orderstatus" id="orderstatus">
+ [% IF orderstatus == "" %]
+ <option value="">Tất cả trừ trạng thái "Bị hủy bỏ"</option>
+ [% ELSE %]
+ <option value="" selected="selected"></option>
+ [% END %]
+ [% IF orderstatus == "new" %]
+ <option value="new" selected="selected">Tạo mới</option>
+ [% ELSE %]
+ <option value="new">Tạo mới</option>
+ [% END %]
+ [% IF orderstatus == "ordered" %]
+ <option value="ordered" selected="selected">Đặt hàng</option>
+ [% ELSE %]
+ <option value="ordered">Đặt hàng</option>
+ [% END %]
+ [% IF orderstatus == "partial" %]
+ <option value="partial" selected="selected">Nhận một phần đơn hàng</option>
+ [% ELSE %]
+ <option value="partial">Nhận một phần đơn hàng</option>
+ [% END %]
+ [% IF orderstatus == "complete" %]
+ <option value="complete" selected="selected">Nhận</option>
+ [% ELSE %]
+ <option value="complete">Nhận</option>
+ [% END %]
+ [% IF orderstatus == "cancelled" %]
+ <option value="cancelled" selected="selected">Hủy bỏ</option>
+ [% ELSE %]
+ <option value="cancelled">Hủy bỏ</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="fund">Nguồn quỹ: </label>
+ <select name="budget" id="fund">
+ <option value="">Tất cả quỹ</option>
+ [% FOREACH bp_loo IN bp_loop %]
+ <optgroup label="[% bp_loo.budget_period_description %]">
+ [% FOREACH h_loo IN bp_loo.hierarchy %]
+ [% IF h_loo.budget_id == budget_id %]
+ <option type="text" value="[% h_loo.budget_id %]" branchcode="[% h_loo.budget_branchcode %]" selected="selected">
+ [% ELSE %]
+ <option type="text" value="[% h_loo.budget_id %]" branchcode="[% h_loo.budget_branchcode %]">
+ [% END %]
+ [% h_loo.budget_display_name %]
+ </option>
+ [% END %]
+ </optgroup>
+ [% END %]
+ </select>
+ </li>
+
+ <li><label for="from">Từ: </label> 
+ <input type="text" size="10" id="from" name="from" value="[% from_placed_on | $KohaDates %]" class="datepickerfrom" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ <li><label for="to">Đến ngày: </label> 
+ <input type="text" size="10" id="to" name="to" value="[% to_placed_on | $KohaDates %]" class="datepickerto" />
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ </ol>
+ </fieldset>
+ <input type="hidden" name="do_search" value="1" />
+ <fieldset class="action"><input type="submit" value="Tìm kiếm" /></fieldset>
+ </form>[% END %]
+ [% IF ( order_loop ) %]<h1>Kết quả tìm kiếm</h1>
+ <div id="acqui_histsearch">
+ <table id="histsearcht">
+ <thead>
+ <tr>
+ <th>Đơn hàng (Chính)</th>
+ <th>Trạng thái</th>
+ <th>Giỏ đặt hàng</th>
+ <th>Basket creator</th>
+ <th>Nhóm giỏ đặt hàng</th>
+ <th>Số hóa đơn</th>
+ <th class="anti-the">Tóm tắt</th>
+ <th>Nhà cung cấp</th>
+ <th class="title-string">Ngày đặt hàng</th>
+ <th class="title-string">Ngày nhận hàng</th>
+ <th>Số lượng nhận</th>
+ <th>Đơn hàng chờ duyệt</th>
+ <th>Đơn giá</th>
+ <th>Quỹ</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH order IN order_loop %]
+ <tr>
+ <td>
+ [% order.ordernumber %]
+ [% IF order.ordernumber != order.parent_ordernumber %]([% order.parent_ordernumber %])[% END %]
+ </td>
+ <td>
+ [% SWITCH order.orderstatus %]
+ [% CASE 'new' %]New
+ [% CASE 'ordered' %]Ordered
+ [% CASE 'partial' %]Partially received
+ [% CASE 'complete' %]Received
+ [% CASE 'cancelled' %]Cancelled
+ [% END %]
+ </td>
+ <td>[% order.basketname %] (<a href="basket.pl?basketno=[% order.basketno %]">[% order.basketno %]</a>)</td>
+ <td>[% order.authorisedbyname %]</td>
+ <td>
+ [% IF ( order.basketgroupid ) %]
+ [% order.groupname %] (<a href="basketgroup.pl?op=add&booksellerid=[% order.id %]&basketgroupid=[% order.basketgroupid %]">[% order.basketgroupid %]</a>)
+ [% ELSE %]
+ &nbsp;
+ [% END %]
+ </td>
+ <td>[% IF ( order.invoicenumber ) %]
+ <a href="/cgi-bin/koha/acqui/parcel.pl?invoiceid=[% order.invoiceid %]">[% order.invoicenumber %]</a>
+ [% ELSE %]
+ &nbsp;
+ [% END %]
+ </td>
+ <td>
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% order.biblionumber %]">[% order.title |html %]</a>
+ <br />[% order.author %] <br /> [% order.isbn %]
+ </td>
+ <td><a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% order.id %]">[% order.name %]</a></td>
+ <td><span title="[% order.creationdate %]">[% order.creationdate | $KohaDates %]</span></td>
+ <td>
+ [% IF order.datereceived %]
+ <span title="[% order.datereceived %]">[% order.datereceived | $KohaDates %]</span>
+ [% ELSE %]
+ <span title="0000-00-00"></span>
+ [% END %]
+ </td>
+ <td>[% order.quantityreceived %]</td>
+ <td>[% order.quantity %]</td>
+ <td>[% order.ecost %]</td>
+ <td>[% order.budget_name %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% ELSIF search_done %]
+ There is no order for this search.
+ [% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+[% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ [% Asset.js("js/autocomplete/patrons.js") %]
+ <script type="text/javascript">
+        var MSG_REMOVE_PATRON = _("Loại bỏ");
+        $(document).ready(function() {
+            var columns_settings = [% ColumnsSettings.GetColumns( 'acqui', 'histsearch', 'histsearcht', 'json' ) %];
+            KohaTable("histsearcht", {
+                "aoColumnDefs": [
+                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                    { "sType": "title-string", "aTargets" : [ "title-string" ] }
+                ],
+                "sPaginationType": "four_button"
+            }, columns_settings );
+
+            [% UNLESS order_loop %]
+                patron_autocomplete({
+                    patron_container: $("#basket_creators"),
+                    input_autocomplete: $("#find_patron"),
+                    patron_input_name: 'created_by',
+                    field_to_retrieve: 'borrowernumber'
+                });
+            [% END %]
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,277 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Tìm kiếm &rsaquo; Thông tin tài liệu của biểu ghi: [% title | html %] [% FOREACH subtitl IN subtitle %] [% subtitl.subfield | html %][% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style type="text/css">h3{padding-top: 1em; border-top: 2px solid #CCCCCC;}#exportLabelexportModal_{border-top: 0px;}</style>
+</head>
+<body id="catalog_moredetail" class="catalog">
+[% USE KohaDates %]
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Tìm kiếm</a> &rsaquo; Thông tin tài liệu của biểu ghi: <i>[% title |html %] [% FOREACH subtitl IN subtitle %] [% subtitl.subfield|html %][% END %]</i></div>
+
+<div id="doc3" class="yui-t2">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+[% INCLUDE 'cat-toolbar.inc' %]
+
+<div id="catalogue_detail_biblio">
+
+ <h2>[% title |html %]</h2>
+ [% IF ( subtitle ) %]<h4>[% FOREACH subtitl IN subtitle %] [% subtitl.subfield|html %][% END %]</h4>[% END %]
+ [% IF ( author ) %]<h4>, Tác giả: [% author | html %]</h4>[% END %]
+ <ol class="bibliodetails">
+ <li><span class="label">Số biểu ghi:</span> [% biblionumber %]&nbsp;</li>
+ [% UNLESS ( item_level_itypes ) %]
+ <li><span class="label">Kiểu tài liệu:</span> [% itemtypename %]&nbsp;</li>
+ [% END %]
+ [% IF ( rentalcharge ) %]<li><span class="label">Phí mượn:</span>[% rentalcharge %]&nbsp;</li>[% END %]
+ <li><span class="label">Số ISBN:</span> [% isbn | html %]&nbsp;</li>
+ <li><span class="label">Nhà xuất bản:</span>[% place %] [% publishercode |html %] [% publicationyear %]&nbsp;</li>
+ [% IF ( volumeddesc ) %]<li><span class="label">Tập:</span> [% volumeddesc %]</li>[% END %]
+ <li><span class="label">Thông tin vật lý:</span> [% pages %] [% illus %] [% size %]&nbsp;</li>
+ [% IF ( bnotes ) %]<li><span class="label">Ghi chú:</span> [% bnotes %]</li>[% END %]
+ <li><span class="label">Số bản tài liệu:</span> [% count %]&nbsp;[% IF ( hiddencount ) %]trong đó ([% showncount %] Tài liệu hiển thị / [% hiddencount %] Ẩn) <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=[% biblionumber %]&amp;showallitems=1">Hiển thị toàn bộ tài liệu</a>[% END %]</li>
+ </ol>
+
+ <br clear="all" />
+ [% IF ( ONLY_ONE ) %]
+ <div class="dialog message">Bạn đang xem thông tin một tài liệu cụ thể. <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=[% biblionumber %]&amp;bi=[% biblioitemnumber %]#item[% itemnumber %]">Xem tất cả</a></div>
+ [% END %]
+ [% FOREACH ITEM_DAT IN ITEM_DATA %]
+ <div class="yui-g">
+ <h3 id="item[% ITEM_DAT.itemnumber %]">Đăng ký cá biệt  [% ITEM_DAT.barcode %] [% IF ( ITEM_DAT.notforloantext ) %][% ITEM_DAT.notforloantext %] [% END %]</h3>
+ <div class="listgroup"><h4>Thông tin tài liệu [% IF ( CAN_user_editcatalogue_edit_catalogue ) %][% UNLESS ( ITEM_DAT.nomod ) %] [% IF ( CAN_user_editcatalogue_edit_items ) %] <a href="/cgi-bin/koha/cataloguing/additem.pl?op=edititem&amp;biblionumber=[% ITEM_DAT.biblionumber %]&amp;itemnumber=[% ITEM_DAT.itemnumber %]">[Sửa tài liệu]</a>
+ [% END %]
+ [% END %][% END %]</h4>
+ <ol class="bibliodetails">
+ <li><span class="label">Thư viện chính:</span> [% Branches.GetName( ITEM_DAT.homebranch ) %]&nbsp;</li>
+ [% IF ( item_level_itypes ) %]
+ <li><span class="label">Kiểu tài liệu:</span> [% ITEM_DAT.itype %]&nbsp;</li>
+ [% END %]
+ [% IF ( ITEM_DAT.collection ) %]<li><span class="label">Bộ sưu tập:</span> [% ITEM_DAT.collection %]</li> [% END %]
+ <li><span class="label">Ký hiệu phân loại:</span> [% ITEM_DAT.itemcallnumber %]&nbsp;</li>
+ [% IF ( ITEM_DAT.displaycopy ) %]<li><span class="label">Số bản sao:</span> [% ITEM_DAT.copyvol %]&nbsp;</li> [% END %]
+ [% IF ( ITEM_DAT.replacementprice ) %]<li><span class="label">Giá thay thế:</span> [% ITEM_DAT.replacementprice %]&nbsp;</li> [% END %]
+ [% IF ITEM_DAT.materials %]<li><span class="label">Tài liệu quy định:</span> [% ITEM_DAT.materials %] </li> [% END %]
+ </ol></div>
+ <div class="listgroup"><h4>Trạng thái tài liệu [% IF ( ITEM_DAT.status_advisory ) %]( [% IF ( ITEM_DAT.notforloantext ) %][% ITEM_DAT.notforloantext %] [% END %] [% IF ( ITEM_DAT.itemlost ) %]Mất[% END %] [% IF ( ITEM_DAT.damaged ) %]Bị hư hỏng[% END %] [% IF ( ITEM_DAT.withdrawn ) %]Loại khỏi lưu thông[% END %] )[% END %]</h4>
+
+ <ol class="bibliodetails">
+ <li><span class="label">Thư viện hiện tại:</span> [% Branches.GetName( ITEM_DAT.holdingbranch ) %]&nbsp;</li>
+ <li><span class="label">Trạng thái ghi mượn:</span>
+ [% IF ( ITEM_DAT.issue ) %]Checked out to
+ [% INCLUDE 'patron-title.inc' patron => ITEM_DAT.patron hide_patron_infos_if_needed=1 %]
+ [% IF ( ITEM_DAT.lastreneweddate ) %]
+ Last renewed [% ITEM_DAT.lastreneweddate | $KohaDates %],
+ [% END %]
+ [% IF ( ITEM_DAT.datedue ) %]
+ Due back on [% ITEM_DAT.datedue | $KohaDates %]
+ [% ELSE %]
+ Not checked out
+ [% END %]
+ [% END %]
+ &nbsp;</li>
+ <li><span class="label">Gia hạn hiện tại:</span> [% ITEM_DAT.renewals %]&nbsp;</li>
+ [% IF itemlostloop %]
+ <li><span class="label">Trạng thái mất tài liệu:</span>
+ [% IF ( CAN_user_circulate ) %]
+ <form action="updateitem.pl" method="post">
+ <input type="hidden" name="biblionumber" value="[% ITEM_DAT.biblionumber %]" />
+ <input type="hidden" name="biblioitemnumber" value="[% ITEM_DAT.biblioitemnumber %]" />
+ <input type="hidden" name="itemnumber" value="[% ITEM_DAT.itemnumber %]" />
+ <select name="itemlost" >
+ <option value="">Chọn</option>
+ [% FOREACH itemlostloo IN itemlostloop %]
+ [% IF itemlostloo.authorised_value == ITEM_DAT.itemlost %]
+ <option value="[% itemlostloo.authorised_value %]" selected="selected">[% itemlostloo.lib %]</option>
+ [% ELSE %]
+ <option value="[% itemlostloo.authorised_value %]">[% itemlostloo.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <input type="hidden" name="withdrawn" value="[% ITEM_DAT.withdrawn %]" />
+ <input type="hidden" name="damaged" value="[% ITEM_DAT.damaged %]" />
+ <input type="submit" name="submit" class="submit" value="Set status" /></form>
+ [% ELSE %]
+ [% FOREACH itemlostloo IN itemlostloop %]
+ [% IF ( itemlostloo.selected ) %]
+ [% itemlostloo.lib %]
+ [% END %]
+ [% END %]
+ &nbsp;
+ [% END %]
+ </li>
+ [% IF ITEM_DAT.itemlost != "" && ITEM_DAT.itemlost_on %]
+ <li><span class="label">Ngày mất:</span>[% ITEM_DAT.itemlost_on | $KohaDates %] &nbsp;</li>
+ [% END %]
+ [% END %]
+ [% IF itemdamagedloop %]
+ <li><span class="label">Trạng thái hỏng tài liệu:</span>
+ [% IF ( CAN_user_circulate ) %]
+ <form action="updateitem.pl" method="post">
+ <input type="hidden" name="biblionumber" value="[% ITEM_DAT.biblionumber %]" />
+ <input type="hidden" name="biblioitemnumber" value="[% ITEM_DAT.biblioitemnumber %]" />
+ <input type="hidden" name="itemnumber" value="[% ITEM_DAT.itemnumber %]" />
+ <select name="damaged" >
+ <option value="">Chọn</option>
+ [% FOREACH itemdamagedloo IN itemdamagedloop %]
+ [% IF itemdamagedloo.authorised_value == ITEM_DAT.damaged %]
+ <option value="[% itemdamagedloo.authorised_value %]" selected="selected">[% itemdamagedloo.lib %]</option>
+ [% ELSE %]
+ <option value="[% itemdamagedloo.authorised_value %]">[% itemdamagedloo.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <input type="hidden" name="withdrawn" value="[% ITEM_DAT.withdrawn %]" />
+ <input type="hidden" name="itemlost" value="[% ITEM_DAT.itemlost %]" />
+ <input type="submit" name="submit" class="submit" value="Set status" /></form>
+ [% ELSE %]
+ [% FOREACH itemdamagedloo IN itemdamagedloop %]
+ [% IF ( itemdamagedloo.selected ) %]
+ [% itemdamagedloo.lib %]
+ [% END %]
+ [% END %]
+ &nbsp;
+ [% END %]
+ </li>
+ [% IF ITEM_DAT.damaged != "" && ITEM_DAT.damaged_on %]
+ <li><span class="label">Damaged on:</span>[% ITEM_DAT.damaged_on | $KohaDates %] &nbsp;</li>
+ [% END %]
+ [% END %]
+
+ [% IF itemwithdrawnloop %]
+ <li><span class="label">Withdrawn status:</span>
+ [% IF ( CAN_user_circulate ) %]
+ <form action="updateitem.pl" method="post">
+ <input type="hidden" name="biblionumber" value="[% ITEM_DAT.biblionumber %]" />
+ <input type="hidden" name="biblioitemnumber" value="[% ITEM_DAT.biblioitemnumber %]" />
+ <input type="hidden" name="itemnumber" value="[% ITEM_DAT.itemnumber %]" />
+ <select name="withdrawn" >
+ <option value="">Chọn</option>
+ [% FOREACH itemwithdrawn IN itemwithdrawnloop %]
+ [% IF itemwithdrawn.authorised_value == ITEM_DAT.withdrawn %]
+ <option value="[% itemwithdrawn.authorised_value %]" selected="selected">[% itemwithdrawn.lib %]</option>
+ [% ELSE %]
+ <option value="[% itemwithdrawn.authorised_value %]">[% itemwithdrawn.lib %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <input type="hidden" name="itemlost" value="[% ITEM_DAT.itemlost %]" />
+ <input type="hidden" name="damaged" value="[% ITEM_DAT.damaged %]" />
+ <input type="submit" name="submit" class="submit" value="Set status" /></form>
+ [% ELSE %]
+ [% FOREACH itemwithdrawn IN itemwithdrawnloop %]
+ [% IF itemwithdrawn.authorised_value == ITEM_DAT.withdrawn %]
+ [% itemwithdrawn.lib %]
+ [% END %]
+ [% END %]
+ &nbsp;
+ [% END %]
+ </li>
+ [% IF ITEM_DAT.withdrawn != "" && ITEM_DAT.withdrawn_on %]
+ <li><span class="label">Loại khỏi lưu thông vào ngày:</span>[% ITEM_DAT.withdrawn_on | $KohaDates %] &nbsp;</li>
+ [% END %]
+ [% END %]
+
+ </ol></div>
+ <div class="listgroup"><h4>Lịch sử tài liệu</h4>
+ <ol class="bibliodetails">
+
+ [% IF ITEM_DAT.basketno %]
+ <li><span class="label">Ngày đặt hàng:</span>
+ [% IF ( CAN_user_acquisition_order_manage ) %]
+ <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% ITEM_DAT.basketno %]">[% ITEM_DAT.orderdate | $KohaDates %]</a>
+ [% ELSE %]
+ [% ITEM_DAT.orderdate | $KohaDates %]
+ [% END %]
+ </li>
+ <li><span class="label">Nhà cung cấp:</span>
+ [% ITEM_DAT.vendor %]
+ </li>
+ [% END %]
+
+ [% IF ITEM_DAT.dateaccessioned %]
+ <li><span class="label">Ngày nhập:</span>
+ [% IF ( CAN_user_acquisition_order_receive && ITEM_DAT.invoiceid ) %]
+ <a href="/cgi-bin/koha/acqui/parcel.pl?invoiceid=[% ITEM_DAT.invoiceid %]">[% ITEM_DAT.dateaccessioned | $KohaDates %]</a>
+ [% ELSE %]
+ [% ITEM_DAT.dateaccessioned | $KohaDates %]
+ [% END %]
+ </li>
+ [% END %]
+ [% IF ( ITEM_DAT.invoicenumber ) %]
+ <li><span class="label">Số hóa đơn:</span>
+ [% ITEM_DAT.invoicenumber %]
+ </li>
+ [% END %]
+
+ <li><span class="label">Số lần ghi mượn:</span>[% IF ( ITEM_DAT.issues ) %][% ITEM_DAT.issues %][% ELSE %][% END %] (<a href="/cgi-bin/koha/circ/bookcount.pl?&amp;biblionumber=[% ITEM_DAT.biblionumber %]&amp;itm=[% ITEM_DAT.itemnumber %]">Xem lịch sử ghi mượn tài liệu</a>)</li>
+
+ <li><span class="label">Cập nhật lần cuối:</span>[% IF ( ITEM_DAT.datelastseen ) %][% ITEM_DAT.datelastseen | $KohaDates %] [%END %]&nbsp;</li>
+ <li><span class="label">Ghi mượn lần cuối:</span>[% IF (ITEM_DAT.datelastborrowed ) %][% ITEM_DAT.datelastborrowed | $KohaDates %][% END %]&nbsp;</li>
+ [% IF Koha.Preference('StoreLastBorrower') && ITEM_DAT.object.last_returned_by %]
+ <li><span class="label">Last returned by:</span> <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[% ITEM_DAT.object.last_returned_by.borrowernumber %]">[% ITEM_DAT.object.last_returned_by.cardnumber %]</a>&nbsp;</li>
+ [% END %]
+ [% IF ( ITEM_DAT.card0 ) %]<li><span class="label">Bạn đọc ghi mượn lần cuối:</span> <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[% ITEM_DAT.borrower0 %]">[% ITEM_DAT.card0 %]</a>&nbsp;</li>[% END %]
+ [% IF ( ITEM_DAT.card1 ) %]<li><span class="label">Bạn đọc ghi mượn trước đó:</span> <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[% ITEM_DAT.borrower1 %]">[% ITEM_DAT.card1 %]</a>&nbsp;</li>[% END %]
+ [% IF ( ITEM_DAT.card2 ) %]<li><span class="label">Bạn đọc ghi mượn trước đó:</span> <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[% ITEM_DAT.borrower2 %]">[% ITEM_DAT.card2 %]</a>&nbsp;</li>[% END %]
+ [% IF ( ITEM_DAT.paidfor ) %]<li><span class="label">Thanh toán cho?:</span> [% ITEM_DAT.paidfor %]&nbsp;</li>[% END %]
+
+ [% IF ( ITEM_DAT.enumchron ) %]<li><span class="label">Kỳ ấn phẩm định kỳ:</span> [% ITEM_DAT.enumchron %]&nbsp;</li>[% END %]
+
+ <li>
+ <span class="label">Ghi chú:</span>
+ [% IF ( CAN_user_editcatalogue_edit_items ) %]
+ <form class="inline" action="updateitem.pl" method="post"><input type="hidden" name="biblionumber" value="[% ITEM_DAT.biblionumber %]" />
+ <input type="hidden" name="biblioitemnumber" value="[% ITEM_DAT.biblioitemnumber %]" /><input type="hidden" name="itemnumber" value="[% ITEM_DAT.itemnumber %]" />
+ <textarea name="itemnotes" rows="2" cols="30">[% ITEM_DAT.itemnotes %]</textarea><input name="submit" type="submit" class="submit" value="Cập nhật" />
+ </form>
+ [% ELSE %]
+ [% ITEM_DAT.itemnotes %]
+ &nbsp;
+ [% END %]
+ </li>
+
+ <li>
+ <span class="label">Non-public note:</span>
+ [% IF ( CAN_user_editcatalogue_edit_items ) %]
+ <form class="inline" action="updateitem.pl" method="post"><input type="hidden" name="biblionumber" value="[% ITEM_DAT.biblionumber %]" />
+ <input type="hidden" name="biblioitemnumber" value="[% ITEM_DAT.biblioitemnumber %]" /><input type="hidden" name="itemnumber" value="[% ITEM_DAT.itemnumber %]" />
+ <textarea name="itemnotes_nonpublic" rows="2" cols="30">[% ITEM_DAT.itemnotes_nonpublic %]</textarea><input value="Cập nhật" class="submit" type="submit" name="submit" />
+ </form>
+ [% ELSE %]
+ [% ITEM_DAT.itemnotes_nonpublic %]
+ &nbsp;
+ [% END %]
+ </li>
+ </ol>
+ </div>
+</div>
+[% END %]
+
+</div>
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'biblio-view-menu.inc' %]
+</div>
+</div>
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'catalog-strings.inc' %]
+ [% Asset.js("js/catalog.js") %]
+ [% INCLUDE 'browser-strings.inc' %]
+ [% Asset.js("js/browser.js") %]
+ <script type="text/javascript">
+        var browser = KOHA.browser('[% searchid %]', parseInt('[% biblionumber %]', 10));
+        browser.show();
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

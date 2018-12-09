@@ -1,0 +1,942 @@
+--- 
+giao diện Opac: 
+  " B\xE1\xBA\xA3o m\xE1\xBA\xADt": 
+    - 
+      - 
+        choices: 
+          "": Don't store
+          1: Store
+        default: 0
+        pref: StoreLastBorrower
+      - the last patron to return an item. This setting is independent of opacreadinghistory/AnonymousPatron.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: AnonSuggestions
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc kh\xC3\xB4ng c\xE1\xBA\xA7n \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp v\xC3\xA0o OPAC \xC4\x91\xE1\xBB\x83 \xC4\x91\xC6\xB0a ra c\xC3\xA1c \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua cho th\xC6\xB0 vi\xE1\xBB\x87n. C\xC3\xA1c \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua s\xE1\xBA\xBD \xC4\x91\xC6\xB0\xE1\xBB\xA3c g\xE1\xBB\xADi \xC4\x91i theo m\xC3\xA3 b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xC6\xB0\xE1\xBB\xA3c khai b\xC3\xA1o trong th\xC3\xB4ng s\xE1\xBB\x91 AnonymousPatron"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: opacreadinghistory
+      - "  b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc xem l\xE1\xBA\xA1i l\xE1\xBB\x8Bch s\xE1\xBB\xAD ghi m\xC6\xB0\xE1\xBB\xA3n t\xC3\xA0i li\xE1\xBB\x87u."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng l\xC6\xB0u l\xE1\xBA\xA1i"
+          1: " L\xC6\xB0u l\xE1\xBA\xA1i"
+        default: 0
+        pref: EnableOpacSearchHistory
+      - " l\xE1\xBB\x8Bch s\xE1\xBB\xAD t\xC3\xACm ki\xE1\xBA\xBFm c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        default: 0
+        pref: OPACPrivacy
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc thi\xE1\xBA\xBFt l\xE1\xBA\xADp b\xE1\xBA\xA3o m\xE1\xBA\xADt cho l\xE1\xBB\x8Bch s\xE1\xBB\xAD ghi m\xC6\xB0\xE1\xBB\xA3n. T\xC3\xADnh n\xC4\x83ng n\xC3\xA0y y\xC3\xAAu c\xE1\xBA\xA7u  c\xC3\xA1c th\xC3\xB4ng s\xE1\xBB\x91 opacreadinghistory v\xC3\xA0 AnonymousPatron"
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        default: 0
+        pref: AllowPatronToSetCheckoutsVisibilityForGuarantor
+      - patrons to choose their own privacy settings for showing the patron's checkouts to the patron's guarantor".
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng s\xE1\xBB\x91 th\xE1\xBA\xBB b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc"
+      - 
+        class: integer
+        pref: AnonymousPatron
+      - " nh\xC6\xB0 l\xC3\xA0 b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh (cho c\xC3\xA1c \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua v\xC3\xB4 danh v\xC3\xA0 l\xE1\xBB\x8Bch s\xE1\xBB\xAD ghi m\xC6\xB0\xE1\xBB\xA3n t\xC3\xA0i li\xE1\xBB\x87u)"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng ki\xE1\xBB\x83m so\xC3\xA1t"
+          anonymous: " Ki\xE1\xBB\x83m so\xC3\xA1t (kh\xC3\xB4ng l\xC6\xB0u l\xE1\xBA\xA1i b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc)"
+          track: " Ki\xE1\xBB\x83m so\xC3\xA1t (l\xC6\xB0u l\xE1\xBA\xA1i b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc)"
+        default: 0
+        pref: TrackClicks
+      - " c\xC3\xA1c li\xC3\xAAn k\xE1\xBA\xBFt \xC4\x91\xC6\xB0\xE1\xBB\xA3c b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc truy c\xE1\xBA\xADp v\xC3\xA0o."
+  " Ch\xC3\xADnh s\xC3\xA1ch": 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng gi\xE1\xBB\x9Bi h\xE1\xBA\xA1n"
+          1: " Gi\xE1\xBB\x9Bi h\xE1\xBA\xA1n"
+        pref: SearchMyLibraryFirst
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xC3\xACm ki\xE1\xBA\xBFm t\xC3\xA0i li\xE1\xBB\x87u trong th\xC6\xB0 vi\xE1\xBB\x87n qu\xE1\xBA\xA3n l\xC3\xBD c\xE1\xBB\xA7a m\xC3\xACnh."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OpacRenewalAllowed
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc gia h\xE1\xBA\xA1n t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC."
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+      - 
+        choices: 
+          "": " NULL"
+          checkoutbranch: " th\xC6\xB0 vi\xE1\xBB\x87n ghi m\xC6\xB0\xE1\xBB\xA3n t\xC3\xA0i li\xE1\xBB\x87u"
+          itemhomebranch: " th\xC6\xB0 vi\xE1\xBB\x87n qu\xE1\xBA\xA3n l\xC3\xBD t\xC3\xA0i li\xE1\xBB\x87u"
+          opacrenew: " 'OPACRenew'"
+          patronhomebranch: " th\xC6\xB0 vi\xE1\xBB\x87n qu\xE1\xBA\xA3n l\xC3\xBD b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc"
+        pref: OpacRenewalBranch
+      - " nh\xC6\xB0 l\xC3\xA0 m\xC3\xA3 th\xC6\xB0 vi\xE1\xBB\x87n \xC4\x91\xE1\xBB\x83 l\xC6\xB0u tr\xE1\xBB\xAF trong b\xE1\xBA\xA3ng th\xE1\xBB\x91ng k\xC3\xAA."
+    - 
+      - " Ch\xE1\xBB\x89 cho ph\xC3\xA9p b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc gia h\xE1\xBA\xA1n t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC n\xE1\xBA\xBFu s\xE1\xBB\x91 ti\xE1\xBB\x81n ph\xE1\xBA\xA1t c\xE1\xBB\xA7a b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc nh\xE1\xBB\x8F h\xC6\xA1n"
+      - 
+        class: currency
+        pref: OPACFineNoRenewals
+      - " [% local_currency %] (\xC4\x91\xE1\xBB\x83 tr\xE1\xBB\x91ng n\xE1\xBA\xBFu kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t)."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OPACViewOthersSuggestions
+      - " \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua t\xE1\xBB\xAB b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc kh\xC3\xA1c tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        default: 0
+        pref: AllowPurchaseSuggestionBranchChoice
+      - "  b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc l\xE1\xBB\xB1a ch\xE1\xBB\x8Dn th\xC6\xB0 vi\xE1\xBB\x87n \xC4\x91\xE1\xBB\x83 g\xE1\xBB\xADi c\xC3\xA1c \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua"
+    - 
+      - "Fields that should be mandatory for patron purchase suggestions:"
+      - 
+        multiple: 
+          author: Author
+          branch: Library or branch
+          collectiontitle: Collection title
+          copyrightdate: Copyright or publication date
+          isbn: ISBN, ISSN or other standard number
+          itemtype: Item type
+          note: Note
+          patronreason: Patron reason
+          place: Publication place
+          publishercode: Publisher name
+          title: Title
+        pref: OPACSuggestionMandatoryFields
+      - "<br />Note: if none of the above options are selected, 'Title' field would be mandatory anyway, by default."
+    - 
+      - 
+        class: code
+        pref: OpacHiddenItems
+        type: textarea
+      - Define custom rules to hide specific items from search and view on the OPAC. How to write these rules is documented on the <a href="http://wiki.koha-community.org/wiki/OpacHiddenItems" target="_blank">Koha wiki</a>.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        default: 1
+        pref: OpacAllowPublicListCreation
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xE1\xBA\xA1o c\xC3\xA1c gi\xC3\xA1 s\xC3\xA1ch \xE1\xBA\xA3o c\xC3\xB4ng c\xE1\xBB\x99ng"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        default: 0
+        pref: OpacAllowSharingPrivateLists
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc chia s\xE1\xBA\xBB gi\xC3\xA1 s\xC3\xA1ch \xE1\xBA\xA3o c\xC3\xA1 nh\xC3\xA2n v\xE1\xBB\x9Bi c\xC3\xA1c b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc kh\xC3\xA1c."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng kh\xC3\xB3a"
+          1: " Kh\xC3\xB3a"
+        pref: BlockExpiredPatronOpacActions
+      - " c\xC3\xA1c t\xC3\xADnh n\xC4\x83ng \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n, gia h\xE1\xBA\xA1n tr\xC3\xAAn Opac khi t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc h\xE1\xBA\xBFt h\xE1\xBA\xA1n.  B\xE1\xBA\xA1n c\xC3\xB3 th\xE1\xBB\x83 thi\xE1\xBA\xBFt l\xE1\xBA\xADp c\xC3\xA1c nh\xC3\xB3m b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC6\xB0u ti\xC3\xAAn \xC4\x91\xE1\xBB\x83 kh\xC3\xB4ng b\xE1\xBB\x8B \xE1\xBA\xA3nh h\xC6\xB0\xE1\xBB\x9Fng b\xE1\xBB\x9Fi th\xC3\xB4ng s\xE1\xBB\x91 n\xC3\xA0y."
+    - 
+      - Limit patrons to
+      - 
+        class: integer
+        pref: MaxOpenSuggestions
+      - "open suggestions. Leave empty for no limit. **Note: this setting does not affect anonymous suggestions"
+  " Giao di\xE1\xBB\x87n": 
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: OPACUserSummary
+      - a summary of a logged in user's checkouts, overdues, holds and fines on the mainpage
+    - 
+      - For search results in the OPAC, show the item's
+      - 
+        choices: 
+          holdingbranch: current location
+          homebranch: home library
+        pref: OPACResultsLibrary
+      - . Please note that this feature is currently available for MARC21 and UNIMARC.
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng ki\xE1\xBB\x83u dao di\xE1\xBB\x87n"
+      - 
+        choices: opac-templates
+        pref: opacthemes
+      - " tr\xC3\xAAn OPAC."
+    - 
+      - Use the
+      - 
+        choices: 
+          bootstrap: bootstrap
+          prog: prog
+        pref: OPACFallback
+      - theme as the fallback theme on the OPAC.
+    - 
+      - "The OPAC is located at "
+      - 
+        class: url
+        pref: OPACBaseURL
+      - . This should be a complete URL, starting with <code>http://</code> or <code>https://</code>. Do not include a trailing slash in the URL. (This must be filled in correctly for RSS, unAPI, and search plugins to work.)
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+      - 
+        class: long
+        pref: LibraryName
+      - " l\xC3\xA0 t\xC3\xAAn th\xC6\xB0 vi\xE1\xBB\x87n tr\xC3\xAAn giao di\xE1\xBB\x87n OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        pref: OpacPublic
+      - Koha OPAC as public. Private OPAC requires authentication before accessing the OPAC.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng \xC4\x91\xC3\xA1nh d\xE1\xBA\xA5u"
+          1: " \xC4\x90\xC3\xA1nh d\xE1\xBA\xA5u"
+        pref: HighlightOwnItemsOnOPAC
+      - " k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm t\xE1\xBB\xAB "
+      - 
+        choices: 
+          OpacURLBranch: " URL giao di\xE1\xBB\x87n OPAC c\xE1\xBB\xA7a th\xC6\xB0 vi\xE1\xBB\x87n nh\xC3\xA1nh"
+          PatronBranch: " th\xC6\xB0  vi\xE1\xBB\x87n qu\xE1\xBA\xA3n l\xC3\xBD b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc"
+        pref: HighlightOwnItemsOnOPACWhich
+      - "  b\xE1\xBA\xB1ng c\xC3\xA1ch di chuy\xE1\xBB\x83n c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u l\xC3\xAAn ph\xC3\xADa tr\xC3\xAAn ho\xE1\xBA\xB7c \xC4\x91\xC3\xA1nh d\xE1\xBA\xA5u c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u t\xE1\xBB\xAB k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm (noeXSLT)"
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B b\xC3\xACnh ch\xE1\xBB\x8Dn tr\xC3\xAAn"
+      - 
+        choices: 
+          all: " K\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm v\xC3\xA0 hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u"
+          details: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt"
+          disable: " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OpacStarRatings
+      - " ."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OpacMaintenance
+      - " C\xE1\xBA\xA3nh b\xC3\xA1o OPAC \xC4\x91ang \xC4\x91\xC6\xB0\xE1\xBB\xA3c b\xE1\xBA\xA3o tr\xC3\xAC. Ch\xC3\xBA \xC3\xBD: Th\xC3\xB4ng b\xC3\xA1o n\xC3\xA0y hi\xE1\xBB\x83n th\xE1\xBB\x8B khi CSDL \xC4\x91\xC6\xB0\xE1\xBB\xA3c n\xC3\xA2ng c\xE1\xBA\xA5p."
+    - ~
+    - 
+      - "Show the following HTML when OpacMaintenance is enabled:"
+      - 
+        class: code
+        pref: OpacMaintenanceNotice
+        type: htmlarea
+    - 
+      - " Theo m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh, hi\xE1\xBB\x83n th\xE1\xBB\x8B bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c"
+      - 
+        choices: 
+          isbd: " trong m\xE1\xBA\xABu ISBD \xC4\x91\xC3\xA3 \xC4\x91\xC6\xB0\xE1\xBB\xA3c thi\xE1\xBA\xBFt l\xE1\xBA\xADp."
+          marc: " trong m\xE1\xBA\xABu MARC."
+          normal: " trong m\xE1\xBA\xABu \xC4\x91\xC6\xA1n gi\xE1\xBA\xA3n."
+        pref: BiblioDefaultView
+    - 
+      - " Khi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc k\xC3\xADch v\xC3\xA0o m\xE1\xBB\x99t li\xC3\xAAn k\xE1\xBA\xBFt t\xE1\xBB\x9Bi trang web kh\xC3\xA1c t\xE1\xBB\xAB giao di\xE1\xBB\x87n OPAC (nh\xC6\xB0 Amazon ho\xE1\xBA\xB7c OCLC),"
+      - 
+        choices: 
+          "": " kh\xC3\xB4ng m\xE1\xBB\x9F"
+          1: " m\xE1\xBB\x9F"
+        pref: OPACURLOpenInNewWindow
+      - " trang web trong m\xE1\xBB\x99t c\xE1\xBB\xADa s\xE1\xBB\x95 m\xE1\xBB\x9Bi."
+    - 
+      - 
+        choices: 
+          "": " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: hidelostitems
+      - " c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u b\xE1\xBB\x8B m\xE1\xBA\xA5t tr\xC3\xAAn trang hi\xE1\xBB\x83n th\xE1\xBB\x8B k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm ho\xE1\xBA\xB7c chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi t\xC3\xA0i li\xE1\xBB\x87u."
+    - 
+      - "Display lists in the OPAC using XSLT stylesheet at: "
+      - 
+        class: file
+        pref: OPACXSLTListsDisplay
+      - <br />Options:<ul><li><a href="#" class="set_syspref" data-syspref="OPACXSLTListsDisplay" data-value="">Leave empty</a> for "no xslt"</li><li>enter "<a href="#" class="set_syspref" data-syspref="OPACXSLTListsDisplay" data-value="default">default</a>" for the default one</li><li> put a path to define a xslt file</li><li>put an URL for an external specific stylesheet.</li></ul>{langcode} will be replaced with current interface language
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm tr\xC3\xAAn OPAC theo ki\xE1\xBB\x83u m\xE1\xBA\xABu XSLT t\xE1\xBA\xA1i: "
+      - 
+        class: file
+        pref: OPACXSLTResultsDisplay
+      - " <br />C\xC3\xA1c t\xC3\xB9y ch\xE1\xBB\x8Dn:<ul><li><a href=\"#\" class=\"set_syspref\" data-syspref=\"OPACXSLTResultsDisplay\" data-value=\"\">\xC4\x90\xE1\xBB\x83 tr\xE1\xBB\x91ng</a> c\xC3\xB3 ngh\xC4\xA9a l\xC3\xA0 \"kh\xC3\xB4ng c\xC3\xB3 xslt\"</li><li>Nh\xE1\xBA\xADp \"<a href=\"#\" class=\"set_syspref\" data-syspref=\"OPACXSLTResultsDisplay\" data-value=\"M\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh\">default</a>\"  \xC4\x91\xE1\xBB\x83 s\xE1\xBB\xAD d\xE1\xBB\xA5ng ki\xE1\xBB\x83u m\xE1\xBA\xABu m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh</li><li> \xC4\x90\xE1\xBA\xB7t \xC4\x91\xC6\xB0\xE1\xBB\x9Dng d\xE1\xBA\xABn t\xE1\xBB\x9Bi t\xE1\xBB\x87p tin xslt</li><li>\xC4\x90\xE1\xBA\xB7t m\xE1\xBB\x99t URL c\xE1\xBB\xA5 th\xE1\xBB\x83 cho m\xE1\xBB\x99t ki\xE1\xBB\x83u m\xE1\xBA\xABu b\xC3\xAAn ngo\xC3\xA0i.</li></ul>{M\xC3\xA3 ng\xC3\xB4n ng\xE1\xBB\xAF} s\xE1\xBA\xBD thay th\xE1\xBA\xBF cho ng\xC3\xB4n ng\xE1\xBB\xAF giao di\xE1\xBB\x87n hi\xE1\xBB\x87n t\xE1\xBA\xA1i"
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC theo ki\xE1\xBB\x83u m\xE1\xBA\xABu XLST t\xE1\xBA\xA1i: "
+      - 
+        class: file
+        pref: OPACXSLTDetailsDisplay
+      - "  <br />C\xC3\xA1c t\xC3\xB9y ch\xE1\xBB\x8Dn:<ul><li><a href=\"#\" class=\"set_syspref\" data-syspref=\"OPACXSLTDetailsDisplay\" data-value=\"\">\xC4\x90\xE1\xBB\x83 tr\xE1\xBB\x91ng</a> c\xC3\xB3 ngh\xC4\xA9a l\xC3\xA0 \"kh\xC3\xB4ng c\xC3\xB3 xslt\"</li><li>Nh\xE1\xBA\xADp \"<a href=\"#\" class=\"set_syspref\" data-syspref=\"OPACXSLTDetailsDisplay\" data-value=\"default\">M\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh</a>\" \xC4\x91\xE1\xBB\x83 s\xE1\xBB\xAD d\xE1\xBB\xA5ng ki\xE1\xBB\x83u m\xE1\xBA\xABu m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh</li><li>\xC4\x90\xE1\xBA\xB7t \xC4\x91\xC6\xB0\xE1\xBB\x9Dng d\xE1\xBA\xABn t\xE1\xBB\x9Bi t\xE1\xBB\x87p tin xslt</li><li>\xC4\x90\xE1\xBA\xB7t m\xE1\xBB\x99t URL c\xE1\xBB\xA5 th\xE1\xBB\x83 cho m\xE1\xBB\x99t ki\xE1\xBB\x83u m\xE1\xBA\xABu b\xC3\xAAn ngo\xC3\xA0i</li></ul>{M\xC3\xA3 ng\xC3\xB4n ng\xE1\xBB\xAF} s\xE1\xBA\xBD thay th\xE1\xBA\xBF cho ng\xC3\xB4n ng\xE1\xBB\xAF giao di\xE1\xBB\x87n hi\xE1\xBB\x87n t\xE1\xBA\xA1i"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: DisplayOPACiconsXSLT
+      - " \xC4\x91\xE1\xBB\x8Bnh d\xE1\xBA\xA1ng v\xC3\xA0 bi\xE1\xBB\x83u t\xC6\xB0\xE1\xBB\xA3ng ki\xE1\xBB\x83u t\xC3\xA0i li\xE1\xBB\x87u trong c\xC3\xA1c trang hi\xE1\xBB\x83n th\xE1\xBB\x8B k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm v\xC3\xA0 hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u trong OPAC theo ki\xE1\xBB\x83u XSLT MARC21."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng bao g\xE1\xBB\x93m"
+          1: " Bao g\xE1\xBB\x93m"
+        pref: COinSinOPACResults
+      - " COinS / OpenURL / Z39.88 trong k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm tr\xC3\xAAn OPAC.  <br/>C\xE1\xBA\xA3nh b\xC3\xA1o: K\xC3\xADch ho\xE1\xBA\xA1t ch\xE1\xBB\xA9c n\xC4\x83ng n\xC3\xA0y s\xE1\xBA\xBD l\xC3\xA0m ch\xE1\xBA\xADm qu\xC3\xA1 tr\xC3\xACnh t\xC3\xACm ki\xE1\xBA\xBFm tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OPACShowUnusedAuthorities
+      - " c\xC3\xA1c bi\xE1\xBB\x83u ghi nh\xE1\xBA\xA5t qu\xC3\xA1n kh\xC3\xB4ng \xC4\x91\xC6\xB0\xE1\xBB\xA3c s\xE1\xBB\xAD d\xE1\xBB\xA5ng trong k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm bi\xE1\xBB\x83u ghi nh\xE1\xBA\xA5t qu\xC3\xA1n tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          holds: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B s\xE1\xBB\x91 l\xC6\xB0\xE1\xBB\xA3ng \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n"
+          holds_priority: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B s\xE1\xBB\x91 l\xC6\xB0\xE1\xBB\xA3ng v\xC3\xA0 m\xE1\xBB\xA9c \xC6\xB0u ti\xC3\xAAn c\xE1\xBB\xA7a \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n"
+          none: " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n"
+          priority: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B m\xE1\xBB\xA9c \xC6\xB0u ti\xC3\xAAn c\xE1\xBB\xA7a \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n"
+        pref: OPACShowHoldQueueDetails
+      - " t\xE1\xBB\x9Bi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc trong giao di\xE1\xBB\x87n OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        default: 0
+        pref: OPACShowCheckoutName
+      - " t\xC3\xAAn b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc ghi m\xC6\xB0\xE1\xBB\xA3n t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u trong OPAC."
+    - 
+      - Display the
+      - 
+        choices: 
+          both: home and holding libraries
+          holding: holding library
+          home: home library
+        pref: OpacLocationBranchToDisplay
+      - for items on the OPAC record details page.
+    - 
+      - "Display the shelving location "
+      - 
+        choices: 
+          both: below both home and holding libraries
+          column: on a separate column
+          holding: below the holding library
+          home: below the home library
+        pref: OpacLocationOnDetail
+      - for items on the OPAC record details page.
+      - "<br />Note: If 'on a separate column' is selected, you still need to enable the item_shelving_location display on the <a href='/cgi-bin/koha/admin/columns_settings.pl'>configure columns</a> administration page"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        default: 0
+        pref: OpacKohaUrl
+      - " d\xC3\xB2ng ch\xE1\xBB\xAF '\xC4\x90\xC6\xB0\xE1\xBB\xA3c cung c\xE1\xBA\xA5p b\xE1\xBB\x9Fi Koha' \xE1\xBB\x9F g\xC3\xB3c d\xC6\xB0\xE1\xBB\x9Bi giao di\xE1\xBB\x87n OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        default: 0
+        pref: OpacShowRecentComments
+      - " m\xE1\xBB\x99t li\xC3\xAAn k\xE1\xBA\xBFt t\xE1\xBB\x9Bi b\xC3\xACnh lu\xE1\xBA\xADn m\xE1\xBB\x9Bi nh\xE1\xBA\xA5t trong giao di\xE1\xBB\x87n OPAC."
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        default: 0
+        pref: GoogleIndicTransliteration
+      - GoogleIndicTransliteration on the OPAC.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng \xC4\x91\xC3\xA1nh d\xE1\xBA\xA5u"
+          1: " \xC4\x90\xC3\xA1nh d\xE1\xBA\xA5u"
+        pref: OpacHighlightedWords
+      - words the patron searched for in their search results and detail pages; To prevent certain words from ever being highlighted, enter a list of stopwords here
+      - 
+        class: multi
+        pref: NotHighlightedWords
+      - (separate columns with |)
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng h\xC3\xACnh \xE1\xBA\xA3nh t\xE1\xBA\xA1i"
+      - 
+        class: url
+        pref: OpacFavicon
+      - " cho h\xC3\xACnh \xC4\x91\xE1\xBA\xA1i di\xE1\xBB\x87n c\xE1\xBB\xA7a OPAC. (B\xE1\xBA\xA1n c\xE1\xBA\xA7n nh\xE1\xBA\xADp m\xE1\xBB\x99t URL ho\xC3\xA0n ch\xE1\xBB\x89nh, b\xE1\xBA\xAFt \xC4\x91\xE1\xBA\xA7u v\xE1\xBB\x9Bi <code>http://</code>.)"
+    - 
+      - "Include the following JavaScript on all pages in the OPAC:"
+      - 
+        class: code
+        pref: OPACUserJS
+        type: textarea
+    - 
+      - " Bao g\xE1\xBB\x93m c\xC3\xA1c ki\xE1\xBB\x83u m\xE1\xBA\xABu CSS"
+      - 
+        class: file
+        pref: OpacAdditionalStylesheet
+      - " \xC4\x91\xE1\xBB\x83 ghi \xC4\x91\xC3\xA8 l\xC3\xAAn c\xC3\xA1c thi\xE1\xBA\xBFt l\xE1\xBA\xADp \xC4\x91\xC6\xB0\xE1\xBB\xA3c x\xC3\xA1c \xC4\x91\xE1\xBB\x8Bnh t\xE1\xBB\xAB ki\xE1\xBB\x83u m\xE1\xBA\xABu m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh (b\xE1\xBB\x8F tr\xE1\xBB\x91ng \xC4\x91\xE1\xBB\x83 kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t ch\xE1\xBB\xA9c n\xC4\x83ng n\xC3\xA0y). Nh\xE1\xBA\xADp t\xC3\xAAn m\xE1\xBB\x99t t\xE1\xBB\x87p tin, m\xE1\xBB\x99t \xC4\x91\xC6\xB0\xE1\xBB\x9Dng d\xE1\xBA\xABn \xC4\x91\xE1\xBA\xA7y \xC4\x91\xE1\xBB\xA7 ho\xE1\xBA\xB7c m\xE1\xBB\x99t URL ho\xC3\xA0n ch\xE1\xBB\x89nh b\xE1\xBA\xAFt \xC4\x91\xE1\xBA\xA7u v\xE1\xBB\x9Bi <code>http://</code> (n\xE1\xBA\xBFu t\xE1\xBB\x87p tin c\xC3\xB3 tr\xC3\xAAn m\xE1\xBB\x99t m\xC3\xA1y ch\xE1\xBB\xA7 kh\xC3\xA1c). Ch\xC3\xBA \xC3\xBD r\xE1\xBA\xB1ng n\xE1\xBA\xBFu b\xE1\xBA\xA1n nh\xE1\xBA\xADp t\xC3\xAAn t\xE1\xBB\x87p tin th\xC3\xAC t\xE1\xBB\x87p tin ph\xE1\xBA\xA3i n\xE1\xBA\xB1m trong th\xC6\xB0 m\xE1\xBB\xA5c con css c\xE1\xBB\xA7a m\xE1\xBB\x97i giao di\xE1\xBB\x87n \xC4\x91ang ho\xE1\xBA\xA1t \xC4\x91\xE1\xBB\x99ng v\xC3\xA0 ng\xC3\xB4n ng\xE1\xBB\xAF b\xC3\xAAn trong m\xE1\xBA\xABu Koha."
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng ki\xE1\xBB\x83u m\xE1\xBA\xABu CSS"
+      - 
+        class: file
+        pref: opaclayoutstylesheet
+      - " tr\xC3\xAAn t\xE1\xBA\xA5t c\xE1\xBA\xA3 c\xC3\xA1c trang c\xE1\xBB\xA7a OPAC, thay th\xE1\xBA\xBF cho c\xC3\xA1c css m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh (\xC4\x91\xC6\xB0\xE1\xBB\xA3c s\xE1\xBB\xAD d\xE1\xBB\xA5ng khi b\xE1\xBB\x8F tr\xE1\xBB\x91ng t\xC3\xADnh n\xC4\x83ng n\xC3\xA0y). Nh\xE1\xBA\xADp t\xC3\xAAn m\xE1\xBB\x99t t\xE1\xBB\x87p tin, m\xE1\xBB\x99t \xC4\x91\xC6\xB0\xE1\xBB\x9Dng d\xE1\xBA\xABn \xC4\x91\xE1\xBA\xA7y \xC4\x91\xE1\xBB\xA7 ho\xE1\xBA\xB7c m\xE1\xBB\x99t URL ho\xC3\xA0n ch\xE1\xBB\x89nh b\xE1\xBA\xAFt \xC4\x91\xE1\xBA\xA7u v\xE1\xBB\x9Bi <code>http://</code> (n\xE1\xBA\xBFu t\xE1\xBB\x87p tin c\xC3\xB3 tr\xC3\xAAn n\xC3\xA1y ch\xE1\xBB\xA7 kh\xC3\xA1c). Ch\xC3\xBA \xC3\xBD r\xE1\xBA\xB1ng n\xE1\xBA\xBFu b\xE1\xBA\xA1n nh\xE1\xBA\xADp t\xC3\xAAn t\xE1\xBB\x87p tin thi t\xE1\xBB\x87p tin ph\xE1\xBA\xA3i n\xE1\xBA\xB1m trong th\xC6\xB0 m\xE1\xBB\xA5c con css c\xE1\xBB\xA7a m\xE1\xBB\x97i giao di\xE1\xBB\x87n \xC4\x91ang ho\xE1\xBA\xA1t \xC4\x91\xE1\xBB\x99ng v\xC3\xA0 ng\xC3\xB4n ng\xE1\xBB\xAF b\xC3\xAAn trong m\xE1\xBA\xABu Koha. "
+    - 
+      - " Bao g\xE1\xBB\x93m c\xC3\xA1c CSS sau \xC4\x91\xC3\xA2y cho t\xE1\xBA\xA5t c\xE1\xBA\xA3 c\xC3\xA1c trang OPAC:"
+      - 
+        class: code
+        pref: OPACUserCSS
+        type: textarea
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y trong c\xC3\xA1c c\xE1\xBB\x99t tr\xC3\xAAn trang ch\xC3\xADnh c\xE1\xBB\xA7a OPAC:"
+      - 
+        class: code
+        pref: OpacMainUserBlock
+        type: htmlarea
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y trong c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xADa b\xC3\xAAn tr\xC3\xA1i c\xE1\xBB\xA7a trang ch\xC3\xADnh v\xC3\xA0 t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc tr\xC3\xAAn OPAC (th\xC6\xB0\xE1\xBB\x9Dng l\xC3\xA0 c\xC3\xA1c li\xC3\xAAn k\xE1\xBA\xBFt \xC4\x91i\xE1\xBB\x81u h\xC6\xB0\xE1\xBB\x9Bng):"
+      - 
+        class: code
+        pref: OpacNav
+        type: htmlarea
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y trong c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xADa b\xC3\xAAn ph\xE1\xBA\xA3i c\xE1\xBB\xA7a trang ch\xC3\xADnh b\xC3\xAAn d\xC6\xB0\xE1\xBB\x9Bi \xC3\xB4 \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp:"
+      - 
+        class: code
+        pref: OpacNavRight
+        type: htmlarea
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y tr\xC3\xAAn c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xADa b\xC3\xAAn tr\xC3\xA1i c\xE1\xBB\xA7a trang ch\xC3\xADnh v\xC3\xA0 t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc tr\xC3\xAAn OPAC, sau OpacNav, v\xC3\xA0 tr\xC6\xB0\xE1\xBB\x9Bc c\xC3\xA1c li\xC3\xAAn k\xE1\xBA\xBFt t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc n\xE1\xBA\xBFu c\xC3\xB3 s\xE1\xBA\xB5n:"
+      - 
+        class: code
+        pref: OpacNavBottom
+        type: htmlarea
+    - 
+      - " Bao g\xE1\xBB\x93m c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y trong l\xE1\xBB\x81 tr\xC3\xAAn c\xE1\xBB\xA7a t\xE1\xBA\xA5t c\xC3\xA1c c\xC3\xA1c trang OPAC:"
+      - 
+        class: code
+        pref: opacheader
+        type: htmlarea
+    - 
+      - " Bao g\xE1\xBB\x93m c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y trong l\xE1\xBB\x81 d\xC6\xB0\xE1\xBB\x9Bi c\xE1\xBB\xA7a t\xE1\xBA\xA5t c\xE1\xBA\xA3 c\xC3\xA1c trang OPAC:"
+      - 
+        class: code
+        pref: opaccredits
+        type: htmlarea
+    - 
+      - " Bao g\xE1\xBB\x93m m\xE1\xBB\x99t \xC3\xB4 \"M\xE1\xBB\x9F r\xE1\xBB\x99ng t\xC3\xACm ki\xE1\xBA\xBFm\" tr\xC3\xAAn trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u trong OPAC, v\xE1\xBB\x9Bi c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y (b\xE1\xBB\x8F tr\xE1\xBB\x91ng \xC4\x91\xE1\xBB\x83 kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t):"
+      - " <br />Ch\xC3\xBA \xC3\xBD: C\xC3\xA1c th\xC3\xB4ng s\xE1\xBB\x91 {BIBLIONUMBER}, {CONTROLNUMBER}, {TITLE}, {ISBN}, {ISSN} v\xC3\xA0 {AUTHOR} s\xE1\xBA\xBD \xC4\x91\xC6\xB0\xE1\xBB\xA3c thay th\xE1\xBA\xBF b\xE1\xBA\xB1ng th\xC3\xB4ng tin c\xE1\xBB\xA7a bi\xE1\xBB\x83u ghi hi\xE1\xBB\x87n t\xE1\xBA\xA1i."
+      - 
+        class: code
+        pref: OPACSearchForTitleIn
+        type: textarea
+    - 
+      - " Bao g\xE1\xBB\x93m m\xE1\xBB\x99t c\xE1\xBB\x99t \"Li\xC3\xAAn k\xE1\xBA\xBFt\" tr\xC3\xAAn c\xC3\xA1c th\xE1\xBA\xBB \"Th\xC3\xB4ng tin c\xC3\xA1 nh\xC3\xA2n\" v\xC3\xA0 \"L\xE1\xBB\x8Bch s\xE1\xBB\xAD ghi m\xC6\xB0\xE1\xBB\xA3n\" khi m\xE1\xBB\x99t t\xC3\xA0i kho\xE1\xBA\xA3n \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp v\xC3\xA0o OPAC, v\xE1\xBB\x9Bi c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y (b\xE1\xBB\x8F tr\xE1\xBB\x91ng \xC4\x91\xE1\xBB\x83 kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t):"
+      - " <br />Ch\xC3\xBA \xC3\xBD: C\xC3\xA1c th\xC3\xB4ng s\xE1\xBB\x91 {BIBLIONUMBER}, {TITLE}, {ISBN} v\xC3\xA0 {AUTHOR} s\xE1\xBA\xBD \xC4\x91\xC6\xB0\xE1\xBB\xA3c thay th\xE1\xBA\xBF b\xE1\xBA\xB1ng th\xC3\xB4ng tin c\xE1\xBB\xA7a bi\xE1\xBB\x83u ghi hi\xE1\xBB\x87n t\xE1\xBA\xA1i.'"
+      - 
+        class: code
+        pref: OPACMySummaryHTML
+        type: htmlarea
+    - 
+      - " Ghi ch\xC3\xBA \xC4\x91\xC6\xB0\xE1\xBB\xA3c hi\xE1\xBB\x83n th\xE1\xBB\x8B tr\xC3\xAAn trang \"Th\xC3\xB4ng tin chung\" c\xE1\xBB\xA7a t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc. C\xC3\xA1c ghi ch\xC3\xBA s\xE1\xBA\xBD \xC4\x91\xC6\xB0\xE1\xBB\xA3c hi\xE1\xBB\x83n th\xE1\xBB\x8B khi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp v\xC3\xA0o Opac:"
+      - 
+        pref: OPACMySummaryNote
+        type: textarea
+    - 
+      - " Bao g\xE1\xBB\x93m c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y b\xC3\xAAn d\xC6\xB0\xE1\xBB\x9Bi c\xC3\xA1c th\xC3\xB4ng s\xE1\xBB\x91 trong k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm OPAC:"
+      - 
+        class: code
+        pref: OPACResultsSidebar
+        type: htmlarea
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OpacAddMastheadLibraryPulldown
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc l\xE1\xBB\xB1a ch\xE1\xBB\x8Dn gi\xE1\xBB\x9Bi h\xE1\xBA\xA1n t\xC3\xACm ki\xE1\xBA\xBFm t\xC3\xA0i li\xE1\xBB\x87u theo th\xC6\xB0 vi\xE1\xBB\x87n trong c\xC3\xB4ng c\xE1\xBB\xA5 t\xC3\xACm ki\xE1\xBA\xBFm nhanh."
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c HTML sau \xC4\x91\xC3\xA2y khi kh\xC3\xB4ng t\xC3\xACm th\xE1\xBA\xA5y t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC:"
+      - " <br />Ch\xC3\xBA \xC3\xBD: B\xE1\xBA\xA1n c\xE1\xBA\xA7n ph\xE1\xBA\xA3i c\xC3\xB3 th\xC3\xB4ng s\xE1\xBB\x91 {QUERY_KW}, th\xC3\xB4ng s\xE1\xBB\x91 n\xC3\xA0y s\xE1\xBA\xBD \xC4\x91\xC6\xB0\xE1\xBB\xA3c thay th\xE1\xBA\xBF b\xE1\xBA\xB1ng t\xE1\xBB\xAB kh\xC3\xB3a t\xC3\xACm ki\xE1\xBA\xBFm."
+      - 
+        class: code
+        pref: OPACNoResultsFound
+        type: htmlarea
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B URL trong tr\xC6\xB0\xE1\xBB\x9Dng 856u nh\xC6\xB0 l\xC3\xA0 m\xE1\xBB\x99t h\xC3\xACnh \xE1\xBA\xA3nh tr\xC3\xAAn: "
+      - 
+        choices: 
+          "": Neither detail or result pages
+          Both: Both detail and result pages
+          Details: Detail page only
+          Results: Result page only
+        pref: OPACDisplay856uAsImage
+      - ". Note: The corresponding OPACXSLT option must be turned on."
+    - 
+      - "Select export options that should be available from OPAC detail page:"
+      - 
+        multiple: 
+          bibtex: BibTeX
+          dc: Dublin Core
+          isbd: ISBD
+          marc8: MARC-8 encoded MARC
+          marcstd: Unicode/UTF-8 encoded MARC without local use -9xx, x9x, xx9- fields and subfields
+          marcxml: MARCXML
+          mods: MODS
+          ris: RIS
+          utf8: Unicode/UTF-8 encoded MARC
+        pref: OpacExportOptions
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng t\xC3\xA1ch ri\xC3\xAAng"
+          1: " T\xC3\xA1ch ri\xC3\xAAng"
+        pref: OpacSeparateHoldings
+      - " hi\xE1\xBB\x83n th\xE1\xBB\x8B t\xC3\xA0i li\xE1\xBB\x87u trong hai th\xE1\xBA\xBB, th\xE1\xBA\xBB \xC4\x91\xE1\xBA\xA7u ti\xC3\xAAn ch\xE1\xBB\xA9a c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u c\xE1\xBB\xA7a"
+      - 
+        choices: 
+          holdingbranch: " th\xC6\xB0 vi\xE1\xBB\x87n s\xE1\xBB\x9F h\xE1\xBB\xAFu"
+          homebranch: " th\xC6\xB0 vi\xE1\xBB\x87n ch\xC3\xADnh"
+        pref: OpacSeparateHoldingsBranch
+      - " c\xE1\xBB\xA7a t\xC3\xA0i kho\xE1\xBA\xA3n \xC4\x91ang \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp. Th\xE1\xBA\xBB th\xE1\xBB\xA9 hai ch\xE1\xBB\xA9a c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u kh\xC3\xA1c."
+    - 
+      - 
+        choices: 
+          first_column: First column of the table
+          holdingbranch: Holding library
+          homebranch: Home library
+        pref: OPACHoldingsDefaultSortField
+      - is the default sort field for the holdings table
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OpacSuggestionManagedBy
+      - " t\xC3\xAAn c\xE1\xBB\xA7a c\xC3\xA1n b\xE1\xBB\x99 th\xC6\xB0 vi\xE1\xBB\x87n qu\xE1\xBA\xA3n l\xC3\xBD \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua tr\xC3\xAAn giao di\xE1\xBB\x87n Opac."
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B t\xE1\xBB\x91i \xC4\x91a"
+      - 
+        class: integer
+        pref: OpacMaxItemsToDisplay
+      - " t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn trang th\xC3\xB4ng tin chi ti\xE1\xBA\xBFt bi\xE1\xBB\x83u ghi th\xC6\xB0 m\xE1\xBB\xA5c (N\xE1\xBA\xBFu bi\xE1\xBB\x83u ghi c\xC3\xB3 c\xC3\xB3 nhi\xE1\xBB\x81u t\xC3\xA0i li\xE1\xBB\x87u h\xC6\xA1n, h\xE1\xBB\x87 th\xE1\xBB\x91ng s\xE1\xBA\xBD hi\xE1\xBB\x83n th\xE1\xBB\x8B li\xC3\xAAn k\xE1\xBA\xBFt \xC4\x91\xE1\xBB\x83 b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc l\xE1\xBB\xB1a ch\xE1\xBB\x8Dn hi\xE1\xBB\x83n th\xE1\xBB\x8B to\xC3\xA0n b\xE1\xBB\x99 t\xC3\xA0i li\xE1\xBB\x87u c\xE1\xBB\xA7a bi\xE1\xBB\x83u ghi)."
+    - 
+      - "Show the following HTML on the OPAC login form when a patron is not logged in:"
+      - 
+        class: code
+        pref: OpacLoginInstructions
+        type: htmlarea
+    - 
+      - "Replace the search box at the top of OPAC pages with the following HTML:"
+      - 
+        class: code
+        pref: OpacCustomSearch
+        type: textarea
+    - 
+      - "Display language selector on "
+      - 
+        choices: 
+          both: both top and footer
+          footer: only footer
+          top: top
+        pref: OpacLangSelectorMode
+  " T\xC3\xACm ki\xE1\xBA\xBFm theo gi\xC3\xA1 s\xC3\xA1ch": 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OPACShelfBrowser
+      - " c\xC3\xB4ng c\xE1\xBB\xA5 t\xC3\xACm ki\xE1\xBA\xBFm theo gi\xC3\xA1 s\xC3\xA1ch tr\xC3\xAAn trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u, t\xC3\xADnh n\xC4\x83ng n\xC3\xA0y cho ph\xC3\xA9p b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc xem c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u c\xC3\xB3 tr\xC3\xAAn gi\xC3\xA1. Ch\xC3\xBA \xC3\xBD r\xE1\xBA\xB1ng t\xC3\xADnh n\xC4\x83ng n\xC3\xA0y s\xE1\xBA\xBD l\xC3\xA0m ch\xE1\xBA\xADm h\xE1\xBB\x87 th\xE1\xBB\x91ng c\xE1\xBB\xA7a b\xE1\xBA\xA1n, n\xC3\xAAn c\xE1\xBA\xA7n c\xC3\xA2n nh\xE1\xBA\xAFc khi s\xE1\xBB\xAD d\xE1\xBB\xA5ng."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng s\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+          1: " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+        default: 1
+        pref: ShelfBrowserUsesLocation
+      - " kho t\xC3\xA0i li\xE1\xBB\x87u khi t\xC3\xACm ki\xE1\xBA\xBFm t\xC3\xA0i li\xE1\xBB\x87u theo gi\xC3\xA1 s\xC3\xA1ch."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng s\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+          1: " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+        default: 1
+        pref: ShelfBrowserUsesHomeBranch
+      - " th\xC6\xB0 vi\xE1\xBB\x87n ch\xC3\xADnh t\xC3\xA0i li\xE1\xBB\x87u khi t\xC3\xACm ki\xE1\xBA\xBFm t\xC3\xA0i li\xE1\xBB\x87u theo gi\xC3\xA1 s\xC3\xA1ch."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng s\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+          1: " S\xE1\xBB\xAD d\xE1\xBB\xA5ng"
+        default: 0
+        pref: ShelfBrowserUsesCcode
+      - " m\xC3\xA3 b\xE1\xBB\x99 s\xC6\xB0u t\xE1\xBA\xADp t\xC3\xA0i li\xE1\xBB\x87u khi t\xC3\xACm ki\xE1\xBA\xBFm t\xC3\xA0i li\xE1\xBB\x87u theo gi\xC3\xA1 s\xC3\xA1ch."
+  " T\xC3\xADnh n\xC4\x83ng": 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: opacuserlogin
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp v\xC3\xA0o giao di\xE1\xBB\x87n OPAC."
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+      - 
+        choices: 
+          callnum: " k\xC3\xBD hi\xE1\xBB\x87u ph\xC3\xA2n lo\xE1\xBA\xA1i"
+          ccode: " m\xC3\xA3 b\xE1\xBB\x99 s\xC6\xB0u t\xE1\xBA\xADp"
+          location: " kho t\xC3\xA0i li\xE1\xBB\x87u"
+        pref: OpacItemLocation
+      - " c\xE1\xBB\xA7a t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm trong OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OpacPasswordChange
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc thay \xC4\x91\xE1\xBB\x95i m\xE1\xBA\xADt kh\xE1\xBA\xA9u t\xC3\xA0i kho\xE1\xBA\xA3n \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp tr\xC3\xAAn giao di\xE1\xBB\x87n OPAC. Ch\xC3\xBA \xC3\xBD r\xE1\xBA\xB1ng t\xC3\xADnh n\xC4\x83ng n\xC3\xA0y ph\xE1\xBA\xA3i thi\xE1\xBA\xBFt l\xE1\xBA\xADp \"Kh\xC3\xB4ng cho ph\xC3\xA9p\" n\xE1\xBA\xBFu b\xE1\xBA\xA1n s\xE1\xBB\xAD d\xE1\xBB\xA5ng LDAP."
+    - 
+      - "Library users are "
+      - 
+        choices: 
+          "": not allowed
+          1: allowed
+        default: 1
+        pref: OpacResetPassword
+      - " to recover their password via e-mail in the OPAC"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OPACPatronDetails
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc thay \xC4\x91\xE1\xBB\x95i th\xC3\xB4ng tin t\xC3\xA0i kho\xE1\xBA\xA3n c\xE1\xBB\xA7a m\xC3\xACnh t\xE1\xBB\xAB giao di\xE1\xBB\x87n OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OPACpatronimages
+      - " h\xC3\xACnh \xE1\xBA\xA3nh b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc tr\xC3\xAAn trang th\xC3\xB4ng tin t\xC3\xA0i kho\xE1\xBA\xA3n b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc trong OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OPACFinesTab
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc ki\xE1\xBB\x83m tra ti\xE1\xBB\x81n ph\xE1\xBA\xA1t c\xE1\xBB\xA7a t\xC3\xA0i kho\xE1\xBA\xA3n khi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp v\xC3\xA0o giao di\xE1\xBB\x87n OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OpacBrowser
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc l\xE1\xBB\xB1a ch\xE1\xBB\x8Dn c\xC3\xA1c ch\xE1\xBB\xA7 \xC4\x91\xE1\xBB\x81 nh\xE1\xBA\xA5t qu\xC3\xA1n tr\xC3\xAAn OPAC (ch\xE1\xBA\xA1y misc/cronjobs/build_browser_and_cloud.pl \xC4\x91\xE1\xBB\x83 t\xE1\xBA\xA1o danh s\xC3\xA1ch c\xC3\xA1c l\xE1\xBB\xB1a ch\xE1\xBB\x8Dn)"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: OpacCloud
+      - " th\xE1\xBA\xBB \"Nh\xC3\xB3m ch\xE1\xBB\xA7 \xC4\x91\xE1\xBB\x81\" tr\xC3\xAAn giao di\xE1\xBB\x87n OPAC (ch\xE1\xBA\xA1y misc/cronjobs/build_browser_and_cloud.pl \xC4\x91\xE1\xBB\x83 x\xC3\xA2y d\xE1\xBB\xB1ng)"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OpacAuthorities
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xC3\xACm ki\xE1\xBA\xBFm c\xC3\xA1c bi\xE1\xBB\x83u ghi nh\xE1\xBA\xA5t qu\xC3\xA1n c\xE1\xBB\xA7a h\xE1\xBB\x8D tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: opacbookbag
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc l\xC6\xB0u t\xC3\xA0i li\xE1\xBB\x87u v\xC3\xA0o trong \"Gi\xE1\xBB\x8F t\xC3\xA0i li\xE1\xBB\x87u\" tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: OpacTopissue
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc xem danh s\xC3\xA1ch c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u \xC4\x91\xC6\xB0\xE1\xBB\xA3c m\xC6\xB0\xE1\xBB\xA3n nhi\xE1\xBB\x81u nh\xE1\xBA\xA5t tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: suggestion
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc g\xE1\xBB\xADi \xC4\x91\xE1\xBB\x81 xu\xE1\xBA\xA5t mua t\xE1\xBB\x9Bi th\xC6\xB0 vi\xE1\xBB\x87n tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: reviewson
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc g\xE1\xBB\xADi b\xC3\xACnh lu\xE1\xBA\xADn tr\xC3\xAAn c\xC3\xA1c t\xC3\xA0i li\xE1\xBB\x87u trong OPAC."
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+      - 
+        choices: 
+          first: " t\xC3\xAAn"
+          firstandinitial: " h\xE1\xBB\x8D v\xC3\xA0 t\xC3\xAAn"
+          full: " t\xC3\xAAn \xC4\x91\xE1\xBA\xA7y \xC4\x91\xE1\xBB\xA7"
+          none: " kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B t\xC3\xAAn"
+          surname: " h\xE1\xBB\x8D"
+          username: " t\xC3\xAAn \xC4\x91\xC4\x83ng nh\xE1\xBA\xADp"
+        pref: ShowReviewer
+      - " c\xE1\xBB\xA7a ng\xC6\xB0\xE1\xBB\x9Di b\xC3\xACnh lu\xE1\xBA\xADn, v\xE1\xBB\x9Bi c\xC3\xA1c b\xC3\xACnh lu\xE1\xBA\xADn tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " \xE1\xBA\xA8n"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        pref: ShowReviewerPhoto
+      - reviewer's avatar beside comments in OPAC. The avatar will be searched on www.libravatar.org using the patron's e-mail address.
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: RequestOnOpac
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc y\xC3\xAAu c\xE1\xBA\xA7u \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n tr\xC3\xAAn OPAC."
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+      - 
+        class: long
+        pref: numSearchRSSResults
+      - " k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm trong m\xE1\xBB\x99t trang hi\xE1\xBB\x83n th\xE1\xBB\x8B tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        default: 0
+        pref: SocialNetworks
+      - " c\xC3\xA1c li\xC3\xAAn k\xE1\xBA\xBFt t\xE1\xBB\x9Bi m\xE1\xBA\xA1ng x\xC3\xA3 h\xE1\xBB\x99i trong trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC"
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        default: 1
+        pref: OpacBrowseResults
+      - " t\xC3\xADnh n\xC4\x83ng xem k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm trong trang hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng k\xC3\xADch ho\xE1\xBA\xA1t"
+          1: " K\xC3\xADch ho\xE1\xBA\xA1t"
+        default: 0
+        pref: QuoteOfTheDay
+      - " t\xC3\xADnh n\xC4\x83ng cho ph\xC3\xA9p th\xC6\xB0 vi\xE1\xBB\x87n t\xE1\xBA\xA1o ra c\xC3\xA1c th\xC3\xB4ng b\xC3\xA1o t\xE1\xBB\xABng ng\xC3\xA0y \xC4\x91\xC6\xB0\xE1\xBB\xA3c hi\xE1\xBB\x83n th\xE1\xBB\x8B tr\xC3\xAAn trang ch\xC3\xADnh c\xE1\xBB\xA7a OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+          1: " Hi\xE1\xBB\x83n th\xE1\xBB\x8B"
+        default: 0
+        pref: OPACPopupAuthorsSearch
+      - " danh s\xC3\xA1ch c\xC3\xA1c t\xC3\xA1c gi\xE1\xBA\xA3/ch\xE1\xBB\xA7 \xC4\x91\xE1\xBB\x81 trong m\xE1\xBB\x99t k\xE1\xBA\xBFt qu\xE1\xBA\xA3 t\xC3\xACm ki\xE1\xBA\xBFm t\xE1\xBB\x95ng h\xE1\xBB\xA3p trong trang Hi\xE1\xBB\x83n th\xE1\xBB\x8B chi ti\xE1\xBA\xBFt t\xC3\xA0i li\xE1\xBB\x87u tr\xC3\xAAn OPAC."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        default: 0
+        pref: OpacHoldNotes
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc th\xC3\xAAm c\xC3\xA1c khi ch\xC3\xBA khi \xC4\x91\xE1\xBA\xB7t m\xC6\xB0\xE1\xBB\xA3n t\xC3\xA0i li\xE1\xBB\x87u."
+    - 
+      - 
+        choices: 
+          "": Don't display
+          1: Display
+        default: 0
+        pref: OPACAcquisitionDetails
+      - the acquisition details on OPAC detail pages.
+    - 
+      - 
+        choices: 
+          "": Don't display
+          1: Display
+        default: 0
+        pref: OpacNewsLibrarySelect
+      - a branch selection list for news items in the OPAC.
+    - 
+      - "Use the following as the OPAC ISBD template:"
+      - 
+        class: code
+        pref: OPACISBD
+        type: textarea
+  " T\xE1\xBB\xB1 \xC4\x91\xC4\x83ng k\xC3\xBD": 
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng cho ph\xC3\xA9p"
+          1: " Cho ph\xC3\xA9p"
+        pref: PatronSelfRegistration
+      - "library patrons to register or modify their account via the OPAC. Note: This needs PatronSelfRegistrationDefaultCategory to be set to a valid patron category code."
+    - 
+      - 
+        choices: 
+          "": " Kh\xC3\xB4ng b\xE1\xBA\xAFt bu\xE1\xBB\x99c"
+          1: " B\xE1\xBA\xAFt bu\xE1\xBB\x99c"
+        pref: PatronSelfRegistrationVerifyByEmail
+      - " b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xE1\xBB\xB1 \xC4\x91\xC4\x83ng k\xC3\xBD x\xC3\xA1c th\xE1\xBB\xB1c t\xC3\xA0i kho\xE1\xBA\xA3n qua th\xC6\xB0 \xC4\x91i\xE1\xBB\x87n t\xE1\xBB\xAD."
+    - 
+      - " S\xE1\xBB\xAD d\xE1\xBB\xA5ng m\xC3\xA3 ki\xE1\xBB\x83u b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc"
+      - 
+        class: short
+        pref: PatronSelfRegistrationDefaultCategory
+      - " l\xC3\xA0m ki\xE1\xBB\x83u b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc m\xE1\xBA\xB7c \xC4\x91\xE1\xBB\x8Bnh cho c\xC3\xA1c b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xE1\xBB\xB1 \xC4\x91\xC4\x83ng k\xC3\xBD t\xC3\xA0i kho\xE1\xBA\xA3n qua OPAC."
+    - 
+      - " X\xC3\xB3a c\xC3\xA1c b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xE1\xBB\xB1 \xC4\x91\xC4\x83ng k\xC3\xBD qua OPAC nh\xC6\xB0ng kh\xC3\xB4ng x\xC3\xA1c th\xE1\xBB\xB1c t\xC3\xA0i kho\xE1\xBA\xA3n sau"
+      - 
+        class: integer
+        pref: PatronSelfRegistrationExpireTemporaryAccountsDelay
+      - " ng\xC3\xA0y."
+    - 
+      - "The following <a href='http://schema.koha-community.org/__VERSION__/tables/borrowers.html' target='blank'>database columns</a> must be filled in on the patron entry screen:"
+      - 
+        class: multi
+        pref: PatronSelfRegistrationBorrowerMandatoryField
+      - " (c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng k\xC3\xBD t\xE1\xBB\xB1 |)"
+    - 
+      - "The following <a href='http://schema.koha-community.org/__VERSION__/tables/borrowers.html' target='blank'>database columns</a> will not appear on the patron self-registration screen:"
+      - 
+        class: multi
+        pref: PatronSelfRegistrationBorrowerUnwantedField
+      - " (c\xC3\xA1c c\xE1\xBB\x99t ph\xC3\xA2n c\xC3\xA1ch b\xE1\xBA\xB1ng k\xC3\xBD t\xE1\xBB\xB1 |)"
+    - 
+      - "The following <a href='http://schema.koha-community.org/__VERSION__/tables/borrowers.html' target='blank'>database columns</a> will not appear on the patron self-modification screen:"
+      - 
+        class: multi
+        pref: PatronSelfModificationBorrowerUnwantedField
+      - (separate columns with |)
+    - 
+      - " Hi\xE1\xBB\x83n th\xE1\xBB\x8B c\xC3\xA1c h\xC6\xB0\xE1\xBB\x9Bng d\xE1\xBA\xABn d\xC6\xB0\xE1\xBB\x9Bi \xC4\x91\xC3\xA2y t\xE1\xBB\x9Bi b\xE1\xBA\xA1n \xC4\x91\xE1\xBB\x8Dc t\xE1\xBB\xB1 \xC4\x91\xC4\x83ng k\xC3\xBD qua OPAC ( Nh\xE1\xBA\xADp m\xC3\xA3 HTML ):"
+      - 
+        class: html
+        pref: PatronSelfRegistrationAdditionalInstructions
+        type: htmlarea
+    - 
+      - 
+        choices: 
+          "": Do not consider
+          1: Consider
+        pref: PatronSelfRegistrationEmailMustBeUnique
+      - patron's email (borrowers.email) as unique on self registering. An email won't be accepted if it already exists in the database.
+    - 
+      - "Enable the self registration for the following libraries:"
+      - 
+        pref: PatronSelfRegistrationLibraryList
+      - (separate branchcode with |).
+      - If empty, all libraries will be listed.
+    - 
+      - 
+        choices: 
+          "": Do not display and prefill
+          1: Display and prefill
+        pref: PatronSelfRegistrationPrefillForm
+      - password and login form after a patron has self registered.
+  Advanced Search Options: 
+    - 
+      - Show search options
+      - 
+        multiple: 
+          itemtype: Item types
+          language: Language
+          location: Location and availability
+          pubdate: Publication date
+          sorting: Sorting
+          subtype: Subtypes
+        pref: OpacAdvSearchOptions
+    - 
+      - Show search options for the expanded view
+      - 
+        multiple: 
+          itemtype: Item types
+          language: Language
+          location: Location and availability
+          pubdate: Publication date
+          sorting: Sorting
+          subtype: Subtypes
+        pref: OpacAdvSearchMoreOptions
+  Payments: 
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        default: 1
+        pref: EnablePayPalOpacPayments
+      - patrons to make payments from the OPAC via PayPal in
+      - 
+        choices: 
+          "": Production
+          1: Sandbox
+        default: 1
+        pref: PayPalSandboxMode
+      - mode.
+    - 
+      - "The email address to receive PayPal payments is "
+      - 
+        class: long
+        pref: PayPalUser
+    - 
+      - "The password for the PayPal account to receive payments is "
+      - 
+        class: long
+        pref: PayPalPwd
+    - 
+      - "The signature for the PayPal account to receive payments is "
+      - 
+        class: long
+        pref: PayPalSignature
+    - 
+      - "The patron should see the charge description as "
+      - 
+        class: long
+        pref: PayPalChargeDescription
+  Restricted page: 
+    - 
+      - Access from IP addresses beginning with
+      - 
+        pref: RestrictedPageLocalIPs
+      - "do not need to be authenticated (comma separated - ex: '127.0.0,127.0.1')"
+    - 
+      - HTML content of your restricted page
+      - 
+        class: HTML
+        pref: RestrictedPageContent
+        type: textarea
+    - 
+      - Use
+      - 
+        class: long
+        pref: RestrictedPageTitle
+      - as title of your restricted page (appears in the breadcrumb and on the top of the restricted page)

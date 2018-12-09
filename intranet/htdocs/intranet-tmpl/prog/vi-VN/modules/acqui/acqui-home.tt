@@ -1,0 +1,249 @@
+[% USE Asset %]
+[% USE Price %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/datatables.css") %]
+[% Asset.css("lib/jquery/plugins/treetable/stylesheets/jquery.treetable.css") %]
+</head>
+
+<body id="acq_acqui-home" class="acq">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; Acquisitions</div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+[% INCLUDE 'acquisitions-toolbar.inc' %]
+
+<h1>Phân hệ bổ sung</h1>
+ [% INCLUDE 'budgets-active-currency.inc' hide = 'yes' %]
+ [% UNLESS ( loop_budget ) %]
+ [% IF ( CAN_user_acquisition_period_manage ) %]
+ <div class="dialog alert"><a href="/cgi-bin/koha/admin/aqbudgetperiods.pl">You must define a budget in Administration</a></div>
+ [% ELSE %]
+ <div class="dialog alert">Thông báo cho cán bộ quản trị để tạo ngân sách cho phân hệ bổ sung.</div>
+ [% END %]
+ [% END %]
+<div class="yui-g">
+<div class="yui-u first">
+<div id="acqui_acqui_home_order">
+ <fieldset>
+ <legend>Quản lý đơn hàng</legend>
+ <form name="findsupplier" action="/cgi-bin/koha/acqui/booksellers.pl" method="post">
+ <p><label for="supplierpage">Nhà cung cấp: </label><input type="text" size="25" name="supplier" id="supplierpage" class="focus" />
+ <input type="submit" value="Tìm kiếm" />
+ </p>
+ </form>
+ </fieldset>
+</div>
+</div>
+
+[% IF ( suggestion && suggestions_count ) %]
+<div class="yui-u">
+ <div id="acqui_acqui_home_suggestions">
+ <fieldset>
+ <legend>Đề xuất mua chờ duyệt</legend>
+ <p>Bạn có  [% suggestions_count %] đề xuất mua đang chờ duyệt. <a href="/cgi-bin/koha/suggestion/suggestion.pl#ASKED">Quản lý đề xuất mua</a>.</p>
+ </fieldset>
+ </div>
+</div>
+[% END %]
+
+</div>
+
+[% IF ( loop_budget ) %]
+
+ <h3>Tất cả quỹ sẵn sàng [% IF LoginBranchname %] cho [% LoginBranchname %][% END %]</h3>
+
+ <div id="BudgetsAndFunds">
+ <table id="accounts">
+ <caption>
+ <span class="actions"><a href="#" id="expand_all">Mở rộng tất cả</a>
+ | <a href="#" id="collapse_all">Thu gọn tất cả</a>
+ | <a href="#" id="hide_inactive">Ẩn ngân sách không hoạt động</a>
+ | <a href="#" id="show_inactive">Hiển thị ngân sách không hoạt động</a></span>
+ </caption>
+
+ <thead>
+ <tr>
+ <th>Kích hoạt</th>
+ <th>Mô tả thời hạn ngân sách</th>
+ <th>Mã quỹ</th>
+ <th>Tên quỹ</th>
+ <th>Người quản lý</th>
+ <th>Thư viện</th>
+ <th>Số lượng</th>
+ <th>Đặt hàng</th>
+ <th>Chi phí thanh toán</th>
+ <th>Total available</th>
+ </tr>
+ </thead>
+ <tfoot id="funds_total">
+ <tr>
+ <th></th>
+ <th></th>
+ <th colspan="4">Tổng số</th>
+ <th class="data"></th>
+ <th class="data"></th>
+ <th class="data"></th>
+ <th class="data"></th>
+ </tr>
+ </tfoot>
+ <tbody>
+ [% FOREACH loop_budge IN loop_budget %]
+ [% IF loop_budge.budget_parent_id %]
+ <tr data-tt-id="[% loop_budge.budget_id %]" data-tt-parent-id="[% loop_budge.budget_parent_id %]">
+ [% ELSE %]
+ <tr data-tt-id="[% loop_budge.budget_id %]">
+ [% END %]
+
+ <td>[% loop_budge.budget_period_active %]</td>
+ <td>Ngân sách [% loop_budge.budget_period_description %] [ID=[% loop_budge.budget_period_id %]][% UNLESS loop_budge.budget_period_active %] (Ngừng hoạt động)[% END %]</td>
+ <td>
+ [% IF ( CAN_user_acquisition_budget_manage ) %]
+ <a href="/cgi-bin/koha/admin/aqbudgets.pl?budget_period_id=[% loop_budge.budget_period_id %]">[% loop_budge.budget_code %]</a>
+ [% ELSE %]
+ [% loop_budge.budget_code %]
+ [% END %]
+ </td>
+ <td>[% loop_budge.budget_name %]</td>
+ <td>[% IF ( loop_budge.budget_owner ) %]
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% loop_budge.budget_owner.borrowernumber %]">[% loop_budge.budget_owner.surname %], [% loop_budge.budget_owner.firstname %]</a>
+ [% ELSE %]
+ &nbsp;
+ [% END %]
+ </td>
+ <td>[% Branches.GetName( loop_budge.budget_branchcode ) %]</td>
+ <td class="data">
+ [% IF loop_budge.budget_parent_id %]
+ [% loop_budge.budget_amount | $Price %]
+ [% ELSE %]
+ <span class="total_amount">[% loop_budge.budget_amount | $Price %]</span>
+ [% END %]
+ </td>
+ <td class="data">
+ <a href="ordered.pl?fund=[% loop_budge.budget_id %]&amp;fund_code=[% loop_budge.budget_code %]">
+ [% IF loop_budge.budget_parent_id %]
+ [% loop_budge.budget_ordered | $Price %]
+ [% ELSE %]
+ <span class="total_amount">[% loop_budge.budget_ordered | $Price %]</span>
+ [% END %]
+ </a>
+ </td>
+ <td class="data">
+ <a href="spent.pl?fund=[% loop_budge.budget_id %]&amp;fund_code=[% loop_budge.budget_code %]">
+ [% IF loop_budge.budget_parent_id %]
+ [% loop_budge.budget_spent | $Price %]
+ [% ELSE %]
+ <span class="total_amount">[% loop_budge.budget_spent | $Price %]</span>
+ [% END %]
+ </a>
+ </td>
+ <td class="data">
+ [% IF loop_budge.budget_parent_id %]
+ [% loop_budge.budget_avail | $Price %]
+ [% ELSE %]
+ <span class="total_amount">[% loop_budge.budget_avail | $Price %]</span>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("lib/jquery/plugins/treetable/jquery.treetable.js") %]
+ [% Asset.js("js/acquisitions-menu.js") %]
+ <script type="text/javascript">
+        dt_overwrite_html_sorting_localeCompare();
+
+        $(document).ready(function() {
+
+            var oTable = $("#accounts").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "fnDrawCallback": function ( oSettings ) {
+                    if ( oSettings.aiDisplay.length == 0 )
+                    {
+                        return;
+                    }
+
+                    var nTrs = $('#accounts tbody tr');
+                    var iColspan = nTrs[0].getElementsByTagName('td').length;
+                    var sLastGroup = "";
+                    for ( var i=0 ; i<nTrs.length ; i++ )
+                    {
+                        var iDisplayIndex = oSettings._iDisplayStart + i;
+                        var sGroup = oSettings.aoData[ oSettings.aiDisplay[iDisplayIndex] ]._aData[1];
+                        if ( sGroup != sLastGroup )
+                        {
+                            var nGroup = document.createElement( 'tr' );
+                            var nCell = document.createElement( 'td' );
+                            nCell.colSpan = iColspan;
+                            nCell.className = "group";
+                            nCell.innerHTML = sGroup;
+                            nGroup.appendChild( nCell );
+                            nTrs[i].parentNode.insertBefore( nGroup, nTrs[i] );
+                            sLastGroup = sGroup;
+                        }
+                    }
+                },
+                "footerCallback": function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
+                    footer_column_sum( api, [ 6, 7, 8, 9 ] );
+                },
+                "aoColumnDefs": [
+                    { "bVisible": false, "aTargets": [ 0, 1 ] },
+                    { "bSortable": false, "aTargets": ["_all"] }
+                ],
+                'dom': '<"top pager"ilpf>tr<"bottom pager"ip>',
+                'bSort': true,
+                'aaSortingFixed': [[ 1, 'asc' ]],
+                'bPaginate': false,
+                "bAutoWidth": false
+            }));
+
+            $(oTable).treetable({
+                expandable: true
+            });
+            $(oTable).treetable('expandAll');
+            $("#expand_all").click(function(e){
+                e.preventDefault();
+                $(oTable).treetable('expandAll');
+            });
+            $("#collapse_all").click(function(e){
+                e.preventDefault();
+                $(oTable).treetable('collapseAll');
+            });
+
+            $("#hide_inactive").click(function(e){
+                e.preventDefault();
+                oTable.fnFilter( 1, 0 ); // Show only active=1
+            });
+            $("#show_inactive").click(function(e){
+                e.preventDefault();
+                oTable.fnFilter( '', 0 );
+            });
+            $("#hide_inactive").click();
+
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

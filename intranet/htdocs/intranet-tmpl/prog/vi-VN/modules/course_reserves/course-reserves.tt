@@ -1,0 +1,109 @@
+[% USE Asset %]
+[% USE AuthorisedValues %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; CSDL khóa học</title>
+[% INCLUDE 'doc-head-close.inc' %]
+
+[% Asset.css("css/datatables.css") %]
+</head>
+
+<body id="courses_course_reserves" class="course">
+
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/course_reserves/course-reserves.pl">CSDL khóa học</a></div>
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ [% IF CAN_user_coursereserves_add_reserves OR CAN_user_coursereserves_manage_courses OR CAN_user_coursereserves_manage_courses %]
+ <div id="toolbar">
+ [% IF ( CAN_user_coursereserves_manage_courses ) %]
+ <a class="btn btn-default btn-sm" id="new_course" href="/cgi-bin/koha/course_reserves/course.pl"><i class="fa fa-plus"></i> Tạo khóa học</a>
+ [% END %]
+ </div><!-- /toolbar -->
+ [% END %]
+
+ <!--
+ <div id="search-toolbar">
+ <script type="text/javascript">
+ //<![CDATA[
+ function submitSearchForm(p_oEvent){
+ $('#search_courses_form').submit();
+ }
+
+ $(document).ready(function(){
+ newCourseButton = new YAHOO.widget.Button("search_courses");
+ newCourseButton.on("click", submitSearchForm );
+ });
+ //]]>
+ </script>
+ <ul class="toolbar">
+ <li><form id="search_courses_form"><input type="text" name="search_on" id="search_on"></form></li>
+ <li><a id="search_courses">Search courses</a></li>
+ </ul>
+ </div>
+ -->
+
+ <h1>Khóa học</h1>
+ <table id="course_reserves_table">
+ <thead>
+ <tr>
+ <th>Tên</th>
+ <th>Đơn vị</th>
+ <th>Số khóa học</th>
+ <th>section</th>
+ <th>Từ khóa</th>
+ <th>Người hướng dẫn</th>
+ <th>Ghi chú thủ thư</th>
+ <th>Ghi chú</th>
+ <th>Số sinh viên</th>
+ <th>Kích hoạt</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH c IN courses %]
+ <tr>
+ <td><a href="course-details.pl?course_id=[% c.course_id %]">[% c.course_name %]</a></td>
+ <td>[% AuthorisedValues.GetByCode( 'DEPARTMENT', c.department ) %]</td>
+ <td>[% c.course_number %]</td>
+ <td>[% c.section %]</td>
+ <td>[% AuthorisedValues.GetByCode( 'TERM' c.term ) %]</td>
+ <td>
+ [% FOREACH i IN c.instructors %]
+ <div class="instructor"><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% i.borrowernumber %]">[% i.firstname %] [% i.surname %]</a></div>
+ [% END %]
+ </td>
+ <td>[% c.staff_note %]</td>
+ <td>[% c.public_note %]</td>
+ <td>[% c.students_count %]</td>
+ <td>
+ [% IF c.enabled == 'yes' %]
+ Yes
+ [% ELSE %]
+ No
+ [% END %]
+ </td>
+ [% END %]
+ </tbody>
+ </table>
+
+ </div>
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/javascript" id="js">
+        $(document).ready(function() {
+            $("#course_reserves_table").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "sPaginationType": "four_button"
+            }));
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

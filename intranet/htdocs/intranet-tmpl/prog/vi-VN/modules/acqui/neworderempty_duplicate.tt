@@ -1,0 +1,73 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Phân hệ bổ sung &rsaquo; Giỏ đặt hàng [% basketno %] &rsaquo; Cảnh báo trùng lặp biểu ghi</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="acq_neworderempty_duplicate" class="acq">
+
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'acquisitions-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Phân hệ bổ sung</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno %]">Giỏ đặt hàng số [% basketno %]</a> &rsaquo; Cảnh báo trùng lặp biểu ghi</div>
+
+<div id="doc3" class="yui-t2">
+
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+<div class="dialog alert">
+<h4>Cảnh báo trùng lặp biểu ghi</h4>
+<p>Bạn đã lựa chọn một biểu ghi từ một nguồn dữ liệu bên ngoài giống với một biểu ghi thư mục hiện có trong cơ sở dữ liệu của bạn: [% IF ( BiblioDefaultViewmarc ) %]<a class="popup" href="/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=[% biblionumber |url %]" target="_blank" title="Mở trong cửa sổ mới">
+[% ELSIF ( BiblioDefaultViewlabeled_marc ) %]<a target="_blank" title="Mở trong cửa sổ mới" href="/cgi-bin/koha/catalogue/labeledMARCdetail.pl?biblionumber=[% biblionumber |url %]" class="popup">
+[% ELSIF ( BiblioDefaultViewisbd ) %]<a title="Mở trong cửa sổ mới" target="_blank" class="popup" href="/cgi-bin/koha/catalogue/ISBDdetail.pl?biblionumber=[% biblionumber |url %]">
+[% ELSE %]<a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber |url %]" class="popup" target="_blank" title="Mở trong cửa sổ mới">[% END %][% duplicatetitle %]</a></p>
+</div>
+
+<div class="yui-gb">
+<div class="yui-u first">
+<div style="border: 1px solid #DDD; padding:1em;">
+<form action="/cgi-bin/koha/acqui/neworderempty.pl">
+<h4>Sử dụng biểu ghi hiện tại</h4>
+<p>Không tạo biểu ghi trùng lặp ở trên. Sử dụng biểu ghi thư mục hiện tại trong cơ sở dữ liệu để tạo đơn hàng.</p>
+<input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+<input type="hidden" name="basketno" value="[% basketno %]" />
+<input type="hidden" name="biblionumber" value="[% biblionumber %]" />
+<input value="Dùng biểu ghi hiện tại" type="submit" />
+</form>
+</div>
+</div>
+
+<div class="yui-u">
+<div style="border: 1px solid #DDD; padding:1em;">
+<form action="/cgi-bin/koha/acqui/basket.pl">
+<h4>Hủy và quay lại giỏ đặt hàng</h4>
+<p>Không tạo đơn hàng mới và quay lại giỏ đặt hàng.</p>
+<input type="hidden" name="basketno" value="[% basketno %]" />
+<input type="submit" value="Hủy bỏ" />
+</form>
+</div>
+</div>
+
+<div class="yui-u">
+<div style="border: 1px solid #DDD; padding:1em;">
+<form action="/cgi-bin/koha/acqui/neworderempty.pl">
+<h4>Tạo biểu ghi thư mục</h4>
+<p>Tạo biểu ghi thư mục từ nguồn dữ liệu bên ngoài.</p>
+<input type="hidden" name="booksellerid" value="[% booksellerid %]" />
+<input type="hidden" name="basketno" value="[% basketno %]" />
+<input type="hidden" name="breedingid" value="[% breedingid %]" />
+<input type="hidden" name="use_external_source" value="1" />
+<input type="submit" value="Tạo biểu ghi" />
+</form>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="yui-b">
+[% INCLUDE 'acquisitions-menu.inc' %]
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

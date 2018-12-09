@@ -1,0 +1,342 @@
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Công cụ bổ trợ &rsaquo; Mẫu chỉnh sửa biểu ghi MARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style type="text/css">
+    #add_action { display: none; }
+</style>
+</head>
+
+<body id="tools_marc_modification_templates" class="tools">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+[% IF ( TemplatesLoop ) %]
+ [% FOREACH TemplatesLoo IN TemplatesLoop %]
+ [% IF ( TemplatesLoo.selected ) %]
+ [% SET template_name = TemplatesLoo.name %]
+ [% END %]
+ [% END %]
+[% END %]
+
+<div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo;
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Công cụ bổ trợ</a> &rsaquo;
+ [% IF ( template_name ) %]
+ <a href="/cgi-bin/koha/tools/marc_modification_templates.pl">Mẫu chỉnh sửa biểu ghi MARC</a>
+ &rsaquo; [% template_name %]
+ [% ELSE %]
+ MARC modification templates
+ [% END %]
+</div>
+
+<div id="doc3" class="yui-t2">
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+ <div id="toolbar" class="btn-toolbar">
+ <a href="#" data-toggle="modal" data-template_id="" data-target="#createTemplate" id="new_template" class="btn btn-default btn-sm duplicate_template"><i class="fa fa-plus"></i> New template</a>
+ [% IF ( template_id != '' ) %]
+ <a href="#" id="new_action" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> New action</a>
+ [% END %]
+ </div>
+
+ [% IF error %]
+ [% IF error == 'no_from_field' %]
+ <div class="dialog message">Lỗi: Chưa khai báo giá trị của trường.</div>
+ [% END %]
+ [% END %]
+
+ [% IF ( TemplatesLoop ) %]
+
+ [% IF ( template_id == '' ) %]
+
+ <h2>MARC modification templates [% template_id %]</h2>
+
+ <table id="templatest">
+ <thead>
+ <tr>
+ <th>Template</th>
+ <th>Thao tác</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH TemplatesLoo IN TemplatesLoop %]
+ <tr>
+ <td>[% TemplatesLoo.name %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/tools/marc_modification_templates.pl?template_id=[% TemplatesLoo.template_id %]&amp;op=select_template" ><i class="fa fa-fw fa-pencil"></i> Edit actions</a>
+ <a class="btn btn-default btn-xs duplicate_template" href="#" data-toggle="modal" data-template_id="[% TemplatesLoo.template_id %]" data-target="#createTemplate"><i class="fa fa-fw fa-copy"></i> Sao chép</a>
+ <a class="btn btn-default btn-xs delete_template" href="/cgi-bin/koha/tools/marc_modification_templates.pl?template_id=[% TemplatesLoo.template_id %]&amp;op=delete_template"><i class="fa fa-fw fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+
+ [% ELSE %]
+
+ <h2>Actions for <i>[% template_name %]</i></h2>
+
+ [% IF ( ActionsLoop ) %]
+
+ <table id="template_actions" class="template_actions">
+ <thead>
+ <tr>
+ <th>Đổi thứ tự</th>
+ <th>Đơn hàng</th>
+ <th>Thao tác</th>
+ <th>Thông tin mô tả</th>
+ <th>&nbsp;</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH ActionsLoo IN ActionsLoop %]
+ <tr>
+ <td class="actions">
+ <a title="Chuyển thao tác lên trên" href="marc_modification_templates.pl?op=move_action&where=up&template_id=[% ActionsLoo.template_id %]&mmta_id=[% ActionsLoo.mmta_id %]">
+ <i class="fa fa-arrow-up fa-lg order-control"></i>
+ </a>
+
+ <a href="marc_modification_templates.pl?op=move_action&where=top&template_id=[% ActionsLoo.template_id %]&mmta_id=[% ActionsLoo.mmta_id %]" title="Chuyển thao tác lên trên cùng">
+ <i class="fa fa-arrow-up fa-lg overline order-control"></i>
+ </a>
+
+ <a href="marc_modification_templates.pl?op=move_action&where=bottom&template_id=[% ActionsLoo.template_id %]&mmta_id=[% ActionsLoo.mmta_id %]" title="Chuyển thao tác xuống dưới cùng">
+ <i class="fa fa-arrow-down fa-lg underline order-control"></i>
+ </a>
+
+ <a href="marc_modification_templates.pl?op=move_action&where=down&template_id=[% ActionsLoo.template_id %]&mmta_id=[% ActionsLoo.mmta_id %]" title="Chuyển thao tác xuống dưới">
+ <i class="fa fa-arrow-down fa-lg order-control"></i>
+ </a>
+ </td>
+
+ <td>[% ActionsLoo.ordering %]</td>
+ <td>
+ [% IF ( ActionsLoo.action_delete_field ) %] Delete [% END %]
+ [% IF ( ActionsLoo.action_update_field ) %] Update [% END %]
+ [% IF ( ActionsLoo.action_move_field ) %] Move [% END %]
+ [% IF ( ActionsLoo.action_copy_field ) %] Copy [% END %]
+ [% IF ( ActionsLoo.action_copy_and_replace_field ) %] Copy and replace [% END %]
+
+ [% UNLESS ( ActionsLoo.action_update_field ) %]
+ [% IF ( ActionsLoo.field_number ) %]
+ 1st
+ [% END %]
+ [% END %]
+
+ field
+
+ [% ActionsLoo.from_field %][% IF ( ActionsLoo.from_subfield ) %]$[% ActionsLoo.from_subfield %][% END %]
+
+ [% IF ( ActionsLoo.field_value ) %]
+ with value <i>[% ActionsLoo.field_value %]</i>
+ [% END %]
+
+ [% IF ( ActionsLoo.to_field ) %]
+ to [% ActionsLoo.to_field %][% IF ( ActionsLoo.to_subfield ) %]$[% ActionsLoo.to_subfield %][% END %]
+
+ [% IF ( ActionsLoo.to_regex_search ) %]
+ using RegEx s<strong>/[% ActionsLoo.to_regex_search %]/[% ActionsLoo.to_regex_replace %]/[% ActionsLoo.to_regex_modifiers %]</strong>
+ [% END %] [% END %] [% IF ( ActionsLoo.conditional ) %] [% IF ( ActionsLoo.conditional_if ) %] nếu [% END %] [% IF ( ActionsLoo.conditional_unless ) %] trừ khi [% END %] [% ActionsLoo.conditional_field %][% IF ( ActionsLoo.conditional_subfield ) %]$[% ActionsLoo.conditional_subfield %][% END %] [% IF ( ActionsLoo.conditional_comparison_exists ) %] đã tồn tại [% END %] [% IF ( ActionsLoo.conditional_comparison_not_exists ) %] không tồn tại [% END %] [% IF ( ActionsLoo.conditional_comparison_equals ) %] phù hợp [% END %] [% IF ( ActionsLoo.conditional_comparison_not_equals ) %] không phù hợp [% END %] [% IF ( ActionsLoo.conditional_regex ) %] RegEx m/[% END %] <strong>[% ActionsLoo.conditional_value %]</strong>
+ [% IF ( ActionsLoo.conditional_regex ) %]/[% END %]
+ [% END %]
+ </td>
+ <td>[% ActionsLoo.description %]</td>
+ <td>
+ <a class="btn btn-default btn-xs" href="#modaction" onclick='editAction(
+                                                            "[% ActionsLoo.mmta_id |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.ordering |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.action |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.field_number |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.from_field |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.from_subfield |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.field_value |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.to_field |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.to_subfield |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.to_regex_search |replace('\\\\', '\\\\') |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.to_regex_replace |replace('\\\\', '\\\\') |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.to_regex_modifiers |replace('\\\\', '\\\\') |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.conditional |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.conditional_field |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.conditional_subfield |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.conditional_comparison |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.conditional_value |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.conditional_regex |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]",
+                                                            "[% ActionsLoo.description |replace('\\\\', '\\\\') |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]"
+                                                        );updateAllEvery();'><i class="fa fa-pencil"></i> Chỉnh sửa</a>
+ </td>
+ <td>
+ <a class="btn btn-default btn-xs" href="marc_modification_templates.pl?template_id=[% ActionsLoo.template_id %]&op=delete_action&mmta_id=[% ActionsLoo.mmta_id %]" onclick="return confirmDeleteAction();"><i class="fa fa-trash"></i> Xóa</a>
+ </td>
+ </tr>
+ [% END # /FOREACH ActionsLoo %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog message template_actions"><p>Hiện tại chưa có thao tác nào được định nghĩa cho mẫu này.</p></div>
+ [% END # /IF ActionsLoop %]
+
+ <form method="post" action="/cgi-bin/koha/tools/marc_modification_templates.pl" id="add_action" >
+ <a name="modaction"></a>
+ <fieldset>
+ <legend id="modaction_legend">Tạo thao tác mới</legend>
+ <div id="warning_multivalued" style="color:red; display:none;">Bạn có thể chọn một điều kiện trên trường tương tự như trường gốc. Nếu biểu ghi của bạn chứa các trường có nhiều giá trị, chúng tôi khuyến cáo bạn không nên thực hiện việc đó.</div>
+
+ <select name="action" id="action" onchange="onActionChange(this);">
+ <option value="delete_field">Xóa</option>
+ <option value="update_field">Tạo/Cập nhật</option>
+ <option value="move_field">Di chuyển</option>
+ <option value="copy_field">Sao chép</option>
+ <option value="copy_and_replace_field">Copy and replace</option>
+ </select>
+
+ <span id="field_number_block">
+ <select name="field_number" id="field_number">
+ <option value="0">Tất cả</option>
+ <option value="1">1st</option>
+ </select>
+ </span>
+
+ trường <input type="text" name="from_field" id="from_field" size="3" maxlength="3" /> <input type="text" name="from_subfield" id="from_subfield" size="1" maxlength="1" title="let blank for the entire field" />
+
+ <span name="with_value_block" id="with_value_block" style="display:none;">
+ với giá trị <input type="text" name="field_value" id="field_value" />
+ </span>
+
+ <span name="to_field_block" id="to_field_block" style="display:none;">
+ tới trường <input type="text" name="to_field" id="to_field" size="3" maxlength="3" /> <input type="text" name="to_subfield" id="to_subfield" size="1" maxlength="1" title="let blank for the entire field" />
+
+ <span name="to_field_regex_block" id="to_field_regex_block">
+ <sup>
+ <label for="to_field_regex">RegEx</label>
+ <input type="checkbox" name="to_field_regex" id="to_field_regex" onchange="onToFieldRegexChange(this);" />
+
+ <span name="to_field_regex_value_block" id="to_field_regex_value_block" style="display:none;">
+ s/<input id="to_regex_search" name="to_regex_search" placeholder="Mẫu thông dụng" type="text" />/<input id="to_regex_replace" placeholder="Thay thế thông thường" name="to_regex_replace" type="text" />/<input type="text" name="to_regex_modifiers" id="to_regex_modifiers" placeholder="ig" size="3" />
+ </span>
+ </sup>
+ </span>
+ </span>
+
+ <p/>
+
+ <select name="conditional" id="conditional" onchange="onConditionalChange(this);">
+ <option value="" selected="selected" />
+ <option value="if">nếu</option>
+ <option value="unless">trừ khi</option>
+ </select>
+
+ <span name="conditional_block" id="conditional_block" style="display:none;">
+ trường <input type="text" name="conditional_field" id="conditional_field" size="3" maxlength="3" /> <input type="text" name="conditional_subfield" id="conditional_subfield" size="1" maxlength="1" />
+
+ <select name="conditional_comparison" id="conditional_comparison" onchange="onConditionalComparisonChange(this);">
+ <option value="" />
+ <option value="exists">tồn tại</option>
+ <option value="not_exists">không tồn tại</option>
+ <option value="equals">Phù hợp</option>
+ <option value="not_equals">không phù hợp</option>
+ </select>
+
+ <span name="conditional_comparison_block" id="conditional_comparison_block" style="display:none;">
+
+ <span class="match_regex_prefix">m/</span><input type="text" id="conditional_value" name="conditional_value" /><span class="match_regex_suffix">/</span>
+
+ <sup>
+ <label for="conditional_regex">RegEx</label>
+ <input type="checkbox" name="conditional_regex" id="conditional_regex" onchange="onConditionalRegexChange(this);" />
+ </sup>
+
+ </span>
+ </span>
+
+ <input type="hidden" name="template_id" value="[% template_id %]" />
+ <input type="hidden" name="mmta_id" id="mmta_id" />
+ <input type="hidden" name="op" value="add_action" />
+
+ <br/><br/>
+ <label for="description">Thông tin mô tả:</label>
+ <input type="text" name="description" id="description" size="60" />
+
+ <br/><br/>
+ <input id="action_submit" type="submit" value="Tạo thao tác" /> <a href="#modaction" id="cancel_edit" onclick="cancelEditAction();">Hủy bỏ</a>
+
+ </fieldset>
+ </form>
+
+ [% END %]
+
+ [% ELSE %]
+ <div class="dialog message"><p>Hiện tại chưa có mẫu chỉnh sửa biểu ghi MARC. Bạn vui lòng tạo mẫu chỉnh sửa biểu ghi trước.</p></div>
+ [% END # /IF TemplatesLoop %]
+
+ <!-- Modal to create new template -->
+ <div class="modal" id="createTemplate" tabindex="-1" role="dialog" aria-labelledby="LabelcreateTemplate" aria-hidden="true">
+ <div class="modal-dialog">
+ <div class="modal-content">
+ <div class="modal-header">
+ <button type="button" class="closebtn" data-dismiss="modal" aria-hidden="true">×</button>
+ <h3 id="LabelcreateTemplate">Tạo mẫu mới</h3>
+ </div>
+ <form method="post" action="/cgi-bin/koha/tools/marc_modification_templates.pl" id="add_template" class="validated">
+ <div class="modal-body">
+ <fieldset>
+ <p>
+ <label for="template_name" class="required">Name: </label>
+ <input name="template_name" id="template_name" type="text" size="30" required="required" class="required" />
+ <span class="required">Bắt buộc</span>
+ </p>
+
+ <input type="hidden" name="op" value="create_template" />
+
+ <p>
+ <label for="duplicate_a_template">Duplicate a template:</label>
+ <select name="template_id" id="duplicate_a_template">
+ <option value=""> -- None --</option>
+ [% FOREACH TemplatesLoo IN TemplatesLoop %]
+ <option value="[% TemplatesLoo.template_id %]"> [% TemplatesLoo.name %]</option>
+ [% END %]
+ </select>
+ <input type="hidden" name="duplicate_current_template" id="duplicate_current_template" />
+ </p>
+ </fieldset>
+ </div>
+ <div class="modal-footer">
+ <button type="submit" class="btn btn-default">Tìm kiếm</button>
+ <button class="btn btn-link" data-dismiss="modal" aria-hidden="true">Hủy bỏ</button>
+ </div>
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <div class="yui-b">
+ [% INCLUDE 'tools-menu.inc' %]
+ </div>
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/tools-menu.js") %]
+ <script type="text/javascript">
+        var MSG_MMT_SUBFIELDS_MATCH = _("Both subfield values should be filled or empty.");
+        var MSG_MMT_DESTINATION_REQUIRED = _("The destination should be filled.");
+        var MSG_MMT_CONTROL_FIELD_EMPTY = _("If the field is a control field, the subfield should be empty");
+        var MSG_MMT_CONTROL_FIELD = _("A control field cannot be used with a regular field.");
+        var MSG_MMT_SOURCE_SUBFIELD = _("The source subfield should be filled for update.");
+        var MSG_MMT_SOURCE_FIELD = _("The source field should be filled.");
+        var MSG_MMT_EVERY = _("Every");
+        var MSG_MMT_ALL = _("Tất cả");
+        var MSG_MMT_CONFIRM_DEL_TEMPLATE = _("Bạn chắc chắn muốn xóa mẫu này?");
+        var MSG_MMT_CONFIRM_DEL_TEMPLATE_ACTION = _("Are you sure you wish to delete this template action?");
+        var MSG_MMT_EDIT_ACTION = _("Edit action %s");
+        var MSG_MMT_UPDATE_ACTION = _("Cập nhật thao tác");
+    </script>
+ [% Asset.js("js/marc_modification_templates.js") %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

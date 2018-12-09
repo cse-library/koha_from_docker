@@ -1,0 +1,1300 @@
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Patrons &rsaquo; [% IF ( opadd ) %]Add[% ELSIF ( opduplicate ) %]Duplicate[% ELSE %] Modify[% END %] patron [% IF (firstname) %][% firstname %] [% END %][% IF (surname) %][% surname %] [% END %]([%IF categoryname %][% categoryname %][% ELSE %][% IF ( I ) %]Organization[% END %][% IF ( A ) %]Adult[% END %][% IF ( C ) %]Child[% END %][% IF ( P ) %]Professional[% END %][% IF ( S ) %]Staff[% END %][% END %])</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_memberentrygen" class="pat">
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'patron-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Trang chủ</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Bạn đọc</a> &rsaquo;
+[% IF (firstname || surname ) %] <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% IF (firstname) %][% firstname | html %] [% END %][% IF (surname) %][% surname | html %] [% END %]</a> &rsaquo;[% END %]
+<strong>[% IF ( opadd ) %]Add[% ELSIF ( opduplicate ) %]Duplicate[% ELSE %] Modify[% END %] patron ([%IF ( categoryname ) %][% categoryname %][% ELSE %][% IF ( I ) %]Organization[% END %][% IF ( A ) %]Adult[% END %][% IF ( C ) %]Child[% END %][% IF ( P ) %]Professional[% END %][% IF ( S ) %]Staff[% END %][% END %])</strong>
+</div>
+[% IF ( opadd ) %]<div id="doc" class="yui-t7">[% ELSE %]<div id="doc3" class="yui-t2">[% END %]
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% IF error_alert %]
+ [% IF ( error_alert == "no_email" ) %]
+ <div class="error">Bạn đọc chưa khai báo địa chỉ thư điện tử</div>
+ [% ELSE %]
+ <div class="error">[% error_alert %]</div>
+ [% END %]
+ [% END %]
+ [% IF info_alert %]
+ <div class="dialog message">Thư điện tử đã được chuyển tới bạn đọc.</div>
+ [% END %]
+
+ [% INCLUDE 'noadd-warnings.inc' %]
+
+ [% UNLESS ( no_add ) %]
+ <h1>[% IF ( opadd ) %]Add[% ELSIF ( opduplicate ) %]Duplicate[% ELSE %] Modify[% END %] patron [% IF (firstname) %][% firstname | html %] [% END %][% IF (surname) %][% surname | html %] [% END %]([%IF ( categoryname ) %][% categoryname %][% ELSE %][% IF ( I ) %]Organization[% END %][% IF ( A ) %]Adult[% END %][% IF ( C ) %]Child[% END %][% IF ( P ) %]Professional[% END %][% IF ( S ) %]Staff[% END %][% END %])</h1>
+
+ [% IF quickadd && opadd && !check_member %]
+ <a href="#" class="toggle_quick_add"><i class="fa fa-plus-square"></i> Show full form</a>
+ <a href="#" class="toggle_quick_add" style="display:none"><i class="fa fa-minus-square"></i> Show brief form</a>
+ [% END %]
+
+ [% IF ( check_member ) %]
+ <div class="dialog alert">
+ <h3>Sao chép tài khoản bạn đọc?</h3>
+ <p><a class="popup" href="#" onclick="Dopop('moremember.pl?print=brief&amp;borrowernumber=[% check_member %]');return false;" >Xem bạn đọc hiện tại</a></p>
+ <button id="duplicate" type="submit" class="new"><i class="fa fa-pencil"></i> Đúng/Chỉnh sửa</button>
+
+ <button type="submit" id="not-duplicate" class="new"><i class="fa fa-plus"></i> Sai/Tạo bạn đọc</button>
+ </div>
+ [% END %]
+
+ [% IF ( nok ) %]
+ <div class="dialog alert">
+ <p>Các trường thông tin sau đây không đúng. Bạn vui lòng kiểm tra lại</p>
+ <ul>
+ [% IF ( ERROR_login_exist ) %]
+ <li id="ERROR_login_exist">Tên đăng nhập/ Mật khẩu đã tồn tại.</li>
+ [% END %]
+ [% IF ERROR_cardnumber_already_exists %]
+ <li id="ERROR_cardnumber">Số thẻ bạn đọc đã được sử dụng.</li>
+ [% END %]
+ [% IF ERROR_cardnumber_length %]
+ <li id="ERROR_cardnumber">Chiều dài số thẻ bạn đọc không phù hợp.</li>
+ [% END %]
+ [% IF ( ERROR_age_limitations ) %]
+ <li id="ERROR_age_limitations">Số tuổi bạn đọc không phù hợp với kiểu bạn đọc. Độ tuổi cho phép từ  đến tuổi [% age_low %]-[% age_high %].</li>
+ [% END %]
+ [% IF ( ERROR_branch ) %]
+ <li id="ERROR_branch">Thư viện không chính xác.</li>
+ [% END %]
+ [% IF ( ERROR_dateofbirth ) %]
+ <li id="ERROR_dateofbirth">Ngày sinh bạn đọc không chính xác.</li>
+ [% END %]
+ [% IF ( ERROR_dateenrolled ) %]
+ <li id="ERROR_dateenrolled">Ngày đăng ký tài khoản không chính xác.</li>
+ [% END %]
+ [% IF ( ERROR_dateexpiry ) %]
+ <li id="ERROR_dateexpiry">Ngày hết hạn tài khoản không chính xác.</li>
+ [% END %]
+ [% IF ( ERROR_password_too_short ) %]
+ <li id="ERROR_short_password">Mật khẩu đăng nhập phải có độ dài tối thiểu là [% minPasswordLength %] ký tự.</li>
+ [% END %]
+ [% IF ( ERROR_password_too_weak ) %]
+ <li id="ERROR_weak_password">Password must contain at least one digit, one lowercase and one uppercase.</li>
+ [% END %]
+ [% IF ( ERROR_password_has_whitespaces ) %]
+ <li id="ERROR_weak_password">Password must not contain leading or trailing whitespaces.</li>
+ [% END %]
+ [% IF ( ERROR_password_mismatch ) %]
+ <li id="ERROR_password_mismatch">Mật khẩu không khớp.</li>
+ [% END %]
+ [% IF ( ERROR_extended_unique_id_failed ) %]
+ <li id="ERROR_extended_unique_id_failed"><strong>[% ERROR_extended_unique_id_failed_description %]:</strong> Attribute value "[% ERROR_extended_unique_id_failed_value %]" is already in use by another patron record.</li>
+ [% END %]
+ [% IF ERROR_bad_email %]
+ <li id="ERROR_bad_email">The primary email is invalid.</li>
+ [% END %]
+ [% IF ERROR_bad_email_secondary %]
+ <li id="ERROR_bad_email_secondary">The secondary email is invalid.</li>
+ [% END %]
+ [% IF ERROR_bad_email_alternative %]
+ <li id="ERROR_bad_email_alternative">The alternative email is invalid.</li>
+ [% END %]
+ </ul>
+ </div>
+ [% END %]
+
+
+<div id="toolbar" class="btn-toolbar">
+[% UNLESS ( check_member ) %]
+ [% IF quickadd && opadd %]
+ <button class="btn btn-default btn-sm toggler" id="save_quick_add" name="save"><i class="fa fa-save"></i> Lưu</button>
+ [% END %]
+ <button class="btn btn-default btn-sm toggler" id="saverecord" name="save" ><i class="fa fa-save"></i> Lưu</button>
+ [% IF opadd %]
+ <a class="btn btn-default btn-sm" href="/cgi-bin/koha/members/member.pl" class="toggler save_entryform">
+ [% ELSE %]
+ <a class="btn btn-default btn-sm" href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">
+ [% END %]
+ <i class="fa fa-times"></i> Cancel
+ </a>
+[% END %]
+</div>
+
+<form name="form" id="entryform"  action="/cgi-bin/koha/members/memberentry.pl" method="post" autocomplete="off" class="toggler" >
+[% UNLESS ( check_member ) %]
+ <input type="hidden" name="nodouble"  value="[% nodouble %]" />
+[% END %]
+<!-- field always hidden in different form (1,2,3) -->
+<input type="hidden" name="BorrowerMandatoryField" value="[% BorrowerMandatoryField %]" />
+<input type="hidden" name="category_type" value="[% category_type %]" />
+<input type="hidden" name="updtype" value="[% updtype %]" />
+<input type="hidden" name="destination" value="[% destination %]" />
+<input type="hidden" name="check_member" value="[% check_member %]" />
+<input type="hidden" name="borrowernumber" value="[% borrowernumber UNLESS opduplicate %]" />
+<input type="hidden" name="nodouble"  value="[% nodouble UNLESS opduplicate %]" />
+<input type="hidden" name="csrf_token" value="[% csrf_token %]" />
+[% IF ( step ) %]<input type="hidden" name="step"  value="[% step %]" />[% END %]
+[% IF ( opadd ) %]<input type="hidden" name="op" value="insert" />
+[% ELSIF ( opduplicate ) %]
+<input type="hidden" name="op" value="insert" />
+[% ELSE %]
+<input type="hidden" name="op" value="save" />
+[% IF step == 4 || step == 5 || step == 6 || step == 2 || step == 1 || step == 7 %]
+[%# Only put the cardnumber if we arent showing it in the form later %]
+[% IF cardnumber %]
+<input type="hidden" name="cardnumber" value="[% cardnumber %]" />
+[% END %]
+[% END %]
+[% END %]
+
+[% IF ( step_1 ) %]
+[%UNLESS notitle && nosurname && nofirstname && nodateofbirth && noinitials && noothernames &&nosex %]
+ <fieldset class="rows" id="memberentry_identity">
+ <legend id="identity_lgd">[% IF ( I ) %]Thông tin [% ELSE %]tổ chức [% END %]bạn đọc</legend>
+ <ol>
+ [% UNLESS ( I ) %]
+ [% UNLESS notitle %]
+ [% IF Koha.Preference('BorrowersTitles') %]
+ <li>
+ [% IF ( mandatorytitle ) %]
+ <label for="btitle" class="required">
+ [% ELSE %]
+ <label for="btitle">
+ [% END %] Danh xưng: </label>
+ <select id="btitle" name="title">
+ <option value=""></option>
+ [% FOREACH t IN Koha.Preference('BorrowersTitles').split('\|') %]
+ [% IF btitle == t %]
+ <option value="[% t %]" selected="selected">[% t %]</option>
+ [% ELSE %]
+ <option value="[% t %]">[% t %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ [% IF ( mandatorytitle ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% END %]
+ [% END %]
+ [% UNLESS nosurname %]
+ <li>
+ [% IF ( mandatorysurname ) %]
+ <label for="surname" class="required">
+ [% ELSE %]
+ <label for="surname">
+ [% END %] Họ: </label>
+ [% IF ( uppercasesurnames ) %]
+ <input style="text-transform:uppercase;" type="text" id="surname" name="surname" size="20"  value="[% surname %]" />
+ [% ELSE %]
+ <input type="text" id="surname" name="surname" size="20"  value="[% surname %]" />
+ [% END %]
+ [% IF ( mandatorysurname ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS ( I ) %]
+ [% UNLESS nofirstname %]
+ <li>
+ [% IF ( mandatoryfirstname ) %]
+ <label for="firstname" class="required">
+ [% ELSE %]
+ <label for="firstname">
+ [% END %] Tên: </label>
+ <input type="text" id="firstname" name="firstname" size="20"  value="[% firstname | html UNLESS opduplicate %]" />
+ [% IF ( mandatoryfirstname ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS nodateofbirth %]
+ <li>
+ [% IF ( mandatorydateofbirth ) %]
+ <label for="dateofbirth" class="required">
+ [% ELSE %]
+ <label for="dateofbirth">
+ [% END %] Ngày sinh: </label>
+
+ <input type="text" id="dateofbirth" name="dateofbirth" size="20" onchange="write_age();" value="[% dateofbirth UNLESS opduplicate %]" class="datepicker" />
+
+ [% IF ( mandatorydateofbirth ) %]<span class="required">Bắt buộc</span>[% END %]
+ [% IF ( ERROR_dateofbirth ) %]<span class="required">(Lỗi)</span>[% END %]
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ [% END %]
+ [% UNLESS noinitials %]
+ <li>
+ [% IF ( mandatoryinitials ) %]
+ <label for="initials" class="required">
+ [% ELSE %]
+ <label for="initials">
+ [% END %]Tên viết tắt: </label>
+ <input type="text" id="initials" name="initials" size="20"  value="[% initials | html UNLESS opduplicate %]" />
+ [% IF ( mandatoryinitials ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% END %]
+ [% UNLESS noothernames %]
+ <li>
+ [% IF ( mandatoryothernames ) %]
+ <label for="othernames" class="required">
+ [% ELSE %]
+ <label for="othernames">
+ [% END %] Tên khác: </label>
+ <input type="text" id="othernames" name="othernames" size="20"  value="[% othernames | html UNLESS opduplicate %]" />
+[% IF ( mandatoryothernames ) %]<span class="required">Bắt buộc</span>[% END %]
+ [% IF ( I ) %]<input type="hidden" name="sex" value="N" />[% END %]
+ </li>
+ [% END %]
+ [% UNLESS ( I ) %]
+ [% UNLESS nosex %]
+ <li class="radio">
+
+ [% UNLESS ( opduplicate ) %]
+ [% IF ( female ) %]
+ <label for="sex-female"><input type="radio" name="sex" id="sex-female" value="F" checked="checked" /> Female</label>
+ [% ELSE %]
+ <label for="sex-female"><input type="radio" name="sex" id="sex-female" value="F" /> Female</label>
+ [% END %]
+ [% IF ( male ) %]
+ <label for="sex-male"><input type="radio" name="sex" id="sex-male" value="M" checked="checked" /> Male</label>
+ [% ELSE %]
+ <label for="sex-male"><input type="radio" name="sex" id="sex-male" value="M" /> Male</label>
+ [% END %]
+ [% IF ( none ) %]
+ <label for="sex-none"><input type="radio" name="sex" id="sex-none" value=""  checked="checked" /> None specified</label>
+ [% ELSE %]
+ <label for="sex-none"><input type="radio" name="sex" id="sex-none" value="" /> None specified</label>
+ [% END %]
+ [% ELSE %]
+ <label for="sex-female">Nữ </label><input type="radio" name="sex" id="sex-female" value="F" />
+ <label for="sex-male">Nam </label><input type="radio" name="sex" id="sex-male" value="M" />
+ <label for="sex-none">None specified </label><input type="radio" name="sex" id="sex-none" value="" checked="checked" />
+ [% END %]
+
+ </li>
+ [% END %]
+ [% END %]
+ </ol>
+ </fieldset>
+[% END # hide fieldset %]
+
+[% IF ( showguarantor ) %]
+ <input type="hidden" id="guarantorid" name="guarantorid"   value="[% guarantorid %]" />
+ [% UNLESS step_6 %]
+ <input type="hidden" name="branchcode" value="[% branchcode %]" />
+ [% END %]
+ <fieldset id="memberentry_guarantor" class="rows">
+ <legend id="guarantor_lgd">Bạn đọc bảo lãnh</legend>
+ <ol>
+[% IF ( P ) %]
+ [% IF ( guarantorid ) %]
+ <li id="contact-details">
+ [% ELSE %]
+ <li id="contact-details" style="display: none">
+ [% END %]
+ <span class="label">Tổ chức bảo lãnh:</span> [% IF ( guarantorid ) %] <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% guarantorid %]" target="blank">[% guarantorid %]</a>[% END %]
+ </li>
+ <li>
+ <label for="contactname">Tên tổ chức: </label>
+ [% IF ( guarantorid ) %]
+ <span>[% contactname %]</span>
+ <input name="contactname" id="contactname" type="hidden" size="20" value="[% contactname | html %]" />
+ [% ELSE %]
+ <input name="contactname" id="contactname" type="text" size="20" value="[% contactname | html %]" />
+ [% END %]
+ </li>
+[% ELSE %]
+ [% IF ( C ) %]
+ [% IF ( guarantorid ) %]
+ <li id="contact-details">
+ [% ELSE %]
+ <li id="contact-details" style="display: none">
+ [% END %]
+ <span class="label">Bạn đọc bảo lãnh:</span>
+ [% IF guarantorid %]
+ [% IF logged_in_user.can_see_patron_infos( guarantor ) %]
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% guarantorid %]" target="blank">[% guarantorid | html %]</a>
+ [% ELSE %]
+ [% guarantorid | html %]
+ [% END %]
+ [% END %]
+ </li>
+ [% UNLESS nocontactname %]
+ <li>
+ <label for="contactname">Họ: </label>
+ [% IF ( guarantorid ) %]
+ <span>[% contactname %]</span>
+ <input name="contactname" id="contactname" type="hidden" size="20" value="[% contactname | html %]" />
+ [% ELSE %]
+ <input name="contactname" id="contactname" type="text" size="20" value="[% contactname | html %]" />
+ [% END %]
+ </li>
+ [% END %]
+ [% UNLESS nocontactfirstname %]
+ <li>
+ <label for="contactfirstname">Tên: </label>
+ [% IF ( guarantorid ) %]
+ <span>[% contactfirstname %]</span>
+ <input name="contactfirstname" id="contactfirstname" type="hidden" size="20" value="[% contactfirstname | html %]" />
+ [% ELSE %]
+ <input name="contactfirstname" id="contactfirstname" type="text" size="20" value="[% contactfirstname | html %]" />
+ [% END %]
+ </li>
+ [% END %]
+ [% IF ( relshiploop ) %]
+ <li>
+ <label for="relationship">Mối quan hệ: </label>
+ <select name="relationship" id="relationship" >
+ [% FOREACH relshiploo IN relshiploop %]
+ [% IF ( relshiploo.selected ) %]
+ <option value="[% relshiploo.relationship %]" selected="selected" >[% relshiploo.relationship %]</option>
+ [% ELSE %]
+ <option value="[% relshiploo.relationship %]">[% relshiploo.relationship %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ [% END %]
+[% END %]
+ <li>
+ <span class="label">&nbsp;</span>
+ [% IF ( guarantorid ) %]
+ <input value="Sửa" onclick="Dopopguarantor('guarantor_search.pl');" type="button" id="guarantorsearch" />
+ [% ELSE %]
+ <input value="Tìm kiếm" onclick="Dopopguarantor('guarantor_search.pl');" id="guarantorsearch" type="button" />
+ [% END %]
+ <input value="Xóa" type="button" id="guarantordelete" />
+ </li>
+ [% IF guarantorid && Koha.Preference('AllowStaffToSetCheckoutsVisibilityForGuarantor') %]
+ <li>
+ <label for="privacy_guarantor_checkouts">Show checkouts to guarantor</label>
+ <select name="privacy_guarantor_checkouts" id="privacy_guarantor_checkouts">
+ [% IF privacy_guarantor_checkouts %]
+ <option value="0">Không xóa</option>
+ <option value="1" selected>Có</option>
+ [% ELSE %]
+ <option value="0" selected>Không xóa</option>
+ <option value="1">Có</option>
+ [% END %]
+ </select>
+ <div class="hint">Allow guarantor of this patron to view this patron's checkouts from the OPAC</div>
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+
+[% END %]
+[% UNLESS noaddress && noaddress2 && nocity && nostate && nozipcode && nocountry %]
+ [% IF Koha.Preference( 'AddressFormat' ) %]
+ [% INCLUDE "member-main-address-style-${ Koha.Preference( 'AddressFormat' ) }.inc" %]
+ [% ELSE %]
+ [% INCLUDE 'member-main-address-style-us.inc' %]
+ [% END %]
+[% END # nostreet && nocity etc group%]
+
+[% UNLESS nophone && nophonepro && nomobile && noemail && noemailpro && nofax %]
+ <fieldset class="rows" id="memberentry_contact">
+ <legend id="contact_lgd">Thông tin liên hệ</legend><ol>
+ [% UNLESS nophone %]
+ <li>
+ [% IF ( mandatoryphone ) %]
+ <label for="phone" class="required">
+ [% ELSE %]
+ <label for="phone">
+ [% END %] Số điện thoại: </label>
+ <input type="text" id="phone" name="phone" value="[% phone | html %]" />
+ [% IF ( mandatoryphone ) %]<span class="required">Bắt buộc</span>[% END %]<div class="hint">Hiển thị trên phiếu vận chuyển</div>
+
+ </li>
+ [% END %]
+ [% UNLESS nophonepro %]
+ <li>
+ [% IF ( mandatoryphonepro ) %]
+ <label for="phonepro" class="required">
+ [% ELSE %]
+ <label for="phonepro">
+ [% END %] Số điện thoại 2:  </label>
+ <input type="text" id="phonepro" name="phonepro" value="[% phonepro | html %]" />
+ [% IF ( mandatoryphonepro ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS nomobile %]
+ <li>
+ [% IF ( mandatorymobile ) %]
+ <label for="mobile" class="required">
+ [% ELSE %]
+ <label for="mobile">
+ [% END %]
+ Other phone: </label>
+ <input type="text" id="mobile" name="mobile" value="[% mobile | html %]" />
+ [% IF ( mandatorymobile ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS noemail %]
+ <li>
+ [% IF ( mandatoryemail ) %]
+ <label for="email" class="required">
+ [% ELSE %]
+ <label for="email">
+ [% END %] Thư điện tử: </label>
+ <input type="text" id="email" name="email" size="45" value="[% email | html %]" />
+ [% IF ( mandatoryemail ) %]<span class="required">Bắt buộc</span>[% END %]<div class="hint">Hiển thị trên phiếu vận chuyển</div>
+
+ </li>
+ [% END %]
+ [% UNLESS noemailpro %]
+ <li>
+ [% IF ( mandatoryemailpro ) %]
+ <label for="emailpro" class="required">
+ [% ELSE %]
+ <label for="emailpro">
+ [% END %] Thư điện tử 2: </label>
+ <input type="text" id="emailpro" name="emailpro" size="45" value="[% emailpro | html %]" />
+ [% IF ( mandatoryemailpro ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS nofax %]
+ <li>
+ [% IF ( mandatoryfax ) %]
+ <label for="fax" class="required">
+ [% ELSE %]
+ <label for="fax">
+ [% END %] Số Fax: </label>
+ <input type="text" id="fax" name="fax" value="[% fax | html %]" />
+ [% IF ( mandatoryfax ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+[%END # hide fieldset %]
+
+<!-- ************************ STEP_1 *********************** -->
+[% END %]
+[% IF ( step_6 ) %]
+
+ [% UNLESS noB_address && noB_address2 && noB_city && noB_zipcode && noB_state && noB_country &&nocontactnote && noB_phone && noB_email %]
+ [% IF Koha.Preference( 'AddressFormat' ) %]
+ [% INCLUDE "member-alt-address-style-${ Koha.Preference( 'AddressFormat' ) }.inc" %]
+ [% ELSE %]
+ [% INCLUDE 'member-alt-address-style-us.inc' %]
+ [% END %]
+ [% END # UNLESS noB_address && noB_city && noB_state && noB_phone && noB_email %]
+[% END %]
+[% IF ( step_2 ) %]
+ [% UNLESS noaltcontactsurname && noaltcontactfirstname && noaltcontactaddress1 && noaltcontactaddress2 && noaltcontactaddress3 && noaltcontactstate && noaltcontactzipcode && noaltcontactcountry && noaltcontactphone %]
+ [% IF Koha.Preference( 'AddressFormat' ) %]
+ [% INCLUDE "member-alt-contact-style-${ Koha.Preference( 'AddressFormat' ) }.inc" %]
+ [% ELSE %]
+ [% INCLUDE 'member-alt-contact-style-us.inc' %]
+ [% END %]
+ [% END # UNLESS noaltcontactsurname && noaltcontactfirstname etc %]
+
+[% END %]
+[% IF ( step_3 ) %]
+
+ [% SET autoMemberNum = Koha.Preference('autoMemberNum') %]
+ <fieldset class="rows" id="memberentry_library_management">
+ <legend id="library_management_lgd">Thư viện quản lý</legend><ol>
+ [% UNLESS nocardnumber %]
+ <li>
+ [% IF mandatorycardnumber %]
+ <label for="cardnumber" class="required">
+ [% ELSE %]
+ <label for="cardnumber" class="validated">
+ [% END %] Số thẻ: </label>
+
+ <!-- NOTE: div.hint closing tag isn't on the same line -->
+ [% IF minlength_cardnumber == maxlength_cardnumber %]
+ <input type="text" id="cardnumber" name="cardnumber" size="20" value="[% cardnumber | html %]" minlength="[% minlength_cardnumber %]" maxlength="[% maxlength_cardnumber %]" />
+ [% IF mandatorycardnumber %]<span class="required">Bắt buộc</span>[% END %]<span id="cn_max" class="required">Card number must not be more than [% maxlength_cardnumber %] characters.</span>
+ <div class="hint">Card number must be exactly [% minlength_cardnumber %] characters.
+ [% ELSIF minlength_cardnumber && maxlength_cardnumber %]
+ <input type="text" id="cardnumber" name="cardnumber" size="20" value="[% cardnumber | html %]" minlength="[% minlength_cardnumber %]" maxlength="[% maxlength_cardnumber %]" />
+ [% IF mandatorycardnumber %]<span class="required">Bắt buộc</span>[% END %]<span id="cn_max" class="required">Card number must not be more than [% maxlength_cardnumber %] characters.</span>
+ <div class="hint">Card number must be between [% minlength_cardnumber %] and [% maxlength_cardnumber %] characters.
+ [% ELSIF maxlength_cardnumber %]
+ <input type="text" id="cardnumber" name="cardnumber" size="20" value="[% cardnumber | html %]" maxlength="[% maxlength_cardnumber %]" />
+ [% IF mandatorycardnumber %]<span class="required">Bắt buộc</span>[% END %]<span id="cn_max" class="required">Card number must not be more than [% maxlength_cardnumber %] characters.</span>
+ <div class="hint">Card number can be up to [% maxlength_cardnumber %] characters.
+ [% ELSE %]
+ <input type="text" id="cardnumber" name="cardnumber" size="20" value="[% cardnumber | html %]" />
+ [% IF mandatorycardnumber %]<span class="required">Bắt buộc</span>[% END %]
+ <div class="hint">There is no minimum or maximum character length.
+ [% END %]
+ [% IF autoMemberNum %]
+ [% IF mandatorycardnumber %]
+ <br/><span class="error">AutoMemberNum is set to enabled, but cardnumber is marked as mandatory in BorrowerMandatoryField: auto calc has been disabled.</span>
+ [% ELSE %]
+ <br/>Leave blank for auto calc during registration
+ [% END %]
+ [% END %]
+ </div><!--/hint div -->
+ </li>
+ [% END %]
+ [% UNLESS nobranchcode %]
+ <li>
+ <label for="libraries" class="required">Thư viện:</label>
+ <select name="branchcode" size="1" id="libraries">
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => userbranch, only_from_group => 1 ) %]
+ </select>
+ <span class="required">Bắt buộc</span>
+ </li>
+ [% END %]
+ <li>
+ <label for="categorycode_entry" class="required">Kiểu: </label>
+ <select id="categorycode_entry" name="categorycode" onchange="update_category_code(this);">
+ [% FOREACH typeloo IN typeloop %]
+ [% FOREACH categoryloo IN typeloo.categoryloop %]
+ [% IF ( loop.first ) %]
+ [% IF ( typeloo.typename_C ) %]<optgroup label="Trẻ em">[% END %]
+ [% IF ( typeloo.typename_A ) %]<optgroup label="Người lớn">[% END %]
+ [% IF ( typeloo.typename_S ) %]<optgroup label="Cán bộ thư viện">[% END %]
+ [% IF ( typeloo.typename_I ) %]<optgroup label="Cơ quan, tổ chức">[% END %]
+ [% IF ( typeloo.typename_P ) %]<optgroup label="Cán bộ chuyên trách">[% END %]
+ [% IF ( typeloo.typename_X ) %]<optgroup label="Thống kê">[% END %]
+ [% END %]
+ [% IF ( categoryloo.categorycodeselected ) %]
+ <option value="[% categoryloo.categorycode %]" selected="selected" data-typename="[% typeloo.typename %]">[% categoryloo.categoryname %]</option>
+ [% ELSE %]
+ <option value="[% categoryloo.categorycode %]" data-typename="[% typeloo.typename %]">[% categoryloo.categoryname %]</option>
+ [% END %]
+ [% IF ( loop.last ) %]
+ </optgroup>
+ [% END %]
+ [% END %]
+ [% END %]
+ </select>
+ <span class="required">Bắt buộc</span>
+ </li>
+ [% UNLESS nosort1 %]
+ <li>
+ [% IF ( mandatorysort1 ) %]
+ <label for="sort1" class="required">
+ [% ELSE %]
+ <label for="sort1">
+ [% END %] Thống kê 1: </label>
+ [% PROCESS 'av-build-dropbox.inc' name="sort1", category="Bsort1", default=sort1, size = 20 %]
+ [% IF ( mandatorysort1 ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS nosort2 %]
+ <li>
+ [% IF ( mandatorysort2 ) %]
+ <label for="sort2" class="required">
+ [% ELSE %]
+ <label for="sort2">
+ [% END %] Thống kê 2: </label>
+ [% PROCESS 'av-build-dropbox.inc' name="sort2", category="Bsort2", default=sort2, size = 20 %]
+ [% IF ( mandatorysort2 ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% IF ( Koha.Preference( 'NorwegianPatronDBEnable' ) == 1 ) %]
+ <li>
+ <label for="sort2">Sync with the Norwegian national patron database:</label>
+ [% IF ( sync == 0 ) %]
+ <input type="radio" id="sync" name="sync" value="1"> Có <input type="radio" id="sync" name="sync" value="0" checked> No
+ [% ELSE %]
+ <input type="radio" id="sync" name="sync" value="1" checked> Có <input type="radio" id="sync" name="sync" value="0"> No
+ [% END %]
+ </li>
+ [% END %]
+ [% IF ( Koha.Preference('CheckPrevCheckout') == 'softyes' || Koha.Preference('CheckPrevCheckout') == 'softno' ) %]
+ <li><label for="checkprevcheckout">Check for previous checkouts: </label>
+ <select name="checkprevcheckout" id="checkprevcheckout">
+ [% IF ( checkprevcheckout == 'yes' ) %]
+ <option value="yes" selected="selected">Yes if settings allow it</option>
+ <option value="no">No if settings allow it</option>
+ <option value="inherit">Inherit from settings</option>
+ [% ELSIF ( checkprevcheckout == 'no' ) %]
+ <option value="yes">Yes if settings allow it</option>
+ <option value="no" selected="selected">No if settings allow it</option>
+ <option value="inherit">Inherit from settings</option>
+ [% ELSE %]
+ <option value="yes">Yes if settings allow it</option>
+ <option value="no">No if settings allow it</option>
+ <option value="inherit" selected="selected">Inherit from settings</option>
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ [% IF Koha.Preference('TranslateNotices') %]
+ <li>
+ <label for="lang">Preferred language for notices: </label>
+ <select id="lang" name="lang">
+ <option value="default">Mặc định</option>
+ [% FOR language IN languages %]
+ [% FOR sublanguage IN language.sublanguages_loop %]
+ [% IF language.plural %]
+ [% IF sublanguage.rfc4646_subtag == lang %]
+ <option value="[% sublanguage.rfc4646_subtag %]" selected="selected">[% sublanguage.native_description %] [% sublanguage.region_description %] ([% sublanguage.rfc4646_subtag %])</option>
+ [% ELSE %]
+ <option value="[% sublanguage.rfc4646_subtag %]">[% sublanguage.native_description %] [% sublanguage.region_description %] ([% sublanguage.rfc4646_subtag %])</option>
+ [% END %]
+ [% ELSE %]
+ [% IF sublanguage.rfc4646_subtag == lang %]
+ <option value="[% sublanguage.rfc4646_subtag %]" selected="selected">[% sublanguage.native_description %] ([% sublanguage.rfc4646_subtag %])</option>
+ [% ELSE %]
+ <option value="[% sublanguage.rfc4646_subtag %]">[% sublanguage.native_description %] ([% sublanguage.rfc4646_subtag %])</option>
+ [% END %]
+ [% END %]
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+ [% UNLESS nodateenrolled &&  noopacnote && noborrowernotes %]
+ <fieldset class="rows" id="memberentry_subscription">
+ <legend id="library_setup_lgd">Thông tin tài khoản</legend><ol>
+ [% UNLESS nodateenrolled %]
+ <li>
+ [% IF ( mandatorydateenrolled ) %]
+ <label for="from" class="required">
+ [% ELSE %]
+ <label for="from">
+ [% END %] Ngày đăng kí: </label>
+ [% IF ( dateformat == "metric" ) %]
+ <input type="text" id="from" name="dateenrolled"  maxlength="10" size="10" onchange="CheckDate(document.form.dateenrolled);check_manip_date('verify');" value="[% dateenrolled %]" class="datepickerfrom" />
+ [% ELSE %]
+ <input type="text" id="from" name="dateenrolled"  maxlength="10" size="10" value="[% dateenrolled %]" class="datepickerfrom" />
+ [% END %]
+ [% IF ( mandatorydateenrolled ) %]<span class="required">Bắt buộc</span>[% END %]
+ [% IF ( ERROR_dateenrolled ) %]<span class="required">(Lỗi)</span>[% END %]
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ [% END %]
+ [% UNLESS nodateexpiry %]
+ <li>
+ [% ELSE %]
+ <li style="display:none">
+ [% END %]
+ [% IF ( mandatorydateexpiry ) %]
+ <label for="to" class="required">
+ [% ELSE %]
+ <label for="to">
+ [% END %]
+ Expiry date (leave blank for auto calc): </label>
+ [% IF ( dateformat == "metric" ) %]
+ [% UNLESS ( opadd ) %]
+ <input type="text" id="to" name="dateexpiry" maxlength="10"  size="10" onchange="CheckDate(document.form.dateexpiry);check_manip_date('verify');" value="[% dateexpiry UNLESS opduplicate %]" class="datepickerto" />
+ [% ELSE %]
+ <input type="text" id="to" name="dateexpiry" maxlength="10"  size="10" onchange="CheckDate(document.form.dateexpiry);check_manip_date('verify');" class="datepickerto" />
+ [% END %]
+ [% ELSE %]
+ [% UNLESS ( opadd ) %]
+ <input type="text" id="to" name="dateexpiry" maxlength="10"  size="10" value="[% dateexpiry UNLESS opduplicate %]" class="datepickerto" />
+ [% ELSE %]
+ <input type="text" id="to" name="dateexpiry" maxlength="10"  size="10" value="[% dateexpiry %]" class="datepickerto" />
+ [% END %]
+ [% END %]
+ [% IF ( mandatorydateexpiry ) %]<span class="required">Bắt buộc</span>[% END %]
+ [% IF ( ERROR_dateexpiry ) %]<span class="required">(Lỗi)</span>[% END %]
+ <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
+ </li>
+ [% UNLESS noopacnote %]
+ <li>
+ [% IF ( mandatoryopacnote ) %]
+ <label for="opacnote" class="required">
+ [% ELSE %]
+ <label for="opacnote">
+ [% END %] Ghi chú OPAC: </label>
+ <textarea id="opacnote" name="opacnote" cols="55" rows="5">[% opacnote | html UNLESS opduplicate %]</textarea>
+ <div class="hint">Thông báo này hiển thị trên trang OPAC của bạn đọc</div>
+ [% IF ( mandatoryopacnote ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ [% UNLESS noborrowernotes %]
+ <li>
+ [% IF ( mandatoryborrowernotes ) %]
+ <label for="borrowernotes" class="required">
+ [% ELSE %]
+ <label for="borrowernotes">
+ [% END %] Ghi chú lưu thông: </label>
+ <textarea id="borrowernotes" name="borrowernotes" cols="55" rows="5">[% borrowernotes | html UNLESS opduplicate %]</textarea>
+ <div class="hint">Thông báo hiển thị khi ghi mượn cho bạn đọc</div>
+ [% IF ( mandatoryborrowernotes ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+ [% END # hide fieldset %]
+
+ [% UNLESS nouserid && nopassword %]
+ <fieldset class="rows" id="memberentry_userid">
+ <legend id="opac_staff_login_lgd">Tài khoản đăng nhập</legend><ol>
+ [% UNLESS nouserid %]
+ <li>
+ [% IF ( mandatoryuserid ) %]
+ <label for="userid" class="required">
+ [% ELSE %]
+ <label for="userid">
+ [% END %] Tên đăng nhập: </label>
+
+[% IF ( NoUpdateLogin ) %]
+ [% IF ( opduplicate ) %]
+ <input type="text" id="userid" name="userid" size="20" disabled="disabled" />
+ [% ELSE %]
+ <input type="text" id="userid" name="userid" size="20" disabled="disabled" value="[% userid %]" />
+ [% END %]
+[% ELSE %]
+ [% IF ( opduplicate ) %]
+ <input type="text" id="userid" name="userid" size="20" value="" />
+ [% ELSE %]
+ <input type="text" id="userid" name="userid" size="20" value="[% userid %]" />
+ [% END %]
+[% END %]
+
+[%# Dummy input to avoid Firefox from using userid/password saved for authentication %]
+<input type="text" disabled="disabled" style="display:none" />
+
+ [% IF ( mandatoryuserid ) %]<span class="required">Bắt buộc</span>[% END %]
+ </li>
+ [%END %]
+ [% UNLESS nopassword %]
+ <li>
+ [% IF ( mandatorypassword ) %]
+ <label for="password" class="required">
+ [% ELSE %]
+ <label for="password">
+ [% END %] Mật khẩu: </label>
+ [% IF ( opadd ) %]
+ [% IF ( NoUpdateLogin ) %]
+ [% IF ( opduplicate ) %]
+ <input type="password" id="password" name="password" size="20"  disabled="disabled" />
+ [% ELSE %]
+ <input type="password" id="password" name="password" size="20"  disabled="disabled" value="[% password %]" />
+ [% END %]
+[% ELSE %]
+ [% IF ( opduplicate ) %]
+ <input type="password" id="password" name="password" size="20" />
+ [% ELSE %]
+ <input type="password" id="password" name="password" size="20" value="[% password %]" />
+ [% END %]
+[% END %]
+ [% ELSE %]
+ [% IF ( password ) %]
+ [% IF ( NoUpdateLogin ) %]
+ <input type="password" id="password" name="password" size="20"  disabled="disabled" value="****" />
+ [% ELSE %]
+ [% IF ( opduplicate ) %]
+ <input type="password" id="password" name="password" size="20" />
+ [% ELSE %]
+ <input type="password" id="password" name="password" size="20" value="****" />
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ [% IF ( NoUpdateLogin ) %]
+ <input type="password" id="password" name="password" size="20"  disabled="disabled" value="" />
+ [% ELSE %]
+ <input type="password" id="password" name="password" size="20" value="" />
+ [% END %]
+ [% END %]
+ [% END %]
+ [% IF ( mandatorypassword ) %]<span class="required">Bắt buộc</span>[% END %]
+ [% IF ( ERROR_password_too_short ) %]<span class="required">Mật khẩu quá ngắn</span>[% END %]
+ [% IF ( ERROR_password_too_weak ) %]<span class="required">Password is too weak</span>[% END %]
+ [% IF ( ERROR_password_has_whitespaces ) %]<span class="required">Password has leading or trailing whitespaces</span>[% END %]
+ <div class="hint">Chiều dài mật khẩu tối thiểu: [% minPasswordLength %]</div>
+ </li>
+ <li>
+ [% IF ( mandatorypassword ) %]
+ <label for="password2" class="required">
+ [% ELSE %]
+ <label for="password2">
+ [% END %] Mật khẩu xác nhận: </label>
+ [% IF ( opadd ) %]
+ [% IF ( NoUpdateLogin ) %]
+ [% IF ( opduplicate ) %]
+ <input type="password" id="password2" name="password2" size="20"  disabled="disabled" />
+ [% ELSE %]
+ <input type="password" id="password2" name="password2" size="20"  disabled="disabled" value="[% password %]" />
+ [% END %]
+[% ELSE %]
+ [% IF ( opduplicate ) %]
+ <input type="password" id="password2" name="password2" size="20" />
+ [% ELSE %]
+ <input type="password" id="password2" name="password2" size="20" value="[% password %]" />
+ [% END %]
+[% END %]
+ [% ELSE %]
+ [% IF ( password ) %]
+ [% IF ( NoUpdateLogin ) %]
+ <input type="password" id="password2" name="password2" size="20"  disabled="disabled" value="****" />
+ [% ELSE %]
+ [% IF ( opduplicate ) %]
+ <input type="password" id="password2" name="password2" size="20" />
+ [% ELSE %]
+ <input type="password" id="password2" name="password2" size="20" value="****" />
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ [% IF ( NoUpdateLogin ) %]
+ <input type="password" id="password2" name="password2" size="20"  disabled="disabled" value="" />
+ [% ELSE %]
+ <input type="password" id="password2" name="password2" size="20" value="" />
+ [% END %]
+ [% END %]
+ [% END %]
+ [% IF ( mandatorypassword ) %]<span class="required">Bắt buộc</span>[% END %][% IF ( ERROR_password_mismatch ) %]<span class="required">Mật khẩu không khớp</span>[% END %]
+ </li>
+ </ol>
+ </fieldset>
+ [% END # hide fieldset %][% END %]
+ <!--this zones are not necessary in modif mode -->
+ [% UNLESS ( opadd || opduplicate ) %]
+ <fieldset class="rows" id="memberentry_account_flags">
+ <legend id="account_flags_lgd">Thông tin khác</legend>
+ <ol class="radio">
+ [% FOREACH flagloo IN flagloop %]
+ <li><label class="radio" for="yes[% flagloo.name %]">
+ [% IF ( flagloo.key == 'gonenoaddress' ) %]Thiếu địa chỉ:[% END %] [% IF ( flagloo.key == 'lost' ) %]Mất thẻ thư viện:[% END %] </label>
+ [% IF CAN_user_circulate_manage_restrictions %]
+ <label for="yes[% flagloo.name %]">
+ [% IF ( flagloo.yes ) %]
+ <input type="radio" id="yes[% flagloo.name %]" name="[% flagloo.name %]" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="radio" id="yes[% flagloo.name %]" name="[% flagloo.name %]" value="1" />
+ [% END %]
+ Yes </label>
+ <label for="no[% flagloo.name %]">
+ [% IF ( flagloo.no ) %]
+ <input type="radio" id="no[% flagloo.name %]" name="[% flagloo.name %]" value="0" checked="checked"/>
+ [% ELSE %]
+ <input type="radio" id="no[% flagloo.name %]" name="[% flagloo.name %]" value="0" />
+ [% END %]
+ No </label>
+ [% ELSE %]
+ [% IF flagloo.yes %]Yes[% ELSE %]No[% END %]
+ [% END %]
+
+ </li>
+ [% END %]
+
+ </ol>
+ </fieldset>
+
+ <fieldset class="rows" id="memberentry_restrictions">
+ <legend id="restrictions_lgd">Hạn chế bạn đọc</legend>
+
+ [% IF ( debarments ) %]
+ <table>
+ <thead>
+ <tr>
+ <th>Type</th>
+ <th>Bình luận</th>
+ <th>Ngày hết hạn</th>
+ <th>Created</th>
+ [% IF CAN_user_borrowers_edit_borrowers && CAN_user_circulate_manage_restrictions %]
+ <th>Loại bỏ?</th>
+ [% END %]
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH d IN debarments %]
+ <tr>
+ <td>[% d.type %]</td>
+ <td>
+ [% IF d.comment.search('OVERDUES_PROCESS') %]
+ Restriction added by overdues process [% d.comment.remove('OVERDUES_PROCESS ') %]
+ [% ELSE %]
+ [% d.comment %]
+ [% END %]
+ </td>
+ <td>[% IF d.expiration %] [% d.expiration | $KohaDates %] [% ELSE %] <i>Indefinite</i> [% END %]</td>
+ <td>[% d.created | $KohaDates %]</td>
+ [% IF CAN_user_borrowers_edit_borrowers && CAN_user_circulate_manage_restrictions %]
+ <td>
+ <input type="checkbox" id="debarment_[% d.borrower_debarment_id %]" name="remove_debarment" value="[% d.borrower_debarment_id %]" />
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <p>Bạn đọc hiện tại không bị hạn chế tài khoản.</p>
+ [% END %]
+
+ [% IF CAN_user_borrowers_edit_borrowers && CAN_user_circulate_manage_restrictions %]
+ <p><a href="#" id="add_manual_restriction">Hạn chế tài khoản</a></p>
+ <fieldset id="manual_restriction_form">
+ <input type="hidden" id="add_debarment" name="add_debarment" value="0" />
+ <legend id="manual_restriction_lgd">Hạn chế tài khoản</legend>
+ <ol>
+ <li><label for="debarred_comment">Bình luận: </label><input type="text" id="debarred_comment" name="debarred_comment" onchange="$('#add_debarment').val(1);" /></li>
+ <li><label for="debarred_expiration">Ngày hết hạn: </label><input name="debarred_expiration" id="debarred_expiration" size="10" value="" class="datepicker" onchange="$('#add_debarment').val(1);" />
+ <a href='javascript:void(0)' onclick="$('#debarred_expiration').val('');">Xóa</a></li>
+
+ </ol>
+ <p>
+ <a class="cancel" id="cancel_manual_restriction" href="#">Hủy bỏ</a>
+ </p>
+ </fieldset>
+ [% END %]
+ </fieldset>
+ [% END %]
+
+[% END %]
+
+[% IF ( step_7 ) %]
+[% IF Koha.Preference('HouseboundModule') %]
+ <fieldset class="rows" id="memberentry_housebound_roles">
+ <legend id="housebound_roles">Housebound roles</legend>
+ <ol class="radio">
+ <li>
+ <label class="radio" for="housebound_chooser">
+ Chooser:
+ </label>
+ [% IF ( housebound_role.housebound_chooser == 1 ) %]
+ <label for="yes_housebound_chooser">Có </label>
+ <input type="radio" id="yes_housebound_chooser"
+               name="housebound_chooser" value="1"
+               checked="checked" />
+ <label for="no_housebound_chooser">Không </label>
+ <input type="radio" id="no_housebound_chooser"
+               name="housebound_chooser" value="0" />
+ [% ELSE %]
+ <label for="yes_housebound_chooser">Có </label>
+ <input type="radio" id="yes_housebound_chooser"
+               name="housebound_chooser" value="1" />
+ <label for="no_housebound_chooser">Không </label>
+ <input type="radio" id="no_housebound_chooser"
+               name="housebound_chooser" value="0"
+               checked="checked" />
+ [% END %]
+ </li>
+ <li>
+ <label class="radio" for="housebound_deliverer">Deliverer:</label>
+ [% IF ( housebound_role.housebound_deliverer == 1 ) %]
+ <label for="yes_housebound_deliverer">Có </label>
+ <input type="radio" id="yes_housebound_deliverer"
+               name="housebound_deliverer" value="1"
+               checked="checked" />
+ <label for="no_housebound_deliverer">Không </label>
+ <input type="radio" id="no_housebound_deliverer"
+               name="housebound_deliverer" value="0" />
+ [% ELSE %]
+ <label for="yes_housebound_deliverer">Có </label>
+ <input type="radio" id="yes_housebound_deliverer"
+               name="housebound_deliverer" value="1" />
+ <label for="no_housebound_deliverer">Không </label>
+ <input type="radio" id="no_housebound_deliverer"
+               name="housebound_deliverer" value="0"
+               checked="checked" />
+ [% END %]
+ </li>
+ </ol>
+ </fieldset>
+[% END # hide fieldset %]
+[% END # IF step_7 %]
+
+[% IF ( step_4 ) %]
+[% IF ( ExtendedPatronAttributes ) %][% UNLESS ( no_patron_attribute_types ) %]
+ <fieldset class="rows" id="memberentry_patron_attributes">
+ <legend id="patron_attributes_lgd">Thuộc tính mở rộng</legend>
+ <input type="hidden" name="setting_extended_patron_attributes" value="1" />
+ [% FOREACH pa_loo IN patron_attributes %]
+ [% IF pa_loo.class %]
+ <fieldset id="aai_[% pa_loo.class %]">
+ <legend id="[% pa_loo.class %]_lgd">[% pa_loo.lib %]</legend>
+ [% END %]
+ <ol class="attributes_table">
+ [% FOREACH patron_attribute IN pa_loo.items %]
+ <li data-category_code="[% patron_attribute.category_code %]">
+ <label for="[% patron_attribute.form_id %]">[% patron_attribute.description %]: </label>
+ [% IF ( patron_attribute.use_dropdown ) %]
+ <select id="[% patron_attribute.form_id %]" name="[% patron_attribute.form_id %]">
+ <option value=""></option>
+ [% FOREACH auth_val_loo IN patron_attribute.auth_val_loop %]
+ [% IF auth_val_loo.authorised_value == patron_attribute.value %]
+ <option value="[% auth_val_loo.authorised_value %]" selected="selected">
+ [% auth_val_loo.lib %]
+ </option>
+ [% ELSE %]
+ <option value="[% auth_val_loo.authorised_value %]" >
+ [% auth_val_loo.lib %]
+ </option>
+ [% END %]
+ [% END %]
+ </select>
+ [% ELSE %]
+ <textarea rows="2" cols="30" id="[% patron_attribute.form_id %]" name="[% patron_attribute.form_id %]">[% patron_attribute.value %]</textarea>
+ [% END %]
+ <input type="hidden" id="[% patron_attribute.form_id %]_code" name="[% patron_attribute.form_id %]_code" value="[% patron_attribute.code |html %]" />
+ <a href="#" onclick="clear_entry(this); return false;"><i class="fa fa-fw fa-trash"></i> Xóa</a>
+ [% IF ( patron_attribute.repeatable ) %]
+ <a href="#" onclick="clone_entry(this); return false;"><i class="fa fa-fw fa-plus"></i> Tạo mới</a>
+ [% END %]
+ </li>
+ [% END %]
+ </ol>
+ [% IF pa_loo.class %]</fieldset>[% END %]
+ [% END %]
+ </fieldset>
+[% END %][% END %][% END %]
+
+[% IF ( step_5 ) %][% IF ( EnhancedMessagingPreferences ) %]
+ <fieldset class="rows" id="memberentry_messaging_prefs">
+ <legend id="patron_messaging_prefs_lgd">Thông báo bạn đọc </legend>
+ [% IF ( opadd ) %]
+ <!-- handle changing prefs if creating new patron and changing
+ the patron category
+ -->
+ <script type="text/javascript">//<![CDATA[
+       $(document).ready(function(){
+            var message_prefs_dirty = false;
+            $('#memberentry_messaging_prefs > *').change(function() {
+                message_prefs_dirty = true;
+            });
+            $('#categorycode_entry').change(function() {
+                var categorycode = $(this).val();
+                if (message_prefs_dirty) {
+                    if (!confirm(_("Change messaging preferences to default for this category?"))) {
+                        return;
+                    }
+                }
+                $.getJSON('/cgi-bin/koha/members/default_messageprefs.pl?categorycode=' + categorycode,
+                    function(data) {
+                        $.each(data.messaging_preferences, function(i, item) {
+                            var attrid = item.message_attribute_id;
+                            var transports = ['email', 'rss', 'sms'];
+                            $.each(transports, function(j, transport) {
+                                if (item['transports_' + transport] == 1) {
+                                    $('#' + transport + attrid).prop('checked', true);
+                                } else {
+                                    $('#' + transport + attrid).prop('checked', false);
+                                }
+                            });
+                            if (item.digest && item.digest != ' ') {
+                                $('#digest' + attrid).prop('checked', true);
+                            } else {
+                                $('#digest' + attrid).prop('checked', false);
+                            }
+                            if (item.takes_days == '1') {
+                                $('[name=' + attrid + '-DAYS]').val('' + item.days_in_advance);
+                            }
+                        });
+                        message_prefs_dirty = false;
+                    }
+                );
+            });
+        });
+    //]]>
+    </script>
+ [% END %]
+ <input type="hidden" name="setting_messaging_prefs" value="1" />
+ [% INCLUDE 'messaging-preference-form.inc' %]
+ [% IF ( SMSSendDriver ) %]
+ <p><label for="SMSnumber">Số tin nhắn:</label>
+ <input type="text" id="SMSnumber" name="SMSnumber" value="[% SMSnumber %]" />
+ </p>
+ [% UNLESS nosms_provider_id %]
+ <p>
+ <label for="sms_provider_id">SMS provider:</label>
+ <select id="sms_provider_id" name="sms_provider_id"/>
+ <option value="">Unknown</option>
+ [% FOREACH s IN sms_providers %]
+ [% IF s.id == sms_provider_id %]
+ <option value="[% s.id %]" selected="selected">[% s.name %]</option>
+ [% ELSE %]
+ <option value="[% s.id %]">[% s.name %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </p>
+ [% END %]
+ [% END %]
+ </fieldset>
+[% END %] [% END %]
+
+</form>
+
+[% IF quickadd && opadd  && !check_member %]
+ <form id="quick_add_form" class="toggler">
+ <fieldset class="rows quick_add"><legend>Quick add</legend>
+ <ol id="quick_add_list">
+ </ol>
+ </fieldset>
+ </form>
+[% END %]
+</div>
+</div>
+
+[% UNLESS ( opadd ) %]<div class="yui-b">
+[% INCLUDE 'members-menu.inc' %]
+</div>[% END %]
+[% END %]
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("lib/jquery/plugins/jquery.fixFloat.js") %]
+ [% INCLUDE 'calendar.inc' %]
+ [% Asset.js("js/members-menu.js") %]
+ <script type="text/javascript">
+        $(document).ready(function() {
+
+                $("#saverecord").css({ 'margin-left': 0 });
+                var original_offset = $("#toolbar").position().top;
+                var additional_height = $("#filters").height();
+                $('#toolbar').fixFloat({ 'originalOffset': original_offset });
+                $("#filteraction_on").on("click", function(){
+                    $(window).off('scroll');
+                    $("#toolbar").css({ top: original_offset + additional_height });
+                    $('#toolbar').fixFloat({ 'originalOffset': original_offset + additional_height });
+                });
+                $("#filteraction_off").on("click", function(){
+                    $(window).off('scroll');
+                    $("#toolbar").css({ top: original_offset });
+                    $('#toolbar').fixFloat({ 'originalOffset': original_offset });
+                })
+
+            [% IF categorycode %]
+                update_category_code( "[% categorycode %]" );
+            [% ELSE %]
+                if ( $("#categorycode_entry").length > 0 ){
+                    var category_code = $("#categorycode_entry").find("option:selected").val();
+                    update_category_code( category_code );
+                }
+            [% END %]
+        });
+
+        function update_cardnumber_warning(size){
+            var max_len = [% maxlength_cardnumber %];
+            if ( size >= max_len ) {
+                $("#cn_max").show();
+            } else {
+                $("#cn_max").hide();
+            }
+        }
+
+        $(document).ready(function() {
+            $("#cn_max").hide();
+            var content;
+            $("#cardnumber").on("keydown", function(e){
+                content = $(this).val();
+            });
+            $("#cardnumber").on("keyup", function(e){
+                // .val() will return the value of the input after the key has been released
+                var l = $(this).val().length;
+                if ( l == content.length + 1 ) { l--; }
+                update_cardnumber_warning(l);
+            });
+            $("#cardnumber").bind("paste", function(e){
+                var pastedData = e.originalEvent.clipboardData.getData('text');
+                update_cardnumber_warning(pastedData.length - 1);
+            } );
+            var toggle_quick_add = $(".toggle_quick_add");
+            $(toggle_quick_add).click(function(e){
+                toggle_quick_add.toggle();
+                e.preventDefault();
+                var toggle_to = '';
+                var toggle_from = '';
+                if( $("#entryform:visible").length ) {
+                    toggle_to = "#quick_add_form label";
+                    toggle_from = "#entryform label";
+                } else {
+                    toggle_to="#entryform label";
+                    toggle_from = "#quick_add_form label";
+                }
+                $(toggle_from).each(function() {
+                    var input_label = $(this).attr('for');
+                    if ( input_label == 'sex-male' || input_label == 'sex-none' || input_label == 'sex-female' ) {
+                        $(toggle_to+"[for='"+input_label+"']").next().prop('checked', $(this).next().prop('checked') );
+                        return;
+                    }
+                    $(toggle_to+"[for='"+input_label+"']").next().val(  $(this).next().val() );
+                });
+
+                $(".toggler").toggle();
+            });
+
+            $("#save_quick_add").click(function(){
+                $("#quick_add_form").validate();
+                if( $("#quick_add_form").valid()){
+                    $('.toggle_quick_add').click();
+                    $('#saverecord').click();
+                }
+                else {return false;}
+            });
+
+            $("#saverecord").click(function(){
+                if( check_form_borrowers() ){
+                    $("#entryform").submit();
+                }
+            });
+
+            $('#duplicate').on('click', function() {
+                $("input[name='op']").val('modify');
+                $("input[name='borrowernumber']").val('[% check_member %]');
+                $("input[name='check_member']").val('');
+                $('#entryform').submit();
+            });
+
+            $('#not-duplicate').on('click', function() {
+                $("input[name='nodouble']").val('1');
+                $('#entryform').submit();
+            });
+        });
+
+        var MSG_SEPARATOR = _("Separator must be / in field %s");
+        var MSG_INCORRECT_DAY = _("Invalid day entered in field %s");
+        var MSG_INCORRECT_MONTH = _("Invalid month entered in field %s");
+        var MSG_INCORRECT_YEAR = _("Invalid year entered in field %s");
+        var MSG_DUPLICATE_PATRON = _("Cảnh báo: Bạn đọc bị trùng lặp");
+        var MSG_DUPLICATE_ORGANIZATION = _("Cảnh báo: Tổ chức bị trùng lặp");
+        var MSG_LATE_EXPIRY = _("Cảnh báo: Ngày hết hạn trước ngày đăng ký");
+        var MSG_DUPLICATE_SUSPICION = _("Vui lòng xác nhận xem đây có phải là một bạn đọc bị trùng lặp");
+        var MSG_MONTH = _("%s month")
+        var MSG_MONTHS = _("%s months")
+        var MSG_YEAR = _("%s year")
+        var MSG_YEARS = _("%s tuổi")
+        var LABEL_CHANGE = _("Sửa");
+        var LABEL_SET_TO_PATRON = _("Tìm kiếm");
+        var LABEL_AGE = _("Age");
+
+        [% IF quickadd && opadd  && !check_member %]
+            $(document).ready(function () {
+
+                $("#entryform,#saverecord").hide();
+                [% q_add_f = Koha.Preference('PatronQuickAddFields').split('\|') %]
+                var qaddfields = [[% FOREACH field IN q_add_f.unique %]"[% field %]",[% END %]];
+                var skipped_fields = ["contactname","contactfirstname","relationship"]; //Guarantor form is pulled as a whole, ignore individual fields
+                $("#entryform label").each(function () {
+                    var input_label = $(this).attr('for');
+                    if ( input_label == 'sex-female' ) {
+                        input_label='sex';
+                    }
+                    else if ( input_label == 'btitle' ) {
+                        input_label='title';
+                    }
+                    if ( skipped_fields.indexOf( input_label ) != -1 ) { input_label=""; }
+                    if( qaddfields.indexOf( input_label ) != -1 || $(this).attr('class') == 'required' ){
+                       $(this).parent().clone().appendTo("#quick_add_list");
+                       [% UNLESS mandatorypassword %]
+                             if( input_label == 'password' ) $("#entryform label[for='password2']").parent().clone().appendTo("#quick_add_list");
+                       [% END %]
+                    }
+                });
+                    if( $("#memberentry_guarantor").length ) {
+                        $("#memberentry_guarantor").clone().appendTo("#quick_add_list").css("margin",0);
+                        $("#quick_add_form #memberentry_guarantor").append("<p>" + _("Note: Quick add guarantor form populates address fields in full form") + "</p>");
+                        $("#quick_add_list #guarantordelete").prop('id','qagd');
+                    }
+                $("#qagd").click(function() { $("#guarantordelete").click(); });
+                $("#quick_add_form").show();
+            });
+        [% END %]
+
+    </script>
+ [% Asset.js("js/members.js") %]
+ [% Asset.js("js/messaging-preference-form.js") %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]
+[% PROCESS 'password_check.inc' %]
+[% PROCESS 'add_password_check' new_password => 'password' %]

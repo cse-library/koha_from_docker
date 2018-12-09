@@ -1,0 +1,60 @@
+[% USE Asset %]
+[% USE KohaDates %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha [% END %] &rsaquo; Self checkout help</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Koha [% Version %]" /> <!-- leave this for stats -->
+<link rel="shortcut icon" href="[% IF ( OpacFavicon  ) %][% OpacFavicon  %][% ELSE %][% interface %]/[% theme %]/images/favicon.ico[% END %]" type="image/x-icon" />
+ [% Asset.css("lib/bootstrap/css/bootstrap.min.css") %]
+[% Asset.css("lib/jquery/jquery-ui.css") %]
+[% Asset.css("css/sco.css") %]
+[% IF ( OPACUserCSS ) %]<style>[% OPACUserCSS %]</style>[% END %]
+[% IF ( SCOUserCSS ) %]<style>[% SCOUserCSS %]</style>[% END %]
+<!--[if lt IE 9]>
+ <script src="[% interface %]/[% theme %]/lib/respond.min.js"></script>
+<![endif]-->
+<script>
+    function _(s) { return s } // dummy function for gettext
+</script>
+[% Asset.js("lib/modernizr.min.js") %]
+</head>
+<body id="sco_help" class="sco">
+[% INCLUDE 'masthead-sco.inc' %]
+
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row-fluid">
+
+<h1>Trợ giúp hệ thống mượn trả tự động</h1>
+
+[% IF ( SelfCheckHelpMessage ) %]
+<div id="selfcheckhelpmessage">
+[% SelfCheckHelpMessage %]
+</div>
+[% END %]
+
+<p>Nếu hệ thống mượn trả tự động hoạt động không tốt, bạn có thể tham khảo theo hướng dẫn này để có thể tự bạn kiểm tra.</p>
+
+<h3>Bước 1: Nhập tên đăng nhập[% IF ( SelfCheckoutByLogin ) %] và mật khẩu của bạn[% END %]</h3>
+<p>Nhập ID[% IF ( SelfCheckoutByLogin ) %] và mật khẩu của bạn[% END %], nhấp vào nút "Gửi" (hoặc ấn phím Enter).</p>
+
+<h3>Bước 2: Quét ĐKCB cho từng tài liệu, bạn có thể quét nhiều ĐKCB cùng một lúc</h3>
+<p>Quét từng tài liệu và đợi cho đến khi trên màn hình tải xong dữ liệu của bạn sau đó tiến hành quét các tài liệu tiếp theo. Kiểm tra các tài liệu xuất hiện trên danh sách của bạn. Chỉ nhấn nút Gửi</p>
+
+<h3>Bước 3: Nhấn nút 'Hoàn thành'.</h3>
+<p>Nếu bạn không nhấn nút  'Hoàn thành', phiên làm việc của bạn sẽ tự động đóng lại trong [% SelfCheckTimeout %] giây.</p>
+
+ <div class="button">
+ <a href="javascript:history.go(-1)">Quay lại hệ thống mượn trả tự động</a>
+ </div>
+
+ </div> <!-- / #showreviews -->
+ </div> <!-- / .span10/12 -->
+ </div> <!-- / .row-fluid -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% IF ( SCOUserJS ) %]<script>[% SCOUserJS %]</script>[% END %]
+[% END %]
